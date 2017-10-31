@@ -1,0 +1,15 @@
+{
+  "name": "motan/motan-php",
+  "version": "1.0.0",
+  "description": "Motan For PHP",
+  "autoload": {
+    "psr-4": {"Motan\\": "src/Motan/"}
+  },
+  "bin": ["weibo-protoc-gen-php.php"],
+  "repositories": {
+    "packagist": {
+      "type": "composer",
+      "url": "https://packagist.phpcomposer.com"
+    }
+  }
+}

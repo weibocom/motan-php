@@ -1,0 +1,30 @@
+# motan-client
+*.lock
+examples/z*
+examples/pb_path/PB_CLASS_PATH/*
+vendor
+
+# vim
+.*.sw[a-z]
+*.un~
+Session.vim
+
+# textmate
+*.tmproj
+*.tmproject
+tmtags
+
+# OSX
+.DS_Store
+._*
+.Spotlight-V100
+.Trashes
+*.swp
+pretty/zj
+*.sublime*
+
+# luarocks
+*.rock
+
+# debugger
+.gdb*
