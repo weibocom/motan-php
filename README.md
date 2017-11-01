@@ -34,8 +34,8 @@ $rs = $cx->show_batch(['name'=>'idevz']);
 if (null === $rs) {
    print_r($cx->getResponseException());
 }
-// print_r($cx->getResponseHeader());
-// print_r($cx->getResponseMetadata());
+print_r($cx->getResponseHeader());
+print_r($cx->getResponseMetadata());
 print_r($rs);
 ```
 
