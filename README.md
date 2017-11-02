@@ -1,4 +1,4 @@
-# Motan-go
+# Motan-PHP
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://github.com/weibocom/motan/blob/master/LICENSE)
 
 # Overview
