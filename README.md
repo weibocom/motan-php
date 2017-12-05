@@ -32,7 +32,7 @@ the demo case is in the main/ directory
 
 ## Motan server
 
-We use Weibo-Mesh to support a PHP Server, Weibo-Mesh is a local agent writen in Golang. But not only a agent, Wei-Mesh take the ability as service governance. You can give take an example at [motan-example](https://github.com/motan-ecosystem/motan-examples/tree/master/weibo-mesh)
+We use Weibo-Mesh to support a PHP Server, Weibo-Mesh is a local agent writen in Golang. But not only a agent, Wei-Mesh take the ability as service governance. There is an example at [motan-example](https://github.com/motan-ecosystem/motan-examples/tree/master/weibo-mesh)
 
 **_As a CGI agent to php-fpm_**
 
