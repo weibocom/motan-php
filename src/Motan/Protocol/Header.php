@@ -48,7 +48,6 @@ class Header
 
     public function buildHeaderBuf()
     {
-        $this->_request_id = 2008074349849897768674;
         $buffer = pack("n", $this->_magic);
         $buffer = $buffer . pack("C", $this->_msg_type);
         $buffer = $buffer . pack("C", $this->_version_status);
