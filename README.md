@@ -13,7 +13,7 @@ This project is the PHP Motan implementation. Provides PHP motan client.
 
 _Using composer:_
 
-**Just** clone this porject and add it to your `composer.json`.
+**Just** clone this project and add it to your `composer.json`.
 
 _WithOut Composer:_
 
