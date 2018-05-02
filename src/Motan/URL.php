@@ -152,6 +152,8 @@ class URL {
      */
     public function getParams()
     {
+        if(empty($this->_params))
+            return NULL;
         return $this->_params;
     }
 
@@ -515,10 +517,7 @@ class URL {
 
     public function getRawReqObj()
     {
-        if (!empty($this->_raw_req_obj)) {
-            return $this->_raw_req_obj;
-        }
-        return false;
+        return $this->_raw_req_obj;
     }
 
     public function addHeaders($headers)

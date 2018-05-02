@@ -94,7 +94,7 @@ abstract class  Endpointer
             $resp_body = $this->_response->getBody();
         }
         $rs = $this->_serializer->deserialize($resp_obj, $resp_body);
-        if (null === $rs || $resp_taged) {
+        if ($resp_taged) {
             null === $rs && $this->_response_exception = $this->_response->getMetadata()['M_e'];
         }
         return $rs;
