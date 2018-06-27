@@ -66,26 +66,31 @@ abstract class  Endpointer
         return $this->_connection = $this->_connection_obj->getConnection();
     }
 
-    public function call()
+    public function call(...$arguments)
     {
-        $req_params = $this->_url_obj->getParams();
-        $resp_obj = $resp_taged = null;
-        if (!empty($req_params)) {
-            $req_obj = $req_params;
+        $request_obj = $resp_obj = $resp_taged = NULL;
+        if (empty($arguments)) {
+            $req_params = $this->_url_obj->getParams();
+            if (!empty($req_params)) {
+                $req_obj_data = $req_params;
+            } else {
+                $req_obj_data = $this->_url_obj->getRawReqObj();
+            }
+            $request_obj = $this->_serializer->serialize($req_obj_data);
         } else {
-            $req_obj = $this->_url_obj->getRawReqObj();
+            $request_obj = $this->_serializer->serializeMulti(...$arguments);
         }
-
         if (Constants::PROTOCOL_GRPC === $this->_url_obj->getProtocol()) {
             $resp_obj = $req_params['resp_msg'];
-            $req_obj = $req_params['req_msg'];
+            $req_obj_data = $req_params['req_msg'];
+            $request_obj = $this->_serializer->serialize($req_obj);
             $resp_taged = true;
         }
         $this->_buildConnection();
         if (!$this->_connection) {
             return false;
         }
-        $this->_response = $this->_motanCall($this->_serializer->serialize($req_obj));
+        $this->_response = $this->_motanCall($request_obj);
         $this->_response_header = $this->_response->getHeader();
         $this->_response_metadata = $this->_response->getMetadata();
         if ($this->_response_header->isGzip()) {
@@ -94,9 +99,9 @@ abstract class  Endpointer
             $resp_body = $this->_response->getBody();
         }
         $rs = $this->_serializer->deserialize($resp_obj, $resp_body);
-        if ($resp_taged) {
+        // if ($resp_taged) {
             null === $rs && $this->_response_exception = $this->_response->getMetadata()['M_e'];
-        }
+        // }
         return $rs;
     }
 

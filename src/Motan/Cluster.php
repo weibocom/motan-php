@@ -133,8 +133,8 @@ class Cluster
         
     }
     
-    public function call()
+    public function call(...$args)
     {
-        return $this->_ha_strategy->call($this->_load_balance);
+        return $this->_ha_strategy->call($this->_load_balance, ...$args);
     }
 }

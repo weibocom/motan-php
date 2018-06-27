@@ -17,6 +17,9 @@
 
 namespace Motan\Serialize;
 
+use Motan\Constants;
+use Motan\Utils;
+
 /**
  * Motan Simple Serializer for PHP 5.4+
  * 
@@ -29,25 +32,117 @@ namespace Motan\Serialize;
  */
 class Motan implements \Motan\Serializer
 {
+    static function motan_table_type($params)
+    {
+        $data_type = NULL;
+        if (!Utils::is_assoc($params)) {
+            $type_tmp_arr = [];
+            foreach ($params as $p) {
+                is_string($p) && $type_tmp_arr['string'][] = $p;
+                is_int($p) && $p <= 0xff && $type_tmp_arr['byte'][] = $p;
+            }
+            if (count($type_tmp_arr) == 1) {
+                $data_type = isset($type_tmp_arr['string']) ? Constants::DTYPE_STRING_ARRAY : Constants::DTYPE_BYTE_ARRAY;
+            } else {
+                $data_type = Constants::DTYPE_ARRAY;
+            }
+        } else {
+            $type_tmp_arr = [];
+            $type_tmp = NULL;
+            foreach ($params as $key => $value) {
+                $type_tmp = gettype($value);
+                $type_tmp_arr[$type_tmp][] = $value;
+            }
+            if (count($type_tmp_arr) == 1 && count($type_tmp_arr[$type_tmp]) == count($params) && $type_tmp == 'string') {
+                $data_type = Constants::DTYPE_STRING_MAP;
+            } else {
+                $data_type = Constants::DTYPE_MAP;
+            }
+        }
+        return $data_type;
+    }
+
+    static function serialize_buf($params, &$buffer)
+    {
+        if (is_string($params)) {
+            $buffer .= pack('C', Constants::DTYPE_STRING) . pack('N', strlen($params)) . $params;
+        } elseif (is_bool($params)) {
+            $buffer .= pack('C', Constants::DTYPE_BOOL) . pack('C', intval($params));
+        } elseif (is_numeric($params)) {
+            # code...
+        } elseif (is_array($params)) {
+            $array_type = self::motan_table_type($params);
+            switch ($array_type) {
+                case Constants::DTYPE_STRING_ARRAY:
+                    $buffer .= pack('C', Constants::DTYPE_STRING_ARRAY);
+                    $btemp = '';
+                    $btemp_len = 0;
+                    foreach ($params as $param) {
+                        $btemp .= pack('N', strlen($param)) . $param;
+                        $btemp_len += strlen($param) + 4;
+                    }
+                    $buffer .= pack('N', $btemp_len) . $btemp;
+                break;
+                // 
+                case Constants::DTYPE_BYTE_ARRAY :
+                break;
+                // 
+                case Constants::DTYPE_ARRAY :
+                break;
+                case Constants::DTYPE_STRING_MAP :
+                    $buffer .= pack('C', Constants::DTYPE_STRING_MAP);
+                    $btemp = '';
+                    $btemp_len = 0;
+                    foreach ($params as $k => $v) {
+                        if (is_array($v)) {
+                            continue;
+                        }
+                        $btemp .= pack('N', strlen($k)) . $k . pack('N', strlen($v)) . $v;
+                        $btemp_len += strlen($k) + strlen($v) + 8;
+                    }
+                    $buffer .= pack('N', $btemp_len) . $btemp;
+                break;
+                // 
+                case Constants::DTYPE_MAP :
+                    $buffer .= pack('C', Constants::DTYPE_MAP);
+                    $btemp = '';
+                    $btemp_len = 0;
+                    foreach ($params as $k => $v) {
+                        $bft_k = $bft_v = '';
+                        self::serialize_buf($k, $bft_k);
+                        self::serialize_buf($v, $bft_v);
+                        // $btemp .= pack('N', strlen($bft_k)) . $bft_k . pack('N', strlen($bft_v)) . $bft_v;
+                        // $btemp_len += strlen($bft_k) + strlen($bft_v) + 8;
+                        $btemp .= $bft_k . $bft_v;
+                        $btemp_len += strlen($bft_k) + strlen($bft_v);
+                    }
+                    $buffer .= pack('N', $btemp_len) . $btemp;
+                break;
+            }
+        } elseif (is_null($params)) {
+            $buffer .= pack('C', 0);
+        }
+    }
+
     public function serialize($params)
     {
         $buffer = '';
-        if (is_array($params)) {
-            $buffer = pack('C', 2);
-            $btemp = '';
-            $btemp_len = 0;
-            foreach ($params as $k => $v) {
-                if (is_array($v)) {
-                    continue;
-                }
-                $btemp .= pack('N', strlen($k)) . $k . pack('N', strlen($v)) . $v;
-                $btemp_len += strlen($k) + strlen($v) + 8;
+        self::serialize_buf($params, $buffer);
+        return $buffer;
+    }
+
+    public function serializeMulti(...$params)
+    {
+        $buffer = '';
+        if (empty($params)) {
+            self::serialize_buf($params, $buffer);
+            return $buffer;
+        }
+        foreach ($params as $param) {
+            if (is_array($param) && empty($param)) {
+                $param = NULL;
             }
-            $buffer = $buffer . pack('N', $btemp_len) . $btemp;
-        } elseif (is_string($params)) {
-            $buffer = pack('C', 1) . pack('N', strlen($params)) . $params;
-        } elseif (is_null($params)) {
-            $buffer = pack('C', 0);
+            self::serialize_buf($param, $buffer);
         }
         return $buffer;
     }

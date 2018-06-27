@@ -38,6 +38,20 @@ class Utils
         return $request_id;
     }
 
+    public static function is_assoc($var)
+    {
+        return is_array($var) && array_diff_key($var,array_keys(array_keys($var)));
+    }
+    
+    public static function get_bytes($string)
+    {  
+        $bytes = array();  
+        for($i = 0; $i < strlen($string); $i++){  
+             $bytes[] = ord($string[$i]);  
+        }  
+        return $bytes;  
+    }
+
     public static function crc32Hash($arr, $key)
     {
         return $arr[intval(sprintf("%u", crc32($key)) % count($arr))];
