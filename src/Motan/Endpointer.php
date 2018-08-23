@@ -42,14 +42,13 @@ abstract class  Endpointer
     protected $_response_header;
     protected $_response_metadata;
     protected $_response_exception;
-
+    
     public $request_id;
 
     public function __construct(URL $url_obj)
     {
         $this->_url_obj = $url_obj;
         $this->_serializer = Utils::getSerializer($this->_url_obj->getSerialization());
-        $this->_connection_obj = new Connection($this->_url_obj);
     }
 
     public function setLoadBalance($loadbalance)
@@ -59,46 +58,19 @@ abstract class  Endpointer
         }
         return $this;
     }
+    
+    public function setConnection(Connection $conn_obj) {
+        $this->_connection_obj = $conn_obj;
+    }
 
     protected function _buildConnection()
     {
         $this->_connection_obj->buildConnection($this->_loadbalance->getNode());
         return $this->_connection = $this->_connection_obj->getConnection();
     }
-
-    public function call()
-    {
-        $req_params = $this->_url_obj->getParams();
-        $resp_obj = $resp_taged = null;
-        if (!empty($req_params)) {
-            $req_obj = $req_params;
-        } else {
-            $req_obj = $this->_url_obj->getRawReqObj();
-        }
-
-        if (Constants::PROTOCOL_GRPC === $this->_url_obj->getProtocol()) {
-            $resp_obj = $req_params['resp_msg'];
-            $req_obj = $req_params['req_msg'];
-            $resp_taged = true;
-        }
-        $this->_buildConnection();
-        if (!$this->_connection) {
-            return false;
-        }
-        $this->_response = $this->_motanCall($this->_serializer->serialize($req_obj));
-        $this->_response_header = $this->_response->getHeader();
-        $this->_response_metadata = $this->_response->getMetadata();
-        if ($this->_response_header->isGzip()) {
-            $resp_body = zlib_decode($this->_response->getBody());
-        } else {
-            $resp_body = $this->_response->getBody();
-        }
-        $rs = $this->_serializer->deserialize($resp_obj, $resp_body);
-        if ($resp_taged) {
-            null === $rs && $this->_response_exception = $this->_response->getMetadata()['M_e'];
-        }
-        return $rs;
-    }
+    
+    abstract function call();
+    abstract function multiCall(array $call_arr);
 
     public function getResponseHeader()
     {
@@ -120,20 +92,4 @@ abstract class  Endpointer
         return $this->_response;
     }
 
-    protected function _motanCall($request_obj)
-    {
-        $request_id = $this->_url_obj->getRequestId();
-        $metadata = $this->_url_obj->getHeaders();
-        defined("APP_NAME") && $metadata['M_s'] = APP_NAME;
-        $metadata['M_p'] = $this->_url_obj->getService();
-        $metadata['M_m'] = $this->_url_obj->getMethod();
-        $metadata['M_g'] = $this->_url_obj->getGroup();
-        $metadata['M_pp'] = $this->_url_obj->getProtocol();
-        $metadata['requestIdFromClient'] = $request_id;
-        $metadata['SERIALIZATION'] = $this->_url_obj->getSerialization();
-        $metadata['M_pp'] === 'cedrus' && $metadata['HTTP_Method'] = $this->_url_obj->getHttpMethod();
-        $buf = Protocol\Motan::encode($request_id, $request_obj, $metadata);
-        $this->_connection_obj->write($buf);
-        return $this->_connection_obj->read();
-    }
 }

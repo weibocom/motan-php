@@ -60,6 +60,7 @@ class Motan implements \Motan\Serializer
         $pos = 0;
         $type_buf = unpack("Cmsg_type", substr($data, 0, 1));
         $pos = $pos + 1;
+
         switch ($type_buf['msg_type']) {
             case 0:
                 $obj = null;

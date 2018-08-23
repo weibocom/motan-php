@@ -17,7 +17,7 @@
 
 namespace Motan;
 
-use DrSlump\Protobuf\Exception;
+//use DrSlump\Protobuf\Exception;
 
 /**
  * Motan URL for PHP 5.4+
@@ -32,7 +32,7 @@ use DrSlump\Protobuf\Exception;
 class URL {
     private $_raw_url;
     private $_raw_req_obj;
-    private $_url_type;
+    private $_scheme;
     private $_params;
     private $_headers;
     private $_service;
@@ -74,9 +74,10 @@ class URL {
 
             $url_info = parse_url($url);
             $this->_path = ltrim($url_info['path'], '/');
+            $this->_scheme = $url_info['scheme'];
             $this->_host = $url_info['host'];
             $this->_port = $url_info['port'];
-            parse_str($url_info['query'], $this->_params);
+            isset($url_info['query']) && parse_str($url_info['query'], $this->_params);
 
             $this->_initMetaInfo(Constants::URL_SERVICE_KEY, '_service');
             $this->_initMetaInfo(Constants::URL_GROUP_KEY, '_group');
@@ -86,30 +87,27 @@ class URL {
             switch ($url_info['scheme']) {
                 case 'motan':
                 case 'motan2':
-                    $this->_url_type = Constants::REQ_URL_TYPE_MOTAN;
-                    $this->_service = $this->_path;
-                    $this->_endpoint = Constants::ENDPOINT_MOTAN;
+                    $this->_endpoint = Constants::ENDPOINT_AGENT;
+                    $this->_protocol = Constants::PROTOCOL_MOTAN_NEW;
+                    $this->_method = '/' . $this->_path;
                 break;
                 case 'http':
                 case 'cedrus':
-                    $this->_url_type = Constants::REQ_URL_TYPE_RESTY;
                     $this->_method = '/' . $this->_path;
-                    $this->_endpoint = Constants::ENDPOINT_MOTAN;
+                    $this->_endpoint = Constants::ENDPOINT_AGENT;
+                    $this->_protocol = Constants::PROTOCOL_CEDRUS;
                 break;
                 case 'grpc':
                     $this->_endpoint = Constants::ENDPOINT_GRPC;
                     $this->_protocol = Constants::PROTOCOL_GRPC;
                     $this->_serialization = Constants::SERIALIZATION_PB;
-                    $this->_service = $this->_path;
                     break;
                 case 'cgi':
                     $this->_protocol = Constants::PROTOCOL_CGI;
-                    $this->_url_type = Constants::REQ_URL_TYPE_MOTAN;
-                    $this->_service = $this->_path;
                     $this->_endpoint = Constants::ENDPOINT_MOTAN;
                     break;
                 default:
-                    throw new Exception("Didn't support the scheme:" . $url_info['scheme']);
+                    throw new \Exception("Didn't support the scheme:" . $url_info['scheme']);
                     break;
             }
         }
@@ -134,17 +132,8 @@ class URL {
     /**
      * @return string
      */
-    public function getUrlType()
-    {
-        return $this->_url_type;
-    }
-
-    /**
-     * @param string $url_type
-     */
-    public function setUrlType($url_type)
-    {
-        $this->_url_type = $url_type;
+    public function getScheme() {
+        $this->_scheme;
     }
 
     /**
@@ -152,8 +141,6 @@ class URL {
      */
     public function getParams()
     {
-        if(empty($this->_params))
-            return NULL;
         return $this->_params;
     }
 
@@ -517,7 +504,10 @@ class URL {
 
     public function getRawReqObj()
     {
-        return $this->_raw_req_obj;
+        if (!empty($this->_raw_req_obj)) {
+            return $this->_raw_req_obj;
+        }
+        return false;
     }
 
     public function addHeaders($headers)

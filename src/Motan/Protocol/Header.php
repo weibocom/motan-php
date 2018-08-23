@@ -165,4 +165,9 @@ class Header
     {
         return $this->_serialize >> 3 & 0x1f;
     }
+    
+    public function getRequestId() {
+        return $this->_request_id;
+    }
+    
 }

@@ -43,9 +43,10 @@ class Client
         if (defined('D_AGENT_ADDR')) {
             $agent_addr = D_AGENT_ADDR;
         }
-        if ($connection->buildConnection($agent_addr)){
-            $this->_url_obj->setEndpoint(Constants::ENDPOINT_AGENT);
+        $this->_url_obj->setEndpoint(Constants::ENDPOINT_AGENT);
+        if ($connection->buildConnection($agent_addr)) {
             $this->_endpoint = new Agent($this->_url_obj);
+            $this->_endpoint->setConnection($connection);
         } else {
             $this->_endpoint = new Cluster($this->_url_obj);
         }
@@ -77,17 +78,14 @@ class Client
 
     public function __call($name, $arguments)
     {
-        $request_id =  (!isset($arguments[2]) || empty($arguments[2])) ? Utils::genRequestId($this->_url_obj) : $arguments[2];
+        $this->_url_obj->setRequestId(Utils::genRequestId($this->_url_obj));
         isset($arguments[0]) && $this->_url_obj->addParams($arguments[0]);
         isset($arguments[1]) && $this->_url_obj->addHeaders($arguments[1]);
-        $this->_url_obj->setRequestId($request_id);
         switch ($name) {
             case 'get':
-                $this->_url_obj->setProtocol(Constants::PROTOCOL_CEDRUS);
                 $this->_url_obj->setHttpMethod(Constants::HTTP_METHOD_GET);
                 break;
             case 'post':
-                $this->_url_obj->setProtocol(Constants::PROTOCOL_CEDRUS);
                 $this->_url_obj->setHeaders(['Content-Type'=>'application/x-www-form-urlencoded']);
                 $this->_url_obj->setHttpMethod(Constants::HTTP_METHOD_POST);
                 break;
@@ -101,4 +99,17 @@ class Client
         }
         return $this->_endpoint->call();
     }
+    
+    public function multiCall(array $url_objs) {
+        if (empty($url_objs)) {
+            return [];
+        }
+        foreach ($url_objs as $url_obj) {
+            usleep(1);  // ·ÀÖ¹Ê±¼ä´ÁÖØ¸´
+            $url_obj->setRequestId(Utils::genRequestId($url_obj));
+        }
+        
+        return $this->_endpoint->multiCall($url_objs);
+    }
+    
 }
