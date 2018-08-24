@@ -45,11 +45,20 @@ class Utils
     
     public static function get_bytes($string)
     {  
-        $bytes = array();  
-        for($i = 0; $i < strlen($string); $i++){  
-             $bytes[] = ord($string[$i]);  
-        }  
-        return $bytes;  
+        $bytes = array();
+        for($i = 0; $i < strlen($string); $i++){
+            $bytes[] = ord($string[$i]);
+        }
+        return $bytes;
+    }
+    
+    public static function toStr($bytes)
+    {  
+        $str = ''; 
+        foreach($bytes as $ch) {
+            $str .= chr($ch);  
+        }
+        return $str;
     }
 
     public static function crc32Hash($arr, $key)

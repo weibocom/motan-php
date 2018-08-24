@@ -66,7 +66,7 @@ class URL {
             unset($this->_params[$key]);
         }
     }
-
+    
     public function __construct($url)
     {
         if (!empty($url)) {
