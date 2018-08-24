@@ -67,5 +67,25 @@ class Constants
     const DEFAULT_SOCKET_BUFFER_SIZE = 8192;
 
     const DEFAULT_AGENT_HOST = '127.0.0.1';
-    const DEFAULT_AGENT_PORT = 9981;
+	const DEFAULT_AGENT_PORT = 9981;
+	
+	// ---------------- simple serialize constants -----------------
+
+	const DEFAULT_BUFFER_SIZE = 2048;
+	
+	const DTYPE_NULL = 0;
+	const DTYPE_STRING = 1;
+	const DTYPE_STRING_MAP = 2;
+	const DTYPE_BYTE_ARRAY = 3;
+	const DTYPE_STRING_ARRAY = 4;
+	const DTYPE_BOOL = 5;
+	const DTYPE_BYTE = 6;
+	const DTYPE_INT16 = 7;
+	const DTYPE_INT32 = 8;
+	const DTYPE_INT64 = 9;
+	const DTYPE_FLOAT32 = 10;
+	const DTYPE_FLOAT64 = 11;
+
+	const DTYPE_MAP = 20;
+	const DTYPE_ARRAY = 21;
 }

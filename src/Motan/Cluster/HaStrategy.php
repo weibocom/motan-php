@@ -52,5 +52,5 @@ abstract class  HaStrategy
         return $this->_endpoint;
     }
 
-    abstract public function call(LoadBalance $load_balance);
+    abstract public function call(LoadBalance $load_balance, ...$args);
 }

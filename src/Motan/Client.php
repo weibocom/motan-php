@@ -75,6 +75,16 @@ class Client
         return $this->_endpoint->getResponse();
     }
 
+    public function doCall($name, ...$arguments)
+    {
+        if ($this->_url_obj->getRequestId() == NULL) {
+            $this->_url_obj->setRequestId(Utils::genRequestId($this->_url_obj));
+        }
+        
+        $this->_url_obj->setMethod($name);
+        return $this->_endpoint->call(...$arguments);
+    }
+
     public function __call($name, $arguments)
     {
         $request_id =  (!isset($arguments[2]) || empty($arguments[2])) ? Utils::genRequestId($this->_url_obj) : $arguments[2];
