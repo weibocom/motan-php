@@ -31,6 +31,8 @@ define("BIGINT_DIVIDER", 0xffffffff + 1);
  */
 class Utils
 {
+    const MAX_VARINT_BYTES = 10;
+
     public static function genRequestId(URL $url_obj)
     {
         $time = explode(" ", microtime());
@@ -191,4 +193,168 @@ class Utils
         }
         return static::$service_conf;
     }
+
+    // Following functions are zigzag varint transform, for 32 bit platfom we need BC Math extension
+    public static function encodeZigzag64($int64)
+    {
+        if (PHP_INT_SIZE == 4) {
+            if (bccomp($int64, 0) >= 0) {
+                return bcmul($int64, 2);
+            } else {
+                return bcsub(bcmul(bcsub(0, $int64), 2), 1);
+            }
+        } else {
+            return ($int64 << 1) ^ ($int64 >> 63);
+        }
+    }
+
+    public static function decodeZigzag64($uint64)
+    {
+        if (PHP_INT_SIZE == 4) {
+            if (bcmod($uint64, 2) == 0) {
+                return bcdiv($uint64, 2, 0);
+            } else {
+                return bcsub(0, bcdiv(bcadd($uint64, 1), 2, 0));
+            }
+        } else {
+            return (($uint64 >> 1) & 0x7FFFFFFFFFFFFFFF) ^ (-($uint64 & 1));
+        }
+    }
+
+    public static function divideInt64ToInt32($value, &$high, &$low)
+    {
+        $neg = (bccomp($value, 0) < 0);
+        if ($neg) {
+            $value = bcsub(0, $value);
+        }
+
+        $high = bcdiv($value, 4294967296);
+        $low = bcmod($value, 4294967296);
+        if (bccomp($high, 2147483647) > 0) {
+            $high = (int) bcsub($high, 4294967296);
+        } else {
+            $high = (int) $high;
+        }
+        if (bccomp($low, 2147483647) > 0) {
+            $low = (int) bcsub($low, 4294967296);
+        } else {
+            $low = (int) $low;
+        }
+
+        if ($neg) {
+            $high = ~$high;
+            $low = ~$low;
+            $low++;
+            if (!$low) {
+                $high = (int)($high + 1);
+            }
+        }
+    }
+
+    public static function encodeVarint($value)
+    {
+        $buffer = '';
+        $count = 0;
+
+        $high = 0;
+        $low = 0;
+        if (PHP_INT_SIZE == 4) {
+            static::divideInt64ToInt32($value, $high, $low);
+        } else {
+            $low = $value;
+        }
+
+        while (($low >= 0x80 || $low < 0) || $high != 0) {
+            $buffer[$count] = chr($low | 0x80);
+            $value = ($value >> 7) & ~(0x7F << ((PHP_INT_SIZE << 3) - 7));
+            $carry = ($high & 0x7F) << ((PHP_INT_SIZE << 3) - 7);
+            $high = ($high >> 7) & ~(0x7F << ((PHP_INT_SIZE << 3) - 7));
+            $low = (($low >> 7) & ~(0x7F << ((PHP_INT_SIZE << 3) - 7)) | $carry);
+            $count++;
+        }
+        $buffer[$count] = chr($low);
+        return $buffer;
+    }
+
+    public static function combineInt32ToInt64($high, $low)
+    {
+        $neg = $high < 0;
+        if ($neg) {
+            $high = ~$high;
+            $low = ~$low;
+            $low++;
+            if (!$low) {
+                $high = (int) ($high + 1);
+            }
+        }
+        $result = bcadd(bcmul($high, 4294967296), $low);
+        if ($low < 0) {
+            $result = bcadd($result, 4294967296);
+        }
+        if ($neg) {
+          $result = bcsub(0, $result);
+        }
+        return $result;
+    }
+
+    public static function decodeVarint($buffer)
+    {
+        $count = 0;
+
+        if (PHP_INT_SIZE == 4) {
+            $high = 0;
+            $low = 0;
+            $b = 0;
+
+            do {
+                if ($count === self::MAX_VARINT_BYTES) {
+                    throw new Exception("Varint overflow");
+                }
+                $b = ord($buffer[$count]);
+                $bits = 7 * $count;
+                if ($bits >= 32) {
+                    $high |= (($b & 0x7F) << ($bits - 32));
+                } else if ($bits > 25){
+                    // $bits is 28 in this case.
+                    $low |= (($b & 0x7F) << 28);
+                    $high = ($b & 0x7F) >> 4;
+                } else {
+                    $low |= (($b & 0x7F) << $bits);
+                }
+                $count += 1;
+            } while ($b & 0x80);
+
+            $result = static::combineInt32ToInt64($high, $low);
+            if (bccomp($result, 0) < 0) {
+                $var = bcadd($result, "18446744073709551616");
+            }
+            return [$result, $count];
+        } else {
+            $result = 0;
+            $shift = 0;
+
+            do {
+                if ($count === self::MAX_VARINT_BYTES) {
+                    throw new Exception("Varint overflow");
+                }
+                $byte = ord($buffer[$count]);
+                $result |= ($byte & 0x7f) << $shift;
+                $shift += 7;
+                $count += 1;
+            } while ($byte > 0x7f);
+            return [$result, $count];
+        }
+    }
+
+    public static function encodeZigzagVarint($number)
+    {
+        return static::encodeVarint(static::encodeZigzag64($number));
+    }
+
+    public static function decodeZigzagVarint($buffer)
+    {
+        $r = static::decodeVarint($buffer);
+        return [static::decodeZigzag64($r[0]), $r[1]];
+    }
+    // zigzag varint end
 }

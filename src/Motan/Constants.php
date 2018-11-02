@@ -39,6 +39,7 @@ class Constants
 	const PROTOCOL_GRPC = 'grpc';
 	const PROTOCOL_CEDRUS = 'cedrus';
 	const PROTOCOL_CGI = 'cgi';
+	const PROTOCOL_MEMCACHE = 'memcache';
 
 	const SERIALIZATION_SIMPLE = 'simple';
 	const SERIALIZATION_PB = 'pb';
