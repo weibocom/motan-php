@@ -105,14 +105,9 @@ class Motan implements \Motan\Serializer
                 case Constants::DTYPE_BYTE:
                 // break;
                 case Constants::DTYPE_INT16:
-                // break;
                 case Constants::DTYPE_INT32:
-                // break;
                 case Constants::DTYPE_INT64:
-                    $buffer .= pack('C', Constants::DTYPE_INT64) . pack('J', $params);
-                    print_r(Utils::get_bytes($buffer));
-                    // Utils::split2Int($upper, $lower, $params);
-                    // $buffer .= pack('C', Constants::DTYPE_INT64) . pack('NN', $upper, $lower);
+                    $buffer .= pack('C', Constants::DTYPE_INT64) . Utils::encodeZigzagVarint($params);
                 break;
                 case Constants::DTYPE_FLOAT32: // @TODO encode_float32
                 // break;
@@ -208,6 +203,7 @@ class Motan implements \Motan\Serializer
 
     static function deserialize_buf($data, &$pos = 0, $data_type = NULL)
     {
+        $data_size = strlen($data);
         $obj = NULL;
         if(NULL === $data_type) {
             $buf_type = unpack("Cmsg_type", substr($data, 0, 1));
@@ -293,14 +289,11 @@ class Motan implements \Motan\Serializer
                 $obj = (int)$obj_buf['buf'];
             break;
             case Constants::DTYPE_INT32:
-                $obj_buf = unpack("Nbuf", substr($data, $pos, 4));
-                $pos = $pos + 4;
-                $obj = (int)$obj_buf['buf'];
-            break;
             case Constants::DTYPE_INT64:
-                $obj_buf = unpack("Nbuf_upper/Nbuf_lower", substr($data, $pos, 8));
-                $pos = $pos + 8;
-                $obj = Utils::bigInt2float($obj_buf['buf_upper'], $obj_buf['buf_lower']);
+                $remain = $data_size - $pos;
+                $tmp = Utils::decodeZigzagVarint(substr($data, $pos, $remain > Utils::MAX_VARINT_BYTES ? Utils::MAX_VARINT_BYTES : $remain));
+                $pos = $pos + $tmp[1];
+                $obj = $tmp[0];
             break;
             case Constants::DTYPE_FLOAT32:
                 $obj_buf = unpack("Gbuf", substr($data, $pos, 4));

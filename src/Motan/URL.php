@@ -108,6 +108,12 @@ class URL {
                     $this->_service = $this->_path;
                     $this->_endpoint = Constants::ENDPOINT_MOTAN;
                     break;
+                case 'memcache':
+                    $this->_protocol = Constants::PROTOCOL_MEMCACHE;
+                    $this->_url_type = Constants::REQ_URL_TYPE_MOTAN;
+                    $this->_service = $this->_path;
+                    $this->_endpoint = Constants::ENDPOINT_MOTAN;
+                    break;
                 default:
                     throw new Exception("Didn't support the scheme:" . $url_info['scheme']);
                     break;
