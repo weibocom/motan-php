@@ -34,17 +34,17 @@ class Motan implements \Motan\Serializer
 {
     static function motan_table_type($params)
     {
+        if (empty($params)) {
+           return Constants::DTYPE_NULL;
+        }
         $data_type = NULL;
         if (!Utils::is_assoc($params)) {
-            $type_tmp_arr = [];
+            $data_type = Constants::DTYPE_STRING_ARRAY;
             foreach ($params as $p) {
-                is_string($p) && $type_tmp_arr['string'][] = $p;
-                is_int($p) && $p <= 0xff && $type_tmp_arr['byte'][] = $p;
-            }
-            if (count($type_tmp_arr) == 1) {
-                $data_type = isset($type_tmp_arr['string']) ? Constants::DTYPE_STRING_ARRAY : Constants::DTYPE_BYTE_ARRAY;
-            } else {
-                $data_type = Constants::DTYPE_ARRAY;
+                if (!is_string($p)) {
+                    $data_type = Constants::DTYPE_ARRAY;
+                    break;
+                }
             }
         } else {
             $type_tmp_arr = [];
@@ -64,33 +64,10 @@ class Motan implements \Motan\Serializer
 
     static function motan_number_type($n)
     {
-        $data_type = NULL;
         if(floor($n) != $n) {
-            $data_type = Constants::DTYPE_FLOAT64;
+            return Constants::DTYPE_FLOAT64;
         }
-        if($n >= 0) {
-            // if(n <= 0xff) {
-            //     $data_type = Constants::DTYPE_BYTE;
-            // } elseif(n <= 0xffff) {
-            //     $data_type = Constants::DTYPE_INT16;
-            // } elseif(n <= 4294967295.0) {
-            //     $data_type = Constants::DTYPE_INT32;
-            // } else {
-            //     $data_type = Constants::DTYPE_INT64;
-            // }
-            $data_type = Constants::DTYPE_INT64;
-        } else {
-            //@TODO n < 0
-            // if(n >= -0x8000) {
-            //     $data_type = Constants::DTYPE_INT16;
-            // } elseif(n >= -0x80000000) {
-            //     $data_type = Constants::DTYPE_INT32;
-            // } else {
-            //     $data_type = Constants::DTYPE_INT64;
-            // }
-            $data_type = Constants::DTYPE_INT64;
-        }
-        return $data_type;
+        return Constants::DTYPE_INT64;
     }
 
     static function serialize_buf($params, &$buffer)
@@ -103,14 +80,12 @@ class Motan implements \Motan\Serializer
             $number_type = self::motan_number_type($params);
             switch ($number_type) {
                 case Constants::DTYPE_BYTE:
-                // break;
                 case Constants::DTYPE_INT16:
                 case Constants::DTYPE_INT32:
                 case Constants::DTYPE_INT64:
                     $buffer .= pack('C', Constants::DTYPE_INT64) . Utils::encodeZigzagVarint($params);
                 break;
                 case Constants::DTYPE_FLOAT32: // @TODO encode_float32
-                // break;
                 case Constants::DTYPE_FLOAT64:
                     $buffer .= pack('C', Constants::DTYPE_FLOAT64) . pack('E', $params);
                 break;
@@ -128,13 +103,7 @@ class Motan implements \Motan\Serializer
                     }
                     $buffer .= pack('N', $btemp_len) . $btemp;
                 break;
-                case Constants::DTYPE_BYTE_ARRAY :
-                    $buffer .= pack('C', Constants::DTYPE_BYTE_ARRAY);
-                    $btemp = Utils::toStr($params);
-                    $btemp_len = strlen($btemp);
-                    $buffer .= pack('N', $btemp_len) . $btemp;
-                break;
-                case Constants::DTYPE_ARRAY :
+                case Constants::DTYPE_ARRAY:
                     $buffer .= pack('C', Constants::DTYPE_ARRAY);
                     $btemp = '';
                     $btemp_len = 0;
@@ -146,7 +115,7 @@ class Motan implements \Motan\Serializer
                     }
                     $buffer .= pack('N', $btemp_len) . $btemp;
                 break;
-                case Constants::DTYPE_STRING_MAP :
+                case Constants::DTYPE_STRING_MAP:
                     $buffer .= pack('C', Constants::DTYPE_STRING_MAP);
                     $btemp = '';
                     $btemp_len = 0;
@@ -159,7 +128,7 @@ class Motan implements \Motan\Serializer
                     }
                     $buffer .= pack('N', $btemp_len) . $btemp;
                 break;
-                case Constants::DTYPE_MAP :
+                case Constants::DTYPE_MAP:
                     $buffer .= pack('C', Constants::DTYPE_MAP);
                     $btemp = '';
                     $btemp_len = 0;
@@ -172,9 +141,12 @@ class Motan implements \Motan\Serializer
                     }
                     $buffer .= pack('N', $btemp_len) . $btemp;
                 break;
+                case Constants::DTYPE_NULL:
+                    $buffer .= pack('C', Constants::DTYPE_NULL);
+                break;
             }
         } elseif (is_null($params)) {
-            $buffer .= pack('C', 0);
+            $buffer .= pack('C', Constants::DTYPE_NULL);
         }
     }
 
@@ -215,6 +187,7 @@ class Motan implements \Motan\Serializer
             case Constants::DTYPE_NULL:
                 $obj = null;
             break;
+            case Constants::DTYPE_BYTE_ARRAY:
             case Constants::DTYPE_STRING:
                 $body_len_buf = unpack("Nbody_len", substr($data, $pos, 4));
                 $pos = $pos + 4;
@@ -250,12 +223,6 @@ class Motan implements \Motan\Serializer
                     $key = substr($map_buf, $map_pos, $key_len_buf['key_len']);
                     $map_pos = $map_pos + $key_len_buf['key_len'];
                 }
-                $pos = $pos + $body_len_buf['body_len'];
-            break;
-            case Constants::DTYPE_BYTE_ARRAY:
-                $body_len_buf = unpack("Nbody_len", substr($data, $pos, 4));
-                $pos = $pos + 4;
-                $obj = Utils::get_bytes(substr($data, $pos, $body_len_buf['body_len']));
                 $pos = $pos + $body_len_buf['body_len'];
             break;
             case Constants::DTYPE_STRING_ARRAY:
