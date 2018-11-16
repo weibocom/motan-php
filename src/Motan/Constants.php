@@ -29,27 +29,27 @@ namespace Motan;
  */
 class Constants
 {
-	const RESTY_COOKIE_PREFIX = 'M_cookie_';
-	const DEFAULT_VERSION = 0.1;
-	
-	const REQ_URL_TYPE_RESTY = 'resty';
-	const REQ_URL_TYPE_MOTAN = 'motan';
+    const RESTY_COOKIE_PREFIX = 'M_cookie_';
+    const DEFAULT_VERSION = 0.1;
 
-	const PROTOCOL_MOTAN_NEW = 'motan2';
-	const PROTOCOL_GRPC = 'grpc';
-	const PROTOCOL_CEDRUS = 'cedrus';
-	const PROTOCOL_CGI = 'cgi';
-	const PROTOCOL_MEMCACHE = 'memcache';
+    const REQ_URL_TYPE_RESTY = 'resty';
+    const REQ_URL_TYPE_MOTAN = 'motan';
 
-	const SERIALIZATION_SIMPLE = 'simple';
-	const SERIALIZATION_PB = 'pb';
-	const SERIALIZATION_GRPC_JSON = 'grpc-json';
+    const PROTOCOL_MOTAN_NEW = 'motan2';
+    const PROTOCOL_GRPC = 'grpc';
+    const PROTOCOL_CEDRUS = 'cedrus';
+    const PROTOCOL_CGI = 'cgi';
+    const PROTOCOL_MEMCACHE = 'memcache';
 
-	const MOTAN_HA_FAILFAST = 'failfast';
-	const MOTAN_HA_FAILOVER = 'failover';
+    const SERIALIZATION_SIMPLE = 'simple';
+    const SERIALIZATION_PB = 'pb';
+    const SERIALIZATION_GRPC_JSON = 'grpc-json';
 
-	const MOTAN_LB_RANDOM = 'random';
-	const MOTAN_LB_ROUNDROBIN = 'roundrobin';
+    const MOTAN_HA_FAILFAST = 'failfast';
+    const MOTAN_HA_FAILOVER = 'failover';
+
+    const MOTAN_LB_RANDOM = 'random';
+    const MOTAN_LB_ROUNDROBIN = 'roundrobin';
 
     const ENDPOINT_AGENT = 'agent';
     const ENDPOINT_MOTAN = 'motan';
@@ -68,25 +68,25 @@ class Constants
     const DEFAULT_SOCKET_BUFFER_SIZE = 8192;
 
     const DEFAULT_AGENT_HOST = '127.0.0.1';
-	const DEFAULT_AGENT_PORT = 9981;
-	
-	// ---------------- simple serialize constants -----------------
+    const DEFAULT_AGENT_PORT = 9981;
 
-	const DEFAULT_BUFFER_SIZE = 2048;
-	
-	const DTYPE_NULL = 0;
-	const DTYPE_STRING = 1;
-	const DTYPE_STRING_MAP = 2;
-	const DTYPE_BYTE_ARRAY = 3;
-	const DTYPE_STRING_ARRAY = 4;
-	const DTYPE_BOOL = 5;
-	const DTYPE_BYTE = 6;
-	const DTYPE_INT16 = 7;
-	const DTYPE_INT32 = 8;
-	const DTYPE_INT64 = 9;
-	const DTYPE_FLOAT32 = 10;
-	const DTYPE_FLOAT64 = 11;
+    // ---------------- simple serialize constants -----------------
 
-	const DTYPE_MAP = 20;
-	const DTYPE_ARRAY = 21;
+    const DEFAULT_BUFFER_SIZE = 2048;
+
+    const DTYPE_NULL = 0;
+    const DTYPE_STRING = 1;
+    const DTYPE_STRING_MAP = 2;
+    const DTYPE_BYTE_ARRAY = 3;
+    const DTYPE_STRING_ARRAY = 4;
+    const DTYPE_BOOL = 5;
+    const DTYPE_BYTE = 6;
+    const DTYPE_INT16 = 7;
+    const DTYPE_INT32 = 8;
+    const DTYPE_INT64 = 9;
+    const DTYPE_FLOAT32 = 10;
+    const DTYPE_FLOAT64 = 11;
+
+    const DTYPE_MAP = 20;
+    const DTYPE_ARRAY = 21;
 }

@@ -254,7 +254,6 @@ class Utils
     public static function encodeVarint($value)
     {
         $buffer = '';
-        $count = 0;
 
         $high = 0;
         $low = 0;
@@ -265,13 +264,12 @@ class Utils
         }
 
         while (($low >= 0x80 || $low < 0) || $high != 0) {
-            $buffer[$count] = chr($low | 0x80);
+            $buffer .= chr($low | 0x80);
             $carry = ($high & 0x7F) << ((PHP_INT_SIZE << 3) - 7);
             $high = ($high >> 7) & ~(0x7F << ((PHP_INT_SIZE << 3) - 7));
             $low = (($low >> 7) & ~(0x7F << ((PHP_INT_SIZE << 3) - 7)) | $carry);
-            $count++;
         }
-        $buffer[$count] = chr($low);
+        $buffer .= chr($low);
         return $buffer;
     }
 
