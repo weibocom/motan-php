@@ -88,11 +88,6 @@ class Utils
         return $upper * BIGINT_DIVIDER + $lower;
     }
     
-    public static function getRouter() 
-    {
-        return new \Motan\Route\Range();
-    }
-
     public static function getSerializer($type)
     {
         $serializer = null;
