@@ -136,8 +136,8 @@ class Cluster
     public function call(...$args)
     {
         return $this->_ha_strategy->call($this->_load_balance, ...$args);
-    }
-    
+    } 
+
     public function multiCall(array $url_objs)
     {
         $result = [];
@@ -150,5 +150,4 @@ class Cluster
         
         return $result;
     }
-    
 }

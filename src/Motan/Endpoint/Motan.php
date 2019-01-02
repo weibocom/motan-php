@@ -36,7 +36,7 @@ class Motan extends \Motan\Endpointer
         parent::__construct($url);
     }
     
-    public function call() {
+    public function call(...$arguments) {
     }
 
     public function multiCall(array $call_arr)
