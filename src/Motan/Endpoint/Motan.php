@@ -35,10 +35,10 @@ class Motan extends \Motan\Endpointer
     {
         parent::__construct($url);
     }
+    
+    public function call() {
+    }
 
-    //@TODO multiCall
-    //@TODO stream_select
-    //@TODO socket_select
     public function multiCall(array $call_arr)
     {
     }

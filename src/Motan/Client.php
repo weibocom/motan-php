@@ -110,5 +110,18 @@ class Client
                 break;
         }
         return $this->_endpoint->call();
+    } 
+
+    public function multiCall(array $url_objs) {
+        if (empty($url_objs)) {
+            return [];
+        }
+        foreach ($url_objs as $url_obj) {
+            // usleep(1);  
+            $url_obj->setRequestId(Utils::genRequestId($url_obj));
+        }
+        
+        return $this->_endpoint->multiCall($url_objs);
     }
+    
 }
