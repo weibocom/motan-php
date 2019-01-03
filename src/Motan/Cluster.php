@@ -136,5 +136,18 @@ class Cluster
     public function call(...$args)
     {
         return $this->_ha_strategy->call($this->_load_balance, ...$args);
+    } 
+
+    public function multiCall(array $url_objs)
+    {
+        $result = [];
+        foreach ($url_objs as $url_obj) {
+            $this->_url_obj = $url_obj;
+            $this->_ha_strategy = Utils::getHa($this->_url_obj->getHaStrategy(), $this->_url_obj);
+            $this->_load_balance = Utils::getLB($this->_url_obj->getLoadbalance(), $this->_url_obj);
+            $result[] = $this->_ha_strategy->call($this->_load_balance);
+        }
+        
+        return $result;
     }
 }

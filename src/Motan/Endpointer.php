@@ -66,6 +66,10 @@ abstract class  Endpointer
         return $this->_connection = $this->_connection_obj->getConnection();
     }
 
+    public function setConnection(Connection $conn_obj) {
+        $this->_connection_obj = $conn_obj;
+    }
+
     public function call(...$arguments)
     {
         $request_obj = $resp_obj = $resp_taged = NULL;
@@ -104,6 +108,8 @@ abstract class  Endpointer
         // }
         return $rs;
     }
+
+    abstract function multiCall(array $call_arr);
 
     public function getResponseHeader()
     {
