@@ -36,7 +36,6 @@ const AGENT_ADDR = "tcp://127.0.0.1:9981";
  */
 class Agent extends \Motan\Endpointer
 {
-    
     protected $_resp_taged = NULL;
     protected $_resp_obj = NULL;
     
@@ -47,25 +46,19 @@ class Agent extends \Motan\Endpointer
 
     protected function _buildConnection()
     {
-        if (is_object($this->_loadbalance)) {
-            $this->_connection_obj = new Connection($this->_url_obj);
-            $this->_connection_obj->buildConnection($this->_loadbalance->getNode());
-        } else {
-            if (isset($this->_connection) && is_resource($this->_connection)) {
-                return true;
-            }
-            if ($this->_connection_obj) {
-                $this->_connection = $this->_connection_obj->getConnection();
-                return true;
-            }
-            $this->_connection_obj = new Connection($this->_url_obj);
-            $this->_connection_obj->buildConnection();
+        if (isset($this->_connection) && is_resource($this->_connection)) {
+            return true;
         }
-        
+        if ($this->_connection_obj) {
+            $this->_connection = $this->_connection_obj->getConnection();
+            return true;
+        }
+        $this->_connection_obj = new Connection($this->_url_obj);
+        $this->_connection_obj->buildConnection();
         return $this->_connection = $this->_connection_obj->getConnection();
     }
     
-    public function call() {
+    public function call(...$arguments) {
         $reqArg = $this->_buildReqArg($this->_url_obj);
         $this->_send($reqArg);
         
@@ -75,7 +68,7 @@ class Agent extends \Motan\Endpointer
     private function _buildReqArg(URL $url_obj) 
     {
         $req_params = $url_obj->getParams();
-        $resp_obj = $resp_taged = null;
+        $this->_resp_obj = $resp_taged = null;
         if (!empty($req_params)) {
             $req_obj = $req_params;
         } else {
@@ -110,8 +103,8 @@ class Agent extends \Motan\Endpointer
         
         $this->_connection_obj->write($buf);
     }
-    
-    protected function _recv() 
+
+    protected function _do_recv()
     {
         $this->_response = $this->_connection_obj->read();
         $this->_response_header = $this->_response->getHeader();
@@ -121,12 +114,34 @@ class Agent extends \Motan\Endpointer
         } else {
             $resp_body = $this->_response->getBody();
         }
+        return $resp_body;
+    }
+    
+    protected function _recv() 
+    {
+        $resp_body = $this->_do_recv();
         $rs = $this->_serializer->deserialize($this->_resp_obj, $resp_body);
-        if (null === $rs || $this->_resp_taged) {
-            null === $rs && $this->_response_exception = $this->_response->getMetadata()['M_e'];
+        if (NULL === $rs || $this->_resp_taged) {
+            NULL === $rs && $this->_response_exception = $this->_response->getMetadata()['M_e'];
         }
-        
         return $rs;
+    }
+
+    protected function _do4Multi()
+    {
+        $rs = $exception = NULL;
+        $resp_body = $this->_do_recv();
+        $rs = $this->_serializer->deserialize($this->_resp_obj, $resp_body);
+    
+        if (NULL === $rs || $this->_resp_taged) {
+            NULL === $rs && $get_exception= $this->_response->getMetadata()['M_e'];
+            !empty($get_exception) && $exception = $get_exception;
+        }
+        return new \Motan\Response(
+            $rs,
+            $exception,
+            $this->_response
+        );
     }
     
     public function multiCall(array $url_objs)
@@ -147,6 +162,32 @@ class Agent extends \Motan\Endpointer
             $result[$ret_order[$ret_id]] = $ret;
         }
         ksort($result);
+        
+        return $result;
+    }
+
+    public function doMultiCall($request_arr)
+    {
+        $result = $requests = [];
+        foreach ($request_arr as $request) {
+            $method = $request->getMethod();
+            $args = $request->getRequestArgs(); 
+            count($args) == 1 && $args = [$args];
+            $request_id = $request->getRequestId();
+            $url_obj = $this->_url_obj;
+            $url_obj->setRequestId($request_id);
+            $url_obj->setMethod($method);
+            $this->_url_obj = $url_obj;
+            $this->_send($this->_serializer->serializeMulti(...$args));
+            $requests[] = $request_id;
+        }
+
+        foreach ($requests as $index) {
+            $resp= $this->_do4Multi();
+            $request_id = $resp->getRawResp()->getRequestId();
+            $this->_multi_resp[$request_id] = $resp;
+            $result[$request_id] = $resp->getRs();
+        }
         
         return $result;
     }

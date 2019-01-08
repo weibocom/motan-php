@@ -79,6 +79,11 @@ class Message
         return $this->_type;
     }
 
+    public function getRequestId()
+    {
+        return $this->_header->getRequestId();
+    }
+
     public function encode()
     {
         $buffer = $this->_header->buildHeaderBuf();

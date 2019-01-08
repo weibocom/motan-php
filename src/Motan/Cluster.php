@@ -36,6 +36,8 @@ class Cluster
     /** @var [\Motan\Cluster\LoadBalance] [default:Motan\Cluster\LoadBalance\Random] */
     private $_load_balance;
 
+    private $_multi_resp;
+
     /**
      * @return mixed
      */
@@ -149,5 +151,37 @@ class Cluster
         }
         
         return $result;
+    }
+
+    public function doMultiCall($request_arr)
+    {
+        $result = [];
+        foreach ($request_arr as $request){
+            $method = $request->getMethod();
+            $args = $request->getRequestArgs();
+            count($args) == 1 && $args = [$args];
+            $url_obj = $this->_url_obj;
+            $url_obj->setRequestId($request->getRequestId());
+            $url_obj->setMethod($method);
+            $this->_url_obj = $url_obj;
+
+            $this->_ha_strategy = Utils::getHa($this->_url_obj->getHaStrategy(), $this->_url_obj);
+            $this->_load_balance = Utils::getLB($this->_url_obj->getLoadbalance(), $this->_url_obj);
+            $resp = $this->_ha_strategy->do4Multi($this->_load_balance, ...$args);
+            $request_id = $resp->getRawResp()->getRequestId();
+            $this->_multi_resp[$request_id] = $resp;
+            $result[$request_id] = $resp->getRs();
+        }
+        return $result;
+    }
+
+    public function getMException(\Motan\Request $request)
+    {
+        return $this->_multi_resp[$request->getRequestId()]->getException();
+    }
+
+    public function getMRs(\Motan\Request $request)
+    {
+        return $this->_multi_resp[$request->getRequestId()]->getRs();
     }
 }
