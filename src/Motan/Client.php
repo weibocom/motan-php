@@ -46,6 +46,7 @@ class Client
         if ($connection->buildConnection($agent_addr)){
             $this->_url_obj->setEndpoint(Constants::ENDPOINT_AGENT);
             $this->_endpoint = new Agent($this->_url_obj);
+            $this->_endpoint->setConnection($connection);
         } else {
             $this->_endpoint = new Cluster($this->_url_obj);
         }
@@ -85,6 +86,24 @@ class Client
         return $this->_endpoint->call(...$arguments);
     }
 
+    public function doMultiCall($request_arr)
+    {
+        if (empty($request_arr)) {
+            return [];
+        }
+        return $this->_endpoint->doMultiCall($request_arr);
+    }
+
+    public function getMRs(\Motan\Request $request)
+    {
+        return $this->_endpoint->getMRs($request);
+    }
+
+    public function getMException(\Motan\Request $request)
+    {
+        return $this->_endpoint->getMException($request);
+    }
+
     public function __call($name, $arguments)
     {
         $request_id =  (!isset($arguments[2]) || empty($arguments[2])) ? Utils::genRequestId($this->_url_obj) : $arguments[2];
@@ -98,7 +117,6 @@ class Client
                 break;
             case 'post':
                 $this->_url_obj->setProtocol(Constants::PROTOCOL_CEDRUS);
-                $this->_url_obj->setHeaders(['Content-Type'=>'application/x-www-form-urlencoded']);
                 $this->_url_obj->setHttpMethod(Constants::HTTP_METHOD_POST);
                 break;
             case 'grpc':

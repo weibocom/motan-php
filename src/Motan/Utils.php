@@ -33,11 +33,16 @@ class Utils
 {
     const MAX_VARINT_BYTES = 10;
 
-    public static function genRequestId(URL $url_obj)
+    public static function genRequestId(URL $url_obj = NULL)
     {
         $time = explode(" ", microtime());
         $request_id = sprintf("%d%06d%03d", $time[1], (int) ($time[0]*1000000), mt_rand(1, 999));
         return $request_id;
+    }
+
+    public function getGroup()
+    {
+        return '';
     }
 
     public static function is_assoc($var)

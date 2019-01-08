@@ -57,7 +57,7 @@ class URL {
     private $_read_time_out = Constants::MOTAN_READ_TIME_OUT;
     private $_read_buffer_size = Constants::DEFAULT_SOCKET_BUFFER_SIZE;
     private $_write_buffer_size = Constants::DEFAULT_SOCKET_BUFFER_SIZE;
-    private $_retry_times = 0;
+    private $_retry_times = Constants::DEFAULT_SOCKET_CONNECT_RETRY_TIMES;
 
     private function _initMetaInfo($key, $url_key)
     {
@@ -95,6 +95,9 @@ class URL {
                     $this->_url_type = Constants::REQ_URL_TYPE_RESTY;
                     $this->_method = '/' . $this->_path;
                     $this->_endpoint = Constants::ENDPOINT_MOTAN;
+                    if (!isset($this->_headers['Content-Type'])) {
+                        $this->_headers['Content-Type'] = Constants::DEFAULT_POST_CONTENTTYPE;
+                    }
                 break;
                 case 'grpc':
                     $this->_endpoint = Constants::ENDPOINT_GRPC;

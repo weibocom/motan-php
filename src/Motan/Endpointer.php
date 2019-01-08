@@ -44,6 +44,7 @@ abstract class  Endpointer
     protected $_response_exception;
 
     public $request_id;
+    protected $_multi_resp;
 
     public function __construct(URL $url_obj)
     {
@@ -70,7 +71,7 @@ abstract class  Endpointer
         $this->_connection_obj = $conn_obj;
     }
 
-    public function call(...$arguments)
+    public function doCall(...$arguments)
     {
         $request_obj = $resp_obj = $resp_taged = NULL;
         if (empty($arguments)) {
@@ -102,6 +103,39 @@ abstract class  Endpointer
         } else {
             $resp_body = $this->_response->getBody();
         }
+        return [$resp_obj, $resp_body];
+    }
+
+    public function do4Multi(...$arguments)
+    {
+        $rs = $exception = NULL;
+        list($resp_obj, $resp_body) = $this->doCall(...$arguments);
+        $rs = $this->_serializer->deserialize($resp_obj, $resp_body);
+        null === $rs && $this->_response_exception = $this->_response->getMetadata()['M_e'];
+        if (NULL === $rs) {
+            $get_exception = $this->_response->getMetadata()['M_e'];
+            !empty($get_exception) && $exception = $get_exception;
+        }
+        return new \Motan\Response(
+            $rs,
+            $exception,
+            $this->_response
+        );
+    }
+
+    public function getMException(\Motan\Request $request)
+    {
+        return $this->_multi_resp[$request->getRequestId()]->getException();
+    }
+
+    public function getMRs(\Motan\Request $request)
+    {
+        return $this->_multi_resp[$request->getRequestId()]->getRs();
+    }
+
+    public function call(...$arguments)
+    {
+        list($resp_obj, $resp_body) = $this->doCall(...$arguments);
         $rs = $this->_serializer->deserialize($resp_obj, $resp_body);
         // if ($resp_taged) {
             null === $rs && $this->_response_exception = $this->_response->getMetadata()['M_e'];

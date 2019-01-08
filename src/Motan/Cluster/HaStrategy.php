@@ -53,4 +53,8 @@ abstract class  HaStrategy
     }
 
     abstract public function call(LoadBalance $load_balance, ...$args);
+
+    public function do4Multi(LoadBalance $load_balance, ...$args){
+        return $this->getEndpoint()->setLoadBalance($load_balance)->do4Multi(...$args);
+    }
 }
