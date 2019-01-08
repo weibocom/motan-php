@@ -169,7 +169,7 @@ abstract class  Endpointer
     {
         $request_id = $this->_url_obj->getRequestId();
         $metadata = $this->_url_obj->getHeaders();
-        defined("APP_NAME") && $metadata['M_s'] = APP_NAME;
+        $metadata['M_s'] = $this->_url_obj->getAppName();
         $metadata['M_p'] = $this->_url_obj->getService();
         $metadata['M_m'] = $this->_url_obj->getMethod();
         $metadata['M_g'] = $this->_url_obj->getGroup();

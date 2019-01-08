@@ -33,7 +33,7 @@ use Motan\Transport\Connection;
 class Client
 {
     private $_url_obj;
-    private $_endpoint;
+    protected $_endpoint;
 
     public function __construct(URL $url_obj)
     {
@@ -86,24 +86,6 @@ class Client
         return $this->_endpoint->call(...$arguments);
     }
 
-    public function doMultiCall($request_arr)
-    {
-        if (empty($request_arr)) {
-            return [];
-        }
-        return $this->_endpoint->doMultiCall($request_arr);
-    }
-
-    public function getMRs(\Motan\Request $request)
-    {
-        return $this->_endpoint->getMRs($request);
-    }
-
-    public function getMException(\Motan\Request $request)
-    {
-        return $this->_endpoint->getMException($request);
-    }
-
     public function __call($name, $arguments)
     {
         $request_id =  (!isset($arguments[2]) || empty($arguments[2])) ? Utils::genRequestId($this->_url_obj) : $arguments[2];
@@ -135,7 +117,6 @@ class Client
             return [];
         }
         foreach ($url_objs as $url_obj) {
-            // usleep(1);  
             $url_obj->setRequestId(Utils::genRequestId($url_obj));
         }
         

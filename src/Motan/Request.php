@@ -34,21 +34,14 @@ class Request{
     private $_method;
     private $_request_args;
     private $_request_id;
-    private $_group;
    
-    public function __construct($service, $method, $request_args = NULL, $group = NULL, $request_id = NULL)
+    public function __construct($service, $method, $request_args = NULL, $request_id = NULL)
     {
         $this->_service = $service;
         $this->_method = $method;
         $request_args != NULL ? $this->_request_args = $request_args :$this->_request_args = [];
-        $group != NULL? $this->_group= $group: $this->_group= Utils::getGroup(NULL); 
-        $request_id != NULL? $this->_request_id = $request_id : $this->_request_id = Utils::genRequestId(NULL); 
-    }
 
-    public function setGroup($group = NULL)
-    {
-        $group != NULL && $this->_group = $group;
-        return $this;
+        $request_id != NULL? $this->_request_id = $request_id : $this->_request_id = Utils::genRequestId(NULL); 
     }
 
     public function setRequestId($request_id = NULL)

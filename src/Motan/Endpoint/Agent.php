@@ -91,7 +91,7 @@ class Agent extends \Motan\Endpointer
         }
         $request_id = $this->_url_obj->getRequestId();
         $metadata = $this->_url_obj->getHeaders();
-        defined("APP_NAME") && $metadata['M_s'] = APP_NAME;
+        $metadata['M_s'] = $this->_url_obj->getAppName();
         $metadata['M_p'] = $this->_url_obj->getService();
         $metadata['M_m'] = $this->_url_obj->getMethod();
         $metadata['M_g'] = $this->_url_obj->getGroup();
@@ -177,6 +177,7 @@ class Agent extends \Motan\Endpointer
             $url_obj = $this->_url_obj;
             $url_obj->setRequestId($request_id);
             $url_obj->setMethod($method);
+            $url_obj->setService($request->getService());
             $this->_url_obj = $url_obj;
             $this->_send($this->_serializer->serializeMulti(...$args));
             $requests[] = $request_id;
