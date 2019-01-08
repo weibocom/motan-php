@@ -163,6 +163,7 @@ class Cluster
             $url_obj = $this->_url_obj;
             $url_obj->setRequestId($request->getRequestId());
             $url_obj->setMethod($method);
+            $url_obj->setService($request->getService());
             $this->_url_obj = $url_obj;
 
             $this->_ha_strategy = Utils::getHa($this->_url_obj->getHaStrategy(), $this->_url_obj);

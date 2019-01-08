@@ -30,6 +30,7 @@ use DrSlump\Protobuf\Exception;
  * @version V1.0 [created at: 2016-12-12]
  */
 class URL {
+    private $_app_name = NULL;
     private $_raw_url;
     private $_raw_req_obj;
     private $_url_type;
@@ -122,6 +123,26 @@ class URL {
                     break;
             }
         }
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getAppName()
+    {
+        if (!empty($this->_app_name)) {
+            return $this->_app_name;
+        }
+        $this->_app_name = defined("APP_NAME") ? APP_NAME:Constants::DEFAULE_APP_NAME; 
+        return $this->_app_name;
+    }
+
+    /**
+     * @param mixed $app_name
+     */
+    public function setAppName($app_name)
+    {
+        $this->_app_name = $app_name;
     }
 
     /**

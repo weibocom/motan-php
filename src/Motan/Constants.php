@@ -64,6 +64,8 @@ class Constants
     const URL_SERIALIZE_KEY = 'serialize';
     const URL_METHOD_KEY = 'method';
 
+    const DEFAULE_APP_NAME='motan-php-with-none-appname';
+
     const MOTAN_CONNECTION_TIME_OUT = 0.2;
     const MOTAN_READ_TIME_OUT = 2;
     const DEFAULT_SOCKET_BUFFER_SIZE = 8192;
