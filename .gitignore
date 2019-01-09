@@ -21,7 +21,7 @@ tmtags
 .Trashes
 *.swp
 pretty/zj
-t/
+tests/coverage/
 
 
 # debugger

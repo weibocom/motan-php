@@ -170,4 +170,8 @@ class Header
         return $this->_request_id;
     }
     
+    public function getMagic()
+    {
+        return $this->_magic;
+    }
 }

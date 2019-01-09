@@ -1,5 +1,6 @@
 # Motan-PHP
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://github.com/weibocom/motan/blob/master/LICENSE)
+[![https://travis-ci.org/weibocom/motan-php.svg?branch=master](https://travis-ci.org/weibocom/motan-php.svg?branch=master)](https://travis-ci.org/weibocom/motan-php)
 
 # Overview
 [Motan][motan] is a cross-language remote procedure call(RPC) framework for rapid development of high performance distributed services.
