@@ -114,12 +114,13 @@ show_help() {
 	echo "
     ./run.sh                                show this help
     ./run.sh nt                             new php unit test for class like 
-        ./run.sh nt Motan/Client.php
+        ./run.sh nt Motan/Client.php        please make sure the tests/Motan/... dirs are exist.
 
-    ./run.sh nat                            clean the container and network
+    ./run.sh nat                            new php unit test for all file under src, just need run once.
     ./run.sh rt                             run all tests of PHP Unit
     ./run.sh rtf                            run test file of PHP Unit like 
         ./run.sh rtf tests/Motan/Serialize/MotanTest.php
+
 
     ./run.sh npt                            new phpt test for class method
         ./run.sh npt ./src/Motan/URL.php 'Motan\URL' getMethod
