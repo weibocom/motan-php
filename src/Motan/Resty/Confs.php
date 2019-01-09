@@ -39,7 +39,7 @@ class Confs implements RestyConfsInterface
 	{
         $this->_resty_url_info = parse_url($url);
 		$this->_resty_url = $url;
-		$this->_motan_resty_conf = require MOTAN_RESTY_CONFS_FILE;
+		// $this->_motan_resty_conf = require MOTAN_RESTY_CONFS_FILE;
 	}
 
 	public function getRestyUrlInfo()

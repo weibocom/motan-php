@@ -9,7 +9,7 @@
 # ./run.sh -h                             show this help
 ### END ###
 
-set -e
+# set -e
 
 BASE_DIR=$(dirname $(cd $(dirname "$0") && pwd -P)/$(basename "$0"))
 PHPUNIT_SKELGEN_EXECUTABLE=/usr/local/bin/phpunit-skelgen
@@ -106,10 +106,7 @@ new_all_test() {
 }
 
 # phpunit-skelgen generate-test --bootstrap=./tests/bootstrap.php   Motan\\Client ./src/Motan/Client.php Motan\\ClientTest ./tests/Motan/ClientTest.php
-# phpunit-skelgen generate-test --bootstrap=/Users/idevz/code/z/git/weibo-mesh/php-use/www/vendor/motan/motan-php/tests/bootstrap.php Motan\\Client /Users/idevz/code/z/git/weibo-mesh/php-use/www/vendor/motan/motan-php/src/Motan/Client.php Motan\\ClientTest /Users/idevz/code/z/git/weibo-mesh/php-use/www/vendor/motan/motan-php/tests/Motan/ClientTest.php
-
 # php generate-phpt.php  -f <function_name> |-c <class_name> -m <method_name> -b|e|v [-s skipif:ini:clean:done] [-k win|notwin|64b|not64b] [-x ext]
-
 # php /Users/idevz/code/src/php-5.3.27/scripts/dev/generate-phpt.phar -f sin -b -s 'skipif:ini:clean:done'
 # TEST_PHP_EXECUTABLE=/usr/local/opt/php@7.1/bin/php php $MCODE/src/php-7.2.5/run-tests.php
 
