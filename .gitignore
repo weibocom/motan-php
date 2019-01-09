@@ -21,10 +21,8 @@ tmtags
 .Trashes
 *.swp
 pretty/zj
-*.sublime*
+t/
 
-# luarocks
-*.rock
 
 # debugger
 .gdb*
