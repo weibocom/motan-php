@@ -1,8 +1,5 @@
 --TEST--
 Test class Motan\URL method  getHeaders() by calling it with its expected arguments
---SKIPIF--
-<?php
-?>
 --INI--
 
 --FILE--
@@ -10,15 +7,13 @@ Test class Motan\URL method  getHeaders() by calling it with its expected argume
 
 include(dirname(__FILE__) . '/url.inc');
 
-var_dump( $class->getHeaders(  ) );
-
-
+var_dump($class->getHeaders());
 
 ?>
 ===DONE===
---CLEAN--
-<?php
-?>
 --EXPECTF--
-NULL
+array(1) {
+  ["Content-Type"]=>
+  string(33) "application/x-www-form-urlencoded"
+}
 ===DONE===

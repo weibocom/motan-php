@@ -17,8 +17,13 @@ class ClientTest extends \PHPUnit\Framework\TestCase
      */
     protected function setUp()
     {
-        $this->markTestSkipped('Just Skip this.');
-        $this->object = new Client;
+        !defined('D_CONN_DEBUG') && define('D_CONN_DEBUG', '10.211.55.5:9100');
+
+        $url_str = 'motan2://127.0.0.1:9981/com.weibo.HelloMTService?group=motan-demo-rpc';
+        $url = new \Motan\URL($url_str);
+        $url->setConnectionTimeOut(50000);
+        $url->setReadTimeOut(50000);
+        $this->object = new Client($url);
     }
 
     /**
@@ -35,10 +40,13 @@ class ClientTest extends \PHPUnit\Framework\TestCase
      */
     public function testGetEndPoint()
     {
-        // Remove the following lines when you implement this test.
-        $this->markTestIncomplete(
-            'This test has not been implemented yet.'
-        );
+        $params = [
+            'hello'=>'motan-php',
+            'a'=>'b'
+        ];
+        $this->object->doCall('Hello', $params);
+        $ep = $this->object->getEndPoint();
+        $this->assertEquals($ep->getResponseHeader(), $this->object->getResponseHeader());
     }
 
     /**
@@ -47,10 +55,13 @@ class ClientTest extends \PHPUnit\Framework\TestCase
      */
     public function testGetResponseHeader()
     {
-        // Remove the following lines when you implement this test.
-        $this->markTestIncomplete(
-            'This test has not been implemented yet.'
-        );
+        $params = [
+            'hello'=>'motan-php',
+            'a'=>'b'
+        ];
+        $this->object->doCall('Hello', $params);
+        $resp_header = $this->object->getResponseHeader();
+        $this->assertEquals($resp_header->getMagic(), 0xF1F1);
     }
 
     /**
@@ -59,10 +70,13 @@ class ClientTest extends \PHPUnit\Framework\TestCase
      */
     public function testGetResponseMetadata()
     {
-        // Remove the following lines when you implement this test.
-        $this->markTestIncomplete(
-            'This test has not been implemented yet.'
-        );
+        $params = [
+            'hello'=>'motan-php',
+            'a'=>'b'
+        ];
+        $this->object->doCall('Hello', $params);
+        $rs = $this->object->getResponseMetadata();
+        $this->assertEquals($rs, []);
     }
 
     /**
@@ -71,10 +85,9 @@ class ClientTest extends \PHPUnit\Framework\TestCase
      */
     public function testGetResponseException()
     {
-        // Remove the following lines when you implement this test.
-        $this->markTestIncomplete(
-            'This test has not been implemented yet.'
-        );
+        $this->object->doCall('HelloX', 222, 123, 124, ['string','arr']);
+        $rs = $this->object->getResponseException();
+        $this->assertEquals($rs, '{"errcode":500,"errmsg":"provider call panic","errtype":1}');
     }
 
     /**
@@ -83,10 +96,13 @@ class ClientTest extends \PHPUnit\Framework\TestCase
      */
     public function testGetResponse()
     {
-        // Remove the following lines when you implement this test.
-        $this->markTestIncomplete(
-            'This test has not been implemented yet.'
-        );
+        $params = [
+            'hello'=>'motan-php',
+            'a'=>'b'
+        ];
+        $this->object->doCall('Hello', $params);
+        $rs = $this->object->getResponse();
+        $this->assertObjectHasAttribute('_type', $rs);
     }
 
     /**
@@ -95,10 +111,12 @@ class ClientTest extends \PHPUnit\Framework\TestCase
      */
     public function testDoCall()
     {
-        // Remove the following lines when you implement this test.
-        $this->markTestIncomplete(
-            'This test has not been implemented yet.'
-        );
+        $params = [
+            'hello'=>'motan-php',
+            'a'=>'b'
+        ];
+        $rs = $this->object->doCall('Hello', $params);
+        $this->assertEquals($rs, "[]-------[128 1 2 128 1 2]");
     }
 
     /**
@@ -107,10 +125,12 @@ class ClientTest extends \PHPUnit\Framework\TestCase
      */
     public function test__call()
     {
-        // Remove the following lines when you implement this test.
-        $this->markTestIncomplete(
-            'This test has not been implemented yet.'
-        );
+        $params = [
+            'hello'=>'motan-php',
+            'a'=>'b'
+        ];
+        $rs = $this->object->Hello($params);
+        $this->assertEquals($rs, "[]-------[128 1 2 128 1 2]");
     }
 
     /**
@@ -119,9 +139,14 @@ class ClientTest extends \PHPUnit\Framework\TestCase
      */
     public function testMultiCall()
     {
-        // Remove the following lines when you implement this test.
-        $this->markTestIncomplete(
-            'This test has not been implemented yet.'
-        );
+        $url_str1 = 'motan2://127.0.0.1:9981/com.weibo.HelloMTService?group=motan-demo-rpc&method=Hello&a=a&b=b';
+        $url_str2 = 'motan2://127.0.0.1:9981/com.weibo.HelloMTService?group=motan-demo-rpc&method=HelloW&a=a&b=b';
+        $url1 = new \Motan\URL($url_str1);
+        $url2 = new \Motan\URL($url_str2);
+        $rs = $this->object->multiCall([$url1, $url2]);
+        $this->assertEquals($rs[0], '[]-------[128 1 2 128 1 2]');
+
+        $rs_empty = $this->object->multiCall([]);
+        $this->assertEquals($rs_empty, []);
     }
 }
