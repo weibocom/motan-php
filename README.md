@@ -74,6 +74,7 @@ if (null === $rs) {
 }
 print_r($cx->getResponseHeader());
 print_r($cx->getResponseMetadata());
+print_r($cx);
 print_r($rs);
 ```
 
