@@ -25,8 +25,8 @@ tests/coverage/
 
 # weibo-mesh
 ./agent_runtime
-./mesh-logs
-./serverlogs
+testhelpers/mesh-logs/*
+testhelpers/serverlogs/*
 agent.pid
 
 # debugger

@@ -1,8 +1,0 @@
-Log file created at: 2019/01/10 08:27:56
-Running on machine: php
-Binary: Built with gc go1.11.1 for linux/amd64
-Log line format: [IWEF]mmdd hh:mm:ss.uuuuuu threadid file:line] msg
-I0110 08:27:56.739202   31988 motanserver.go:34] motan server is started. port:9100
-I0110 08:27:56.740817   31988 directRegistry.go:48] direct registry:register url :&{Protocol:motan2 Host:10.211.55.7 Port:9100 Path:com.weibo.HelloMTService Group:motan-demo-rpc Parameters:map[export:motan2:9100 registry:test-direct filter:accessLog serialization:simple conf-id:mt-test nodeType:service basicService:test-mesh-basicService ref:main.MTService] address: identity:}
-I0110 08:27:56.740848   31988 server.go:108] export url motan2://10.211.55.7:9100/com.weibo.HelloMTService?group=motan-demo-rpc success.
-I0110 08:27:56.740853   31988 server.go:143] service export success. url:&{motan2 10.211.55.7 9100 com.weibo.HelloMTService motan-demo-rpc map[basicService:test-mesh-basicService ref:main.MTService export:motan2:9100 registry:test-direct filter:accessLog serialization:simple conf-id:mt-test nodeType:service]  motan2://10.211.55.7:9100/com.weibo.HelloMTService?group=motan-demo-rpc}
