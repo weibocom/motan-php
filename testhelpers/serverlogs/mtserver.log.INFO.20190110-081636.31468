@@ -1,0 +1,4 @@
+Log file created at: 2019/01/10 08:16:36
+Running on machine: php
+Binary: Built with gc go1.11.1 for linux/amd64
+Log line format: [IWEF]mmdd hh:mm:ss.uuuuuu threadid file:line] msg

@@ -17,8 +17,6 @@ class ClientTest extends \PHPUnit\Framework\TestCase
      */
     protected function setUp()
     {
-        !defined('D_CONN_DEBUG') && define('D_CONN_DEBUG', '10.211.55.5:9100');
-
         $url_str = 'motan2://127.0.0.1:9981/com.weibo.HelloMTService?group=motan-demo-rpc';
         $url = new \Motan\URL($url_str);
         $url->setConnectionTimeOut(50000);

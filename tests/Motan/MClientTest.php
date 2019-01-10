@@ -1,6 +1,5 @@
 <?php
 namespace Motan;
-define('D_CONN_DEBUG', '10.211.55.5:9100');
 define('DEFAULT_GROUP', 'motan-demo-rpc');
 define('DEFAULT_SERVICE', 'com.weibo.HelloMTService');
 define('DEFAULT_PROTOCOL', 'motan2');

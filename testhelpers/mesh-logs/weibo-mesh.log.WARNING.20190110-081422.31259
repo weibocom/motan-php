@@ -1,0 +1,12 @@
+Log file created at: 2019/01/10 08:14:22
+Running on machine: php
+Binary: Built with gc go1.11.1 for linux/amd64
+Log line format: [IWEF]mmdd hh:mm:ss.uuuuuu threadid file:line] msg
+W0110 08:14:22.874585   31259 failoverHA.go:41] FailOverHA call fail! url:motan2://127.0.0.1:9100/com.weibo.HelloMTService?group=motan-demo-rpc, err:&{ErrCode:500 ErrMsg:provider call panic ErrType:1}
+W0110 08:14:22.902020   31259 failoverHA.go:41] FailOverHA call fail! url:motan2://127.0.0.1:9100/com.weibo.HelloMTService?group=motan-demo-rpc, err:&{ErrCode:500 ErrMsg:provider call panic ErrType:1}
+W0110 08:14:22.906027   31259 failoverHA.go:41] FailOverHA call fail! url:motan2://127.0.0.1:9100/com.weibo.HelloMTService?group=motan-demo-rpc, err:&{ErrCode:500 ErrMsg:provider call panic ErrType:1}
+W0110 08:14:22.939200   31259 failoverHA.go:41] FailOverHA call fail! url:motan2://127.0.0.1:9100/com.weibo.HelloMTService?group=motan-demo-rpc, err:&{ErrCode:500 ErrMsg:deserialize arguments fail.EOF ErrType:1}
+W0110 08:14:22.945286   31259 failoverHA.go:41] FailOverHA call fail! url:motan2://127.0.0.1:9100/com.weibo.HelloMTService?group=motan-demo-rpc, err:&{ErrCode:500 ErrMsg:provider call panic ErrType:1}
+W0110 08:14:22.952680   31259 failoverHA.go:41] FailOverHA call fail! url:motan2://127.0.0.1:9100/com.weibo.HelloMTService?group=motan-demo-rpc, err:&{ErrCode:500 ErrMsg:provider call panic ErrType:1}
+W0110 08:14:23.091543   31259 failoverHA.go:41] FailOverHA call fail! url:motan2://127.0.0.1:9100/com.weibo.HelloMTService?group=motan-demo-rpc, err:&{ErrCode:500 ErrMsg:provider call panic ErrType:1}
+W0110 08:14:23.097743   31259 failoverHA.go:41] FailOverHA call fail! url:motan2://127.0.0.1:9100/com.weibo.HelloMTService?group=motan-demo-rpc, err:&{ErrCode:500 ErrMsg:provider call panic ErrType:1}

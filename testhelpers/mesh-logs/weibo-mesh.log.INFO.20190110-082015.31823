@@ -1,0 +1,104 @@
+Log file created at: 2019/01/10 08:20:15
+Running on machine: php
+Binary: Built with gc go1.11.1 for linux/amd64
+Log line format: [IWEF]mmdd hh:mm:ss.uuuuuu threadid file:line] msg
+I0110 08:20:15.129611   31823 agent.go:232] agent port:9981, manage port:8082, pidfile:./agent.pid, logdir:./mesh-logs, runtimedir:./agent_runtime
+I0110 08:20:15.131234   31823 agent.go:352] Agent URL inited ://10.211.55.7:8082/server-mesh?group=server-mesh
+I0110 08:20:15.131278   31823 motanCluster.go:120] cluster motan2://:0/com.weibo.HelloMTService?group=motan-demo-rpc receive notify size 1. 
+I0110 08:20:15.131285   31823 motanCluster.go:138] cluster motan2://:0/com.weibo.HelloMTService?group=motan-demo-rpc received notify url:127.0.0.1:9100
+I0110 08:20:15.131862   31823 motanEndpoint.go:90] Channel pool init success. url:127.0.0.1:9100
+I0110 08:20:15.131877   31823 motanCluster.go:93] init MotanCluster motan2://:0/com.weibo.HelloMTService?group=motan-demo-rpc
+I0110 08:20:15.131899   31823 agent.go:260] Start http forward proxy server on port 9983
+I0110 08:20:15.132036   31823 agent.go:371] start agent registry.
+I0110 08:20:15.132044   31823 agent.go:376] agent register in registry:direct://127.0.0.1:9100/?group=, agent url:://10.211.55.7:8082/server-mesh?group=server-mesh
+I0110 08:20:15.132074   31823 agent.go:628] add manage server handle path:/debug/pprof/
+I0110 08:20:15.132083   31823 agent.go:628] add manage server handle path:/debug/pprof/trace
+I0110 08:20:15.132086   31823 agent.go:628] add manage server handle path:/registry/info
+I0110 08:20:15.132089   31823 agent.go:628] add manage server handle path:/version
+I0110 08:20:15.132092   31823 agent.go:628] add manage server handle path:/getReferService
+I0110 08:20:15.132094   31823 agent.go:628] add manage server handle path:/debug/mesh/trace
+I0110 08:20:15.132099   31823 agent.go:628] add manage server handle path:/
+I0110 08:20:15.132101   31823 agent.go:628] add manage server handle path:/debug/pprof/symbol
+I0110 08:20:15.132104   31823 agent.go:628] add manage server handle path:/registry/list
+I0110 08:20:15.132106   31823 agent.go:628] add manage server handle path:/debug/pprof/sw
+I0110 08:20:15.132109   31823 agent.go:628] add manage server handle path:/switcher/get
+I0110 08:20:15.132112   31823 agent.go:628] add manage server handle path:/debug/pprof/profile
+I0110 08:20:15.132115   31823 agent.go:628] add manage server handle path:/getConfig
+I0110 08:20:15.132117   31823 agent.go:628] add manage server handle path:/debug/pprof/cmdline
+I0110 08:20:15.132048   31823 directRegistry.go:48] direct registry:register url :&{Protocol: Host:10.211.55.7 Port:8082 Path:server-mesh Group:server-mesh Parameters:map[registry:test-direct application:server-mesh nodeType:agent mport:8082 log_dir:./mesh-logs snapshot_dir:./snapshot] address: identity:://10.211.55.7:8082/server-mesh?group=server-mesh}
+I0110 08:20:15.132119   31823 agent.go:628] add manage server handle path:/switcher/set
+I0110 08:20:15.132123   31823 agent.go:628] add manage server handle path:/503
+I0110 08:20:15.132126   31823 agent.go:628] add manage server handle path:/switcher/getAll
+I0110 08:20:15.132128   31823 agent.go:628] add manage server handle path:/registry/subscribe
+I0110 08:20:15.132130   31823 agent.go:628] add manage server handle path:/registry/unregister
+I0110 08:20:15.132133   31823 agent.go:628] add manage server handle path:/200
+I0110 08:20:15.132135   31823 agent.go:628] add manage server handle path:/registry/register
+I0110 08:20:15.132137   31823 agent.go:599] start listen manage port 8082 ...
+I0110 08:20:15.132962   31823 agent.go:125] Motan agent is starting...
+I0110 08:20:15.132970   31823 agent.go:360] Motan agent is started. port:9981
+I0110 08:20:15.133049   31823 motanserver.go:34] motan server is started. port:9981
+I0110 08:20:17.620555   31823 accessLog.go:53] access log--client-agent:127.0.0.1,9100,pt:0,size:0,req:com.weibo.HelloMTService,Hello,,1547079617619582629, res:0,false,&{ErrCode:500 ErrMsg:provider call panic ErrType:1}
+W0110 08:20:17.620578   31823 failoverHA.go:41] FailOverHA call fail! url:motan2://127.0.0.1:9100/com.weibo.HelloMTService?group=motan-demo-rpc, err:&{ErrCode:500 ErrMsg:provider call panic ErrType:1}
+I0110 08:20:17.644539   31823 accessLog.go:53] access log--client-agent:127.0.0.1,9100,pt:0,size:0,req:com.weibo.HelloMTService,Hello,,1547079617643617333, res:0,false,&{ErrCode:500 ErrMsg:provider call panic ErrType:1}
+W0110 08:20:17.644555   31823 failoverHA.go:41] FailOverHA call fail! url:motan2://127.0.0.1:9100/com.weibo.HelloMTService?group=motan-demo-rpc, err:&{ErrCode:500 ErrMsg:provider call panic ErrType:1}
+I0110 08:20:17.648906   31823 accessLog.go:53] access log--client-agent:127.0.0.1,9100,pt:0,size:0,req:com.weibo.HelloMTService,Hello,,1547079617647988261, res:0,false,&{ErrCode:500 ErrMsg:provider call panic ErrType:1}
+W0110 08:20:17.648920   31823 failoverHA.go:41] FailOverHA call fail! url:motan2://127.0.0.1:9100/com.weibo.HelloMTService?group=motan-demo-rpc, err:&{ErrCode:500 ErrMsg:provider call panic ErrType:1}
+I0110 08:20:17.681815   31823 accessLog.go:53] access log--client-agent:127.0.0.1,9100,pt:0,size:0,req:com.weibo.HelloMTService,HelloX,,1547079617680950940, res:0,false,&{ErrCode:500 ErrMsg:deserialize arguments fail.EOF ErrType:1}
+W0110 08:20:17.681831   31823 failoverHA.go:41] FailOverHA call fail! url:motan2://127.0.0.1:9100/com.weibo.HelloMTService?group=motan-demo-rpc, err:&{ErrCode:500 ErrMsg:deserialize arguments fail.EOF ErrType:1}
+I0110 08:20:17.687933   31823 accessLog.go:53] access log--client-agent:127.0.0.1,9100,pt:0,size:0,req:com.weibo.HelloMTService,Hello,,1547079617686942889, res:0,false,&{ErrCode:500 ErrMsg:provider call panic ErrType:1}
+W0110 08:20:17.687948   31823 failoverHA.go:41] FailOverHA call fail! url:motan2://127.0.0.1:9100/com.weibo.HelloMTService?group=motan-demo-rpc, err:&{ErrCode:500 ErrMsg:provider call panic ErrType:1}
+I0110 08:20:17.695205   31823 accessLog.go:53] access log--client-agent:127.0.0.1,9100,pt:0,size:0,req:com.weibo.HelloMTService,Hello,,1547079617694112345, res:0,false,&{ErrCode:500 ErrMsg:provider call panic ErrType:1}
+W0110 08:20:17.695232   31823 failoverHA.go:41] FailOverHA call fail! url:motan2://127.0.0.1:9100/com.weibo.HelloMTService?group=motan-demo-rpc, err:&{ErrCode:500 ErrMsg:provider call panic ErrType:1}
+I0110 08:20:17.701467   31823 accessLog.go:53] access log--client-agent:127.0.0.1,9100,pt:0,size:0,req:com.weibo.HelloMTService,Hello,,1547079617699998209, res:0,true,<nil>
+I0110 08:20:17.706821   31823 accessLog.go:53] access log--client-agent:127.0.0.1,9100,pt:0,size:0,req:com.weibo.HelloMTService,Hello,,1547079617705310423, res:0,true,<nil>
+I0110 08:20:17.706857   31823 accessLog.go:53] access log--client-agent:127.0.0.1,9100,pt:0,size:0,req:com.weibo.HelloMTService,HelloW,,1547079617705350329, res:0,true,<nil>
+I0110 08:20:17.820546   31823 accessLog.go:53] access log--client-agent:127.0.0.1,9100,pt:0,size:0,req:com.weibo.HelloMTService,Hello,,1547079617819461917, res:0,true,<nil>
+I0110 08:20:17.821050   31823 accessLog.go:53] access log--client-agent:127.0.0.1,9100,pt:0,size:0,req:com.weibo.HelloMTService,Hello,,1547079617819520916, res:0,true,<nil>
+I0110 08:20:17.821749   31823 accessLog.go:53] access log--client-agent:127.0.0.1,9100,pt:0,size:0,req:com.weibo.HelloMTService,HelloX,,1547079617819561656, res:0,true,<nil>
+I0110 08:20:17.826367   31823 accessLog.go:53] access log--client-agent:127.0.0.1,9100,pt:0,size:0,req:com.weibo.HelloMTService,Hello,,1547079617825410781, res:0,true,<nil>
+I0110 08:20:17.827000   31823 accessLog.go:53] access log--client-agent:127.0.0.1,9100,pt:0,size:0,req:com.weibo.HelloMTService,Hello,,1547079617825460590, res:0,true,<nil>
+I0110 08:20:17.827906   31823 accessLog.go:53] access log--client-agent:127.0.0.1,9100,pt:0,size:0,req:com.weibo.HelloMTService,HelloX,,1547079617825500969, res:0,false,&{ErrCode:500 ErrMsg:provider call panic ErrType:1}
+W0110 08:20:17.827922   31823 failoverHA.go:41] FailOverHA call fail! url:motan2://127.0.0.1:9100/com.weibo.HelloMTService?group=motan-demo-rpc, err:&{ErrCode:500 ErrMsg:provider call panic ErrType:1}
+I0110 08:20:17.833421   31823 accessLog.go:53] access log--client-agent:127.0.0.1,9100,pt:0,size:0,req:com.weibo.HelloMTService,Hello,,1547079617832168119, res:0,true,<nil>
+I0110 08:20:17.833849   31823 accessLog.go:53] access log--client-agent:127.0.0.1,9100,pt:0,size:0,req:com.weibo.HelloMTService,Hello,,1547079617832254296, res:0,true,<nil>
+I0110 08:20:17.834655   31823 accessLog.go:53] access log--client-agent:127.0.0.1,9100,pt:0,size:0,req:com.weibo.HelloMTService,HelloX,,1547079617832297947, res:0,false,&{ErrCode:500 ErrMsg:provider call panic ErrType:1}
+W0110 08:20:17.834665   31823 failoverHA.go:41] FailOverHA call fail! url:motan2://127.0.0.1:9100/com.weibo.HelloMTService?group=motan-demo-rpc, err:&{ErrCode:500 ErrMsg:provider call panic ErrType:1}
+W0110 08:21:01.869868   31823 motanEndpoint.go:535] motan channel will close. ep:127.0.0.1:9100, err: EOF
+W0110 08:21:01.869897   31823 motanEndpoint.go:535] motan channel will close. ep:127.0.0.1:9100, err: EOF
+W0110 08:21:01.869936   31823 motanEndpoint.go:535] motan channel will close. ep:127.0.0.1:9100, err: EOF
+E0110 08:21:26.534539   31823 motanEndpoint.go:577] create channel failed. err:dial tcp 127.0.0.1:9100: connect: connection refused
+E0110 08:21:26.535600   31823 motanEndpoint.go:120] motanEndpoint 127.0.0.1:9100 error: can not get a channel, msg: channel is nil
+I0110 08:21:26.535609   31823 accessLog.go:53] access log--client-agent:127.0.0.1,9100,pt:0,size:0,req:com.weibo.HelloMTService,Hello,,1547079686532366718, res:1,false,&{ErrCode:400 ErrMsg:can not get a channel ErrType:1}
+W0110 08:21:26.535620   31823 failoverHA.go:41] FailOverHA call fail! url:motan2://127.0.0.1:9100/com.weibo.HelloMTService?group=motan-demo-rpc, err:&{ErrCode:400 ErrMsg:can not get a channel ErrType:1}
+E0110 08:21:26.545937   31823 motanEndpoint.go:577] create channel failed. err:dial tcp 127.0.0.1:9100: connect: connection refused
+E0110 08:21:26.545949   31823 motanEndpoint.go:120] motanEndpoint 127.0.0.1:9100 error: can not get a channel, msg: channel is nil
+I0110 08:21:26.545956   31823 accessLog.go:53] access log--client-agent:127.0.0.1,9100,pt:0,size:0,req:com.weibo.HelloMTService,Hello,,1547079686545285482, res:0,false,&{ErrCode:400 ErrMsg:can not get a channel ErrType:1}
+W0110 08:21:26.545968   31823 failoverHA.go:41] FailOverHA call fail! url:motan2://127.0.0.1:9100/com.weibo.HelloMTService?group=motan-demo-rpc, err:&{ErrCode:400 ErrMsg:can not get a channel ErrType:1}
+E0110 08:21:26.546885   31823 motanEndpoint.go:577] create channel failed. err:dial tcp 127.0.0.1:9100: connect: connection refused
+E0110 08:21:26.546894   31823 motanEndpoint.go:120] motanEndpoint 127.0.0.1:9100 error: can not get a channel, msg: channel is nil
+I0110 08:21:26.546901   31823 accessLog.go:53] access log--client-agent:127.0.0.1,9100,pt:0,size:0,req:com.weibo.HelloMTService,Hello,,1547079686546633116, res:0,false,&{ErrCode:400 ErrMsg:can not get a channel ErrType:1}
+W0110 08:21:26.546912   31823 failoverHA.go:41] FailOverHA call fail! url:motan2://127.0.0.1:9100/com.weibo.HelloMTService?group=motan-demo-rpc, err:&{ErrCode:400 ErrMsg:can not get a channel ErrType:1}
+E0110 08:21:26.551448   31823 motanEndpoint.go:577] create channel failed. err:dial tcp 127.0.0.1:9100: connect: connection refused
+E0110 08:21:26.551459   31823 motanEndpoint.go:120] motanEndpoint 127.0.0.1:9100 error: can not get a channel, msg: channel is nil
+I0110 08:21:26.551465   31823 accessLog.go:53] access log--client-agent:127.0.0.1,9100,pt:0,size:0,req:com.weibo.HelloMTService,HelloX,,1547079686551162676, res:0,false,&{ErrCode:400 ErrMsg:can not get a channel ErrType:1}
+W0110 08:21:26.551477   31823 failoverHA.go:41] FailOverHA call fail! url:motan2://127.0.0.1:9100/com.weibo.HelloMTService?group=motan-demo-rpc, err:&{ErrCode:400 ErrMsg:can not get a channel ErrType:1}
+E0110 08:21:26.552488   31823 motanEndpoint.go:577] create channel failed. err:dial tcp 127.0.0.1:9100: connect: connection refused
+E0110 08:21:26.552495   31823 motanEndpoint.go:120] motanEndpoint 127.0.0.1:9100 error: can not get a channel, msg: channel is nil
+I0110 08:21:26.552501   31823 accessLog.go:53] access log--client-agent:127.0.0.1,9100,pt:0,size:0,req:com.weibo.HelloMTService,Hello,,1547079686552293943, res:0,false,&{ErrCode:400 ErrMsg:can not get a channel ErrType:1}
+W0110 08:21:26.552508   31823 failoverHA.go:41] FailOverHA call fail! url:motan2://127.0.0.1:9100/com.weibo.HelloMTService?group=motan-demo-rpc, err:&{ErrCode:400 ErrMsg:can not get a channel ErrType:1}
+E0110 08:21:26.554467   31823 motanEndpoint.go:577] create channel failed. err:dial tcp 127.0.0.1:9100: connect: connection refused
+E0110 08:21:26.554477   31823 motanEndpoint.go:120] motanEndpoint 127.0.0.1:9100 error: can not get a channel, msg: channel is nil
+I0110 08:21:26.554484   31823 accessLog.go:53] access log--client-agent:127.0.0.1,9100,pt:0,size:0,req:com.weibo.HelloMTService,Hello,,1547079686554154511, res:0,false,&{ErrCode:400 ErrMsg:can not get a channel ErrType:1}
+W0110 08:21:26.554495   31823 failoverHA.go:41] FailOverHA call fail! url:motan2://127.0.0.1:9100/com.weibo.HelloMTService?group=motan-demo-rpc, err:&{ErrCode:400 ErrMsg:can not get a channel ErrType:1}
+E0110 08:21:26.555833   31823 motanEndpoint.go:577] create channel failed. err:dial tcp 127.0.0.1:9100: connect: connection refused
+E0110 08:21:26.555841   31823 motanEndpoint.go:120] motanEndpoint 127.0.0.1:9100 error: can not get a channel, msg: channel is nil
+I0110 08:21:26.555847   31823 accessLog.go:53] access log--client-agent:127.0.0.1,9100,pt:0,size:0,req:com.weibo.HelloMTService,Hello,,1547079686555432885, res:0,false,&{ErrCode:400 ErrMsg:can not get a channel ErrType:1}
+W0110 08:21:26.555857   31823 failoverHA.go:41] FailOverHA call fail! url:motan2://127.0.0.1:9100/com.weibo.HelloMTService?group=motan-demo-rpc, err:&{ErrCode:400 ErrMsg:can not get a channel ErrType:1}
+E0110 08:21:26.556952   31823 motanEndpoint.go:577] create channel failed. err:dial tcp 127.0.0.1:9100: connect: connection refused
+E0110 08:21:26.556959   31823 motanEndpoint.go:120] motanEndpoint 127.0.0.1:9100 error: can not get a channel, msg: channel is nil
+I0110 08:21:26.556965   31823 accessLog.go:53] access log--client-agent:127.0.0.1,9100,pt:0,size:0,req:com.weibo.HelloMTService,Hello,,1547079686556671627, res:0,false,&{ErrCode:400 ErrMsg:can not get a channel ErrType:1}
+W0110 08:21:26.556972   31823 failoverHA.go:41] FailOverHA call fail! url:motan2://127.0.0.1:9100/com.weibo.HelloMTService?group=motan-demo-rpc, err:&{ErrCode:400 ErrMsg:can not get a channel ErrType:1}
+E0110 08:21:26.557071   31823 motanEndpoint.go:577] create channel failed. err:dial tcp 127.0.0.1:9100: connect: connection refused
+E0110 08:21:26.557075   31823 motanEndpoint.go:120] motanEndpoint 127.0.0.1:9100 error: can not get a channel, msg: channel is nil
+I0110 08:21:26.557079   31823 accessLog.go:53] access log--client-agent:127.0.0.1,9100,pt:0,size:0,req:com.weibo.HelloMTService,HelloW,,1547079686556683370, res:0,false,&{ErrCode:400 ErrMsg:can not get a channel ErrType:1}
+W0110 08:21:26.557084   31823 failoverHA.go:41] FailOverHA call fail! url:motan2://127.0.0.1:9100/com.weibo.HelloMTService?group=motan-demo-rpc, err:&{ErrCode:400 ErrMsg:can not get a channel ErrType:1}

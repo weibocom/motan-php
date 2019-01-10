@@ -1,0 +1,39 @@
+Log file created at: 2019/01/10 08:11:18
+Running on machine: php
+Binary: Built with gc go1.11.1 for linux/amd64
+Log line format: [IWEF]mmdd hh:mm:ss.uuuuuu threadid file:line] msg
+I0110 08:11:18.878761   30857 agent.go:232] agent port:9981, manage port:8082, pidfile:./agent.pid, logdir:./mesh-logs, runtimedir:./agent_runtime
+I0110 08:11:18.880149   30857 agent.go:352] Agent URL inited ://10.211.55.7:8082/server-mesh?group=server-mesh
+I0110 08:11:18.880181   30857 motanCluster.go:120] cluster motan2://:0/com.weibo.HelloMTService?group=motan-demo-rpc receive notify size 1. 
+I0110 08:11:18.880185   30857 motanCluster.go:138] cluster motan2://:0/com.weibo.HelloMTService?group=motan-demo-rpc received notify url:127.0.0.1:9100
+E0110 08:11:18.880331   30857 motanEndpoint.go:66] Channel pool init failed. err:dial tcp 127.0.0.1:9100: connect: connection refused
+I0110 08:11:18.882470   30857 motanCluster.go:93] init MotanCluster motan2://:0/com.weibo.HelloMTService?group=motan-demo-rpc
+I0110 08:11:18.882497   30857 agent.go:260] Start http forward proxy server on port 9983
+I0110 08:11:18.882649   30857 agent.go:628] add manage server handle path:/version
+I0110 08:11:18.882655   30857 agent.go:628] add manage server handle path:/debug/pprof/cmdline
+I0110 08:11:18.882658   30857 agent.go:628] add manage server handle path:/debug/pprof/trace
+I0110 08:11:18.882660   30857 agent.go:628] add manage server handle path:/debug/pprof/sw
+I0110 08:11:18.882663   30857 agent.go:628] add manage server handle path:/getReferService
+I0110 08:11:18.882666   30857 agent.go:628] add manage server handle path:/debug/mesh/trace
+I0110 08:11:18.882670   30857 agent.go:628] add manage server handle path:/switcher/set
+I0110 08:11:18.882672   30857 agent.go:628] add manage server handle path:/getConfig
+I0110 08:11:18.882674   30857 agent.go:628] add manage server handle path:/debug/pprof/
+I0110 08:11:18.882677   30857 agent.go:628] add manage server handle path:/switcher/get
+I0110 08:11:18.882679   30857 agent.go:628] add manage server handle path:/
+I0110 08:11:18.882683   30857 agent.go:628] add manage server handle path:/200
+I0110 08:11:18.882685   30857 agent.go:628] add manage server handle path:/debug/pprof/profile
+I0110 08:11:18.882688   30857 agent.go:628] add manage server handle path:/503
+I0110 08:11:18.882690   30857 agent.go:628] add manage server handle path:/registry/list
+I0110 08:11:18.882693   30857 agent.go:628] add manage server handle path:/registry/subscribe
+I0110 08:11:18.882695   30857 agent.go:628] add manage server handle path:/registry/unregister
+I0110 08:11:18.882697   30857 agent.go:628] add manage server handle path:/registry/info
+I0110 08:11:18.882699   30857 agent.go:628] add manage server handle path:/debug/pprof/symbol
+I0110 08:11:18.882702   30857 agent.go:628] add manage server handle path:/switcher/getAll
+I0110 08:11:18.882704   30857 agent.go:628] add manage server handle path:/registry/register
+I0110 08:11:18.882706   30857 agent.go:599] start listen manage port 8082 ...
+I0110 08:11:18.882858   30857 agent.go:371] start agent registry.
+I0110 08:11:18.882908   30857 agent.go:376] agent register in registry:direct://127.0.0.1:9100/?group=, agent url:://10.211.55.7:8082/server-mesh?group=server-mesh
+I0110 08:11:18.882936   30857 directRegistry.go:48] direct registry:register url :&{Protocol: Host:10.211.55.7 Port:8082 Path:server-mesh Group:server-mesh Parameters:map[mport:8082 log_dir:./mesh-logs nodeType:agent snapshot_dir:./snapshot registry:test-direct application:server-mesh] address: identity:://10.211.55.7:8082/server-mesh?group=server-mesh}
+I0110 08:11:18.883827   30857 agent.go:125] Motan agent is starting...
+I0110 08:11:18.883834   30857 agent.go:360] Motan agent is started. port:9981
+I0110 08:11:18.883900   30857 motanserver.go:34] motan server is started. port:9981

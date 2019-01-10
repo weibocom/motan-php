@@ -1,0 +1,35 @@
+#config fo agent
+motan-agent:
+  mport: 8082  
+  log_dir: "./mesh-logs"
+  snapshot_dir: "./snapshot"
+  registry: "test-direct" # registry id
+  application: "server-mesh" #请求来源，用于在监控中标识请求的业务方，请各业务方务必修改成自己的标识，类似 APP_NAME
+
+#config of registries
+motan-registry:
+  test-direct:
+    protocol: direct
+    host: 127.0.0.1
+    port: 9100
+
+
+#conf of basic refers
+motan-basicRefer:
+  test-mesh-basicRefer: # basic refer id
+    group: motan-demo-rpc # group name
+    protocol: motan2 # rpc protocol
+    requestTimeout: 10000
+    haStrategy: failover
+    loadbalance: roundrobin
+    serialization: simple
+    filter: "accessLog" # filter registed in extFactory
+    retries: 0
+
+#conf of refers
+motan-refer:
+  hello-mt-direct:
+    path: com.weibo.HelloMTService
+    registry: "test-direct" # registry id
+    basicRefer: test-mesh-basicRefer
+    

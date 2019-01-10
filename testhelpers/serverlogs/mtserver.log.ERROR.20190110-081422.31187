@@ -1,0 +1,193 @@
+Log file created at: 2019/01/10 08:14:22
+Running on machine: php
+Binary: Built with gc go1.11.1 for linux/amd64
+Log line format: [IWEF]mmdd hh:mm:ss.uuuuuu threadid file:line] msg
+E0110 08:14:22.868615   31187 util.go:126] recover panic. error:reflect: Call using zero Value argument, stack: goroutine 10 [running]:
+runtime/debug.Stack(0xc00005b650, 0x9c5ba0, 0xc000032260)
+	/usr/local/go1.11.1/src/runtime/debug/stack.go:24 +0xa7
+github.com/weibocom/motan-go/core.HandlePanic(0xc00005be18)
+	/media/psf/code/z/idevz-go/src/github.com/weibocom/motan-go/core/util.go:126 +0x57
+panic(0x9c5ba0, 0xc000032260)
+	/usr/local/go1.11.1/src/runtime/panic.go:513 +0x1b9
+reflect.Value.call(0xa3ee80, 0xfd29e8, 0x213, 0xabc68f, 0x4, 0xc00000c600, 0x1, 0x1, 0xaba4c0, 0x1, ...)
+	/usr/local/go1.11.1/src/reflect/value.go:372 +0x14f5
+reflect.Value.Call(0xa3ee80, 0xfd29e8, 0x213, 0xc00000c600, 0x1, 0x1, 0x0, 0x0, 0x0)
+	/usr/local/go1.11.1/src/reflect/value.go:308 +0xa4
+github.com/weibocom/motan-go/provider.(*DefaultProvider).Call(0xc00016b020, 0xb6ea00, 0xc0002ea150, 0x333866ce, 0x333866ce0005bc00)
+	/media/psf/code/z/idevz-go/src/github.com/weibocom/motan-go/provider/provider.go:112 +0x298
+github.com/weibocom/motan-go/core.(*lastEndPointFilter).Filter(0xfd29e8, 0x7f0f8a1bd000, 0xc00016b020, 0xb6ea00, 0xc0002ea150, 0x1, 0x6)
+	/media/psf/code/z/idevz-go/src/github.com/weibocom/motan-go/core/motan.go:809 +0x7a
+github.com/weibocom/motan-go/filter.(*AccessLogEndPointFilter).Filter(0xc000274c20, 0x7f0f8a1bd000, 0xc00016b020, 0xb6ea00, 0xc0002ea150, 0xc0002738c8, 0xc0002738c0)
+	/media/psf/code/z/idevz-go/src/github.com/weibocom/motan-go/filter/accessLog.go:39 +0xe5
+github.com/weibocom/motan-go/server.(*FilterProviderWrapper).Call(0xc00016b220, 0xb6ea00, 0xc0002ea150, 0x18, 0xc000273948)
+	/media/psf/code/z/idevz-go/src/github.com/weibocom/motan-go/server/server.go:279 +0x95
+github.com/weibocom/motan-go/server.(*DefaultMessageHandler).Call(0xc0000981b0, 0xb6ea00, 0xc0002ea150, 0x0, 0x0)
+	/media/psf/code/z/idevz-go/src/github.com/weibocom/motan-go/server/server.go:241 +0x365
+github.com/weibocom/motan-go/server.(*MotanServer).processReq(0xc00009d0c0, 0xc00001e5a0, 0x0, 0xb6dae0, 0xc0000981c8)
+	/media/psf/code/z/idevz-go/src/github.com/weibocom/motan-go/server/motanserver.go:141 +0x9c2
+created by github.com/weibocom/motan-go/server.(*MotanServer).handleConn
+	/media/psf/code/z/idevz-go/src/github.com/weibocom/motan-go/server/motanserver.go:115 +0x1b3
+
+E0110 08:14:22.871251   31187 server.go:237] provider call panic. req:req{1547079262858501265,com.weibo.HelloMTService,Hello}
+E0110 08:14:22.901894   31187 util.go:126] recover panic. error:reflect: Call using zero Value argument, stack: goroutine 13 [running]:
+runtime/debug.Stack(0xc00005b650, 0x9c5ba0, 0xc000032490)
+	/usr/local/go1.11.1/src/runtime/debug/stack.go:24 +0xa7
+github.com/weibocom/motan-go/core.HandlePanic(0xc00005be18)
+	/media/psf/code/z/idevz-go/src/github.com/weibocom/motan-go/core/util.go:126 +0x57
+panic(0x9c5ba0, 0xc000032490)
+	/usr/local/go1.11.1/src/runtime/panic.go:513 +0x1b9
+reflect.Value.call(0xa3ee80, 0xfd29e8, 0x213, 0xabc68f, 0x4, 0xc00000c840, 0x1, 0x1, 0xaba4c0, 0x1, ...)
+	/usr/local/go1.11.1/src/reflect/value.go:372 +0x14f5
+reflect.Value.Call(0xa3ee80, 0xfd29e8, 0x213, 0xc00000c840, 0x1, 0x1, 0x0, 0x0, 0x0)
+	/usr/local/go1.11.1/src/reflect/value.go:308 +0xa4
+github.com/weibocom/motan-go/provider.(*DefaultProvider).Call(0xc00016b020, 0xb6ea00, 0xc0002ea3f0, 0x35c07ed9, 0x35c07ed90005bc00)
+	/media/psf/code/z/idevz-go/src/github.com/weibocom/motan-go/provider/provider.go:112 +0x298
+github.com/weibocom/motan-go/core.(*lastEndPointFilter).Filter(0xfd29e8, 0x7f0f8a1bd000, 0xc00016b020, 0xb6ea00, 0xc0002ea3f0, 0x1, 0x0)
+	/media/psf/code/z/idevz-go/src/github.com/weibocom/motan-go/core/motan.go:809 +0x7a
+github.com/weibocom/motan-go/filter.(*AccessLogEndPointFilter).Filter(0xc000274c20, 0x7f0f8a1bd000, 0xc00016b020, 0xb6ea00, 0xc0002ea3f0, 0xc0002738c8, 0xc0002738c0)
+	/media/psf/code/z/idevz-go/src/github.com/weibocom/motan-go/filter/accessLog.go:39 +0xe5
+github.com/weibocom/motan-go/server.(*FilterProviderWrapper).Call(0xc00016b220, 0xb6ea00, 0xc0002ea3f0, 0x18, 0xc000273948)
+	/media/psf/code/z/idevz-go/src/github.com/weibocom/motan-go/server/server.go:279 +0x95
+github.com/weibocom/motan-go/server.(*DefaultMessageHandler).Call(0xc0000981b0, 0xb6ea00, 0xc0002ea3f0, 0x0, 0x0)
+	/media/psf/code/z/idevz-go/src/github.com/weibocom/motan-go/server/server.go:241 +0x365
+github.com/weibocom/motan-go/server.(*MotanServer).processReq(0xc00009d0c0, 0xc00001e810, 0x0, 0xb6dae0, 0xc00000e018)
+	/media/psf/code/z/idevz-go/src/github.com/weibocom/motan-go/server/motanserver.go:141 +0x9c2
+created by github.com/weibocom/motan-go/server.(*MotanServer).handleConn
+	/media/psf/code/z/idevz-go/src/github.com/weibocom/motan-go/server/motanserver.go:115 +0x1b3
+
+E0110 08:14:22.901908   31187 server.go:237] provider call panic. req:req{1547079262901112787,com.weibo.HelloMTService,Hello}
+E0110 08:14:22.905932   31187 util.go:126] recover panic. error:reflect: Call using zero Value argument, stack: goroutine 14 [running]:
+runtime/debug.Stack(0xc00005b650, 0x9c5ba0, 0xc000032500)
+	/usr/local/go1.11.1/src/runtime/debug/stack.go:24 +0xa7
+github.com/weibocom/motan-go/core.HandlePanic(0xc00005be18)
+	/media/psf/code/z/idevz-go/src/github.com/weibocom/motan-go/core/util.go:126 +0x57
+panic(0x9c5ba0, 0xc000032500)
+	/usr/local/go1.11.1/src/runtime/panic.go:513 +0x1b9
+reflect.Value.call(0xa3ee80, 0xfd29e8, 0x213, 0xabc68f, 0x4, 0xc00000c900, 0x1, 0x1, 0xaba4c0, 0x1, ...)
+	/usr/local/go1.11.1/src/reflect/value.go:372 +0x14f5
+reflect.Value.Call(0xa3ee80, 0xfd29e8, 0x213, 0xc00000c900, 0x1, 0x1, 0x0, 0x0, 0x0)
+	/usr/local/go1.11.1/src/reflect/value.go:308 +0xa4
+github.com/weibocom/motan-go/provider.(*DefaultProvider).Call(0xc00016b020, 0xb6ea00, 0xc0002ea4d0, 0x35fe37e5, 0x35fe37e50005bc00)
+	/media/psf/code/z/idevz-go/src/github.com/weibocom/motan-go/provider/provider.go:112 +0x298
+github.com/weibocom/motan-go/core.(*lastEndPointFilter).Filter(0xfd29e8, 0x7f0f8a1bd000, 0xc00016b020, 0xb6ea00, 0xc0002ea4d0, 0x1, 0x0)
+	/media/psf/code/z/idevz-go/src/github.com/weibocom/motan-go/core/motan.go:809 +0x7a
+github.com/weibocom/motan-go/filter.(*AccessLogEndPointFilter).Filter(0xc000274c20, 0x7f0f8a1bd000, 0xc00016b020, 0xb6ea00, 0xc0002ea4d0, 0xc0002738c8, 0xc0002738c0)
+	/media/psf/code/z/idevz-go/src/github.com/weibocom/motan-go/filter/accessLog.go:39 +0xe5
+github.com/weibocom/motan-go/server.(*FilterProviderWrapper).Call(0xc00016b220, 0xb6ea00, 0xc0002ea4d0, 0x18, 0xc000273948)
+	/media/psf/code/z/idevz-go/src/github.com/weibocom/motan-go/server/server.go:279 +0x95
+github.com/weibocom/motan-go/server.(*DefaultMessageHandler).Call(0xc0000981b0, 0xb6ea00, 0xc0002ea4d0, 0x0, 0x0)
+	/media/psf/code/z/idevz-go/src/github.com/weibocom/motan-go/server/server.go:241 +0x365
+github.com/weibocom/motan-go/server.(*MotanServer).processReq(0xc00009d0c0, 0xc00001e900, 0x0, 0xb6dae0, 0xc00000e020)
+	/media/psf/code/z/idevz-go/src/github.com/weibocom/motan-go/server/motanserver.go:141 +0x9c2
+created by github.com/weibocom/motan-go/server.(*MotanServer).handleConn
+	/media/psf/code/z/idevz-go/src/github.com/weibocom/motan-go/server/motanserver.go:115 +0x1b3
+
+E0110 08:14:22.905942   31187 server.go:237] provider call panic. req:req{1547079262905184421,com.weibo.HelloMTService,Hello}
+E0110 08:14:22.945158   31187 util.go:126] recover panic. error:reflect: Call using zero Value argument, stack: goroutine 29 [running]:
+runtime/debug.Stack(0xc000055650, 0x9c5ba0, 0xc000275050)
+	/usr/local/go1.11.1/src/runtime/debug/stack.go:24 +0xa7
+github.com/weibocom/motan-go/core.HandlePanic(0xc000055e18)
+	/media/psf/code/z/idevz-go/src/github.com/weibocom/motan-go/core/util.go:126 +0x57
+panic(0x9c5ba0, 0xc000275050)
+	/usr/local/go1.11.1/src/runtime/panic.go:513 +0x1b9
+reflect.Value.call(0xa3ee80, 0xfd29e8, 0x213, 0xabc68f, 0x4, 0xc00016b580, 0x1, 0x1, 0xaba4c0, 0x1, ...)
+	/usr/local/go1.11.1/src/reflect/value.go:372 +0x14f5
+reflect.Value.Call(0xa3ee80, 0xfd29e8, 0x213, 0xc00016b580, 0x1, 0x1, 0x42, 0xc00013e240, 0xc)
+	/usr/local/go1.11.1/src/reflect/value.go:308 +0xa4
+github.com/weibocom/motan-go/provider.(*DefaultProvider).Call(0xc00016b020, 0xb6ea00, 0xc000266bd0, 0x385493d3, 0x385493d300055c00)
+	/media/psf/code/z/idevz-go/src/github.com/weibocom/motan-go/provider/provider.go:112 +0x298
+github.com/weibocom/motan-go/core.(*lastEndPointFilter).Filter(0xfd29e8, 0x7f0f8a1bd000, 0xc00016b020, 0xb6ea00, 0xc000266bd0, 0x1, 0x0)
+	/media/psf/code/z/idevz-go/src/github.com/weibocom/motan-go/core/motan.go:809 +0x7a
+github.com/weibocom/motan-go/filter.(*AccessLogEndPointFilter).Filter(0xc000274c20, 0x7f0f8a1bd000, 0xc00016b020, 0xb6ea00, 0xc000266bd0, 0xc0002738c8, 0xc0002738c0)
+	/media/psf/code/z/idevz-go/src/github.com/weibocom/motan-go/filter/accessLog.go:39 +0xe5
+github.com/weibocom/motan-go/server.(*FilterProviderWrapper).Call(0xc00016b220, 0xb6ea00, 0xc000266bd0, 0x18, 0xc000273948)
+	/media/psf/code/z/idevz-go/src/github.com/weibocom/motan-go/server/server.go:279 +0x95
+github.com/weibocom/motan-go/server.(*DefaultMessageHandler).Call(0xc0000981b0, 0xb6ea00, 0xc000266bd0, 0x0, 0x0)
+	/media/psf/code/z/idevz-go/src/github.com/weibocom/motan-go/server/server.go:241 +0x365
+github.com/weibocom/motan-go/server.(*MotanServer).processReq(0xc00009d0c0, 0xc00016dd40, 0x0, 0xb6dae0, 0xc00000e018)
+	/media/psf/code/z/idevz-go/src/github.com/weibocom/motan-go/server/motanserver.go:141 +0x9c2
+created by github.com/weibocom/motan-go/server.(*MotanServer).handleConn
+	/media/psf/code/z/idevz-go/src/github.com/weibocom/motan-go/server/motanserver.go:115 +0x1b3
+
+E0110 08:14:22.945172   31187 server.go:237] provider call panic. req:req{1547079262944333347,com.weibo.HelloMTService,Hello}
+E0110 08:14:22.952552   31187 util.go:126] recover panic. error:reflect: Call using zero Value argument, stack: goroutine 30 [running]:
+runtime/debug.Stack(0xc000055650, 0x9c5ba0, 0xc0002750c0)
+	/usr/local/go1.11.1/src/runtime/debug/stack.go:24 +0xa7
+github.com/weibocom/motan-go/core.HandlePanic(0xc000055e18)
+	/media/psf/code/z/idevz-go/src/github.com/weibocom/motan-go/core/util.go:126 +0x57
+panic(0x9c5ba0, 0xc0002750c0)
+	/usr/local/go1.11.1/src/runtime/panic.go:513 +0x1b9
+reflect.Value.call(0xa3ee80, 0xfd29e8, 0x213, 0xabc68f, 0x4, 0xc00016b640, 0x1, 0x1, 0xaba4c0, 0x1, ...)
+	/usr/local/go1.11.1/src/reflect/value.go:372 +0x14f5
+reflect.Value.Call(0xa3ee80, 0xfd29e8, 0x213, 0xc00016b640, 0x1, 0x1, 0x42, 0xc00013e240, 0xc)
+	/usr/local/go1.11.1/src/reflect/value.go:308 +0xa4
+github.com/weibocom/motan-go/provider.(*DefaultProvider).Call(0xc00016b020, 0xb6ea00, 0xc000266cb0, 0x38c53509, 0x38c5350900055c00)
+	/media/psf/code/z/idevz-go/src/github.com/weibocom/motan-go/provider/provider.go:112 +0x298
+github.com/weibocom/motan-go/core.(*lastEndPointFilter).Filter(0xfd29e8, 0x7f0f8a1bd000, 0xc00016b020, 0xb6ea00, 0xc000266cb0, 0x1, 0x0)
+	/media/psf/code/z/idevz-go/src/github.com/weibocom/motan-go/core/motan.go:809 +0x7a
+github.com/weibocom/motan-go/filter.(*AccessLogEndPointFilter).Filter(0xc000274c20, 0x7f0f8a1bd000, 0xc00016b020, 0xb6ea00, 0xc000266cb0, 0xc0002738c8, 0xc0002738c0)
+	/media/psf/code/z/idevz-go/src/github.com/weibocom/motan-go/filter/accessLog.go:39 +0xe5
+github.com/weibocom/motan-go/server.(*FilterProviderWrapper).Call(0xc00016b220, 0xb6ea00, 0xc000266cb0, 0x18, 0xc000273948)
+	/media/psf/code/z/idevz-go/src/github.com/weibocom/motan-go/server/server.go:279 +0x95
+github.com/weibocom/motan-go/server.(*DefaultMessageHandler).Call(0xc0000981b0, 0xb6ea00, 0xc000266cb0, 0x0, 0x0)
+	/media/psf/code/z/idevz-go/src/github.com/weibocom/motan-go/server/server.go:241 +0x365
+github.com/weibocom/motan-go/server.(*MotanServer).processReq(0xc00009d0c0, 0xc00016de30, 0x0, 0xb6dae0, 0xc00000e020)
+	/media/psf/code/z/idevz-go/src/github.com/weibocom/motan-go/server/motanserver.go:141 +0x9c2
+created by github.com/weibocom/motan-go/server.(*MotanServer).handleConn
+	/media/psf/code/z/idevz-go/src/github.com/weibocom/motan-go/server/motanserver.go:115 +0x1b3
+
+E0110 08:14:22.952564   31187 server.go:237] provider call panic. req:req{1547079262951681130,com.weibo.HelloMTService,Hello}
+E0110 08:14:23.091395   31187 util.go:126] recover panic. error:reflect: Call using int64 as type string, stack: goroutine 36 [running]:
+runtime/debug.Stack(0xc000055650, 0x9c5ba0, 0xc000275380)
+	/usr/local/go1.11.1/src/runtime/debug/stack.go:24 +0xa7
+github.com/weibocom/motan-go/core.HandlePanic(0xc000055e18)
+	/media/psf/code/z/idevz-go/src/github.com/weibocom/motan-go/core/util.go:126 +0x57
+panic(0x9c5ba0, 0xc000275380)
+	/usr/local/go1.11.1/src/runtime/panic.go:513 +0x1b9
+reflect.Value.call(0xa3ee80, 0xfd29e8, 0xa13, 0xabc68f, 0x4, 0xc00009b920, 0x4, 0x4, 0xaba4c0, 0x1, ...)
+	/usr/local/go1.11.1/src/reflect/value.go:377 +0x1437
+reflect.Value.Call(0xa3ee80, 0xfd29e8, 0xa13, 0xc00009b920, 0x4, 0x4, 0x42, 0xc00013e240, 0xc)
+	/usr/local/go1.11.1/src/reflect/value.go:308 +0xa4
+github.com/weibocom/motan-go/provider.(*DefaultProvider).Call(0xc00016b020, 0xb6ea00, 0xc000266fc0, 0x5714caa, 0x5714caa00055c00)
+	/media/psf/code/z/idevz-go/src/github.com/weibocom/motan-go/provider/provider.go:112 +0x298
+github.com/weibocom/motan-go/core.(*lastEndPointFilter).Filter(0xfd29e8, 0x7f0f8a1bd000, 0xc00016b020, 0xb6ea00, 0xc000266fc0, 0x1, 0x0)
+	/media/psf/code/z/idevz-go/src/github.com/weibocom/motan-go/core/motan.go:809 +0x7a
+github.com/weibocom/motan-go/filter.(*AccessLogEndPointFilter).Filter(0xc000274c20, 0x7f0f8a1bd000, 0xc00016b020, 0xb6ea00, 0xc000266fc0, 0xc0002738c8, 0xc0002738c0)
+	/media/psf/code/z/idevz-go/src/github.com/weibocom/motan-go/filter/accessLog.go:39 +0xe5
+github.com/weibocom/motan-go/server.(*FilterProviderWrapper).Call(0xc00016b220, 0xb6ea00, 0xc000266fc0, 0x18, 0xc000273948)
+	/media/psf/code/z/idevz-go/src/github.com/weibocom/motan-go/server/server.go:279 +0x95
+github.com/weibocom/motan-go/server.(*DefaultMessageHandler).Call(0xc0000981b0, 0xb6ea00, 0xc000266fc0, 0x0, 0x0)
+	/media/psf/code/z/idevz-go/src/github.com/weibocom/motan-go/server/server.go:241 +0x365
+github.com/weibocom/motan-go/server.(*MotanServer).processReq(0xc00009d0c0, 0xc0003b0510, 0x0, 0xb6dae0, 0xc00000e020)
+	/media/psf/code/z/idevz-go/src/github.com/weibocom/motan-go/server/motanserver.go:141 +0x9c2
+created by github.com/weibocom/motan-go/server.(*MotanServer).handleConn
+	/media/psf/code/z/idevz-go/src/github.com/weibocom/motan-go/server/motanserver.go:115 +0x1b3
+
+E0110 08:14:23.091414   31187 server.go:237] provider call panic. req:req{1547079263088131847,com.weibo.HelloMTService,HelloX}
+E0110 08:14:23.097656   31187 util.go:126] recover panic. error:reflect: Call using int64 as type string, stack: goroutine 39 [running]:
+runtime/debug.Stack(0xc000055650, 0x9c5ba0, 0xc0002754b0)
+	/usr/local/go1.11.1/src/runtime/debug/stack.go:24 +0xa7
+github.com/weibocom/motan-go/core.HandlePanic(0xc000055e18)
+	/media/psf/code/z/idevz-go/src/github.com/weibocom/motan-go/core/util.go:126 +0x57
+panic(0x9c5ba0, 0xc0002754b0)
+	/usr/local/go1.11.1/src/runtime/panic.go:513 +0x1b9
+reflect.Value.call(0xa3ee80, 0xfd29e8, 0xa13, 0xabc68f, 0x4, 0xc00009bbc0, 0x4, 0x4, 0xaba4c0, 0x1, ...)
+	/usr/local/go1.11.1/src/reflect/value.go:377 +0x1437
+reflect.Value.Call(0xa3ee80, 0xfd29e8, 0xa13, 0xc00009bbc0, 0x4, 0x4, 0x42, 0xc00013e240, 0xc)
+	/usr/local/go1.11.1/src/reflect/value.go:308 +0xa4
+github.com/weibocom/motan-go/provider.(*DefaultProvider).Call(0xc00016b020, 0xb6ea00, 0xc000267180, 0x5d0a12d, 0x5d0a12d00055c00)
+	/media/psf/code/z/idevz-go/src/github.com/weibocom/motan-go/provider/provider.go:112 +0x298
+github.com/weibocom/motan-go/core.(*lastEndPointFilter).Filter(0xfd29e8, 0x7f0f8a1bd000, 0xc00016b020, 0xb6ea00, 0xc000267180, 0x1, 0x0)
+	/media/psf/code/z/idevz-go/src/github.com/weibocom/motan-go/core/motan.go:809 +0x7a
+github.com/weibocom/motan-go/filter.(*AccessLogEndPointFilter).Filter(0xc000274c20, 0x7f0f8a1bd000, 0xc00016b020, 0xb6ea00, 0xc000267180, 0xc0002738c8, 0xc0002738c0)
+	/media/psf/code/z/idevz-go/src/github.com/weibocom/motan-go/filter/accessLog.go:39 +0xe5
+github.com/weibocom/motan-go/server.(*FilterProviderWrapper).Call(0xc00016b220, 0xb6ea00, 0xc000267180, 0x18, 0xc000273948)
+	/media/psf/code/z/idevz-go/src/github.com/weibocom/motan-go/server/server.go:279 +0x95
+github.com/weibocom/motan-go/server.(*DefaultMessageHandler).Call(0xc0000981b0, 0xb6ea00, 0xc000267180, 0x0, 0x0)
+	/media/psf/code/z/idevz-go/src/github.com/weibocom/motan-go/server/server.go:241 +0x365
+github.com/weibocom/motan-go/server.(*MotanServer).processReq(0xc00009d0c0, 0xc0003b0840, 0x0, 0xb6dae0, 0xc00000e020)
+	/media/psf/code/z/idevz-go/src/github.com/weibocom/motan-go/server/motanserver.go:141 +0x9c2
+created by github.com/weibocom/motan-go/server.(*MotanServer).handleConn
+	/media/psf/code/z/idevz-go/src/github.com/weibocom/motan-go/server/motanserver.go:115 +0x1b3
+
+E0110 08:14:23.097667   31187 server.go:237] provider call panic. req:req{1547079263095497315,com.weibo.HelloMTService,HelloX}

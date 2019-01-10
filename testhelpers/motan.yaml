@@ -1,0 +1,70 @@
+motan-server:
+  mport: 8003 # agent manage port
+  log_dir: "./serverlogs" 
+  application: "server-test" # server identify. 
+
+#config of registries
+motan-registry:
+  test-direct:
+    protocol: direct
+    host: 127.0.0.1
+    port: 9100
+
+#conf of basic service
+motan-basicService:
+  test-mesh-basicService: # basic refer id
+    group: motan-demo-rpc # group name
+    protocol: motan2 # rpc protocol
+    # registry: "test-direct" # registry id
+    registry: "test-zk" # registry id
+    filter: "accessLog" # filter registed in extFactory
+    serialization: simple
+    nodeType: server
+
+#conf of services
+motan-service:
+  mt-test:
+    path: com.weibo.HelloMTService # e.g. service name for subscribe
+    registry: test-direct
+    # registry: test-zk
+    ref : "main.MTService"
+    export: "motan2:9100"
+    basicService: test-mesh-basicService
+  mytest-motan2:
+    # filter: "accessLog"
+    path: com.weibo.HelloWorldService
+    export: "motan2:9100"
+    # proxy: "motan2:8100"
+    provider: httpx
+    HTTP_REQUEST_METHOD: GET
+    # URL_FORMAT: http://xxx.xxx.55.7/server.php
+    # URL_FORMAT: http://xxx.xxx.0.1/or
+    URL_FORMAT: http://xxx.xxx.55.7/or
+    basicRefer: test-mesh-basicService
+  api-test:
+    path: com.weibo.ApiTestService
+    export: "motan2:9100"
+    provider: http
+    HTTP_REQUEST_METHOD: GET
+    URL_FORMAT: http://i.api.toutiao.weibo.cn/pub/comm_timeline?access_token=2.00rLP4ACQ4QiNC0155b57b23afnZuD&cate_id=0&imei=1
+    basicRefer: test-mesh-basicService
+  s-test:
+    path: com.weibo.STestService
+    export: "motan2:9100"
+    provider: http
+    HTTP_REQUEST_METHOD: GET
+    URL_FORMAT: http://xxx.xxx.0.1:8000
+    basicRefer: test-mesh-basicService
+
+http-service:
+  mytest-motan2:
+    anyFuncName,Hello:
+      # URL_FORMAT: http://xxx.xxx.55.7/server.php
+      # URL_FORMAT: http://xxx.xxx.0.1/or
+      URL_FORMAT: http://xxx.xxx.55.7/or
+  s-test:
+    anyFuncName,Hello:
+      URL_FORMAT: http://xxx.xxx.0.1:8000
+  api-test:
+    Hello:
+      URL_FORMAT: http://i.api.toutiao.weibo.cn/pub/comm_timeline?access_token=2.00rLP4ACQ4QiNC0155b57b23afnZuD&cate_id=0&imei=1

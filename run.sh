@@ -139,7 +139,7 @@ if [ $# != 0 ]; then
 		fi
 		new_utest $2
 	elif [ $1 == "naut" ]; then
-		local TO_TEST_DIR=${BASE_DIR}/src
+		TO_TEST_DIR=${BASE_DIR}/src
 		if [ ! -z $2 ]; then
 			TO_TEST_DIR=$2
 		fi
