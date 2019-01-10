@@ -10,7 +10,7 @@ if (isset($_SERVER['HOSTNAME']) && $_SERVER['HOSTNAME'] == 'php') {
 
 if (isset($_SERVER['MESH_UP']) && $_SERVER['MESH_UP'] == 'yes'){
     define('MESH_CALL', TRUE);
-    $_SERVER['HOSTNAME'] == 'php' && define('D_AGENT_ADDR', CONN_HOST_IP . ':9981');
+    isset($_SERVER['HOSTNAME']) && $_SERVER['HOSTNAME'] == 'php' && define('D_AGENT_ADDR', CONN_HOST_IP . ':9981');
 }else {
     define('D_CONN_DEBUG', CONN_HOST_IP . ':9100');
 }

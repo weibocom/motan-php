@@ -28,10 +28,13 @@ cache:
 before_install:
   - travis_retry composer self-update
   - docker pull docker.io/zhoujing/wm-testhelper-server
-  - docker run -d --rm --name server -p 9100:9100 zhoujing/wm-testhelper-server
+  - docker run -d --rm --name server --network host zhoujing/wm-testhelper-server
   - if [[ $MESH_UP = 'yes' ]]; then docker pull docker.io/zhoujing/wm-testhelper-mesh; fi
-  - if [[ $MESH_UP = 'yes' ]]; then docker run -d --rm --name mesh -p 9981:9981 zhoujing/wm-testhelper-mesh; fi
+  - if [[ $MESH_UP = 'yes' ]]; then docker run -d --rm --name mesh --network host zhoujing/wm-testhelper-mesh; fi
   - docker ps -a
+  - curl 127.0.0.1:8082/getConfig
+  - curl 127.0.0.1:8082/getReferService
+  - curl 127.0.0.1:8082/version
 
 install:
   - travis_retry composer update --prefer-dist --no-interaction --prefer-stable --no-suggest
