@@ -24,7 +24,7 @@ cache:
 
 before_install:
   - travis_retry composer self-update
-  - cd testhelpers/ && ./mtserver& && cd -
+  - cd testhelpers/; ./mtserver&; cd -
 
 install:
   - if [[ $setup = 'stable' ]]; then travis_retry composer update --prefer-dist --no-interaction --prefer-stable --no-suggest; fi
