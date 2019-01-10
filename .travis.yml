@@ -32,14 +32,14 @@ before_install:
   - if [[ $MESH_UP = 'yes' ]]; then docker pull docker.io/zhoujing/wm-testhelper-mesh; fi
   - if [[ $MESH_UP = 'yes' ]]; then docker run -d --rm --name mesh -p 127.0.0.1:9981:9981 -p 127.0.0.1:8082:8082 zhoujing/wm-testhelper-mesh; fi
   - docker ps -a
-  - curl 127.0.0.1:8082/getConfig
-  - curl 127.0.0.1:8082/getReferService
-  - curl 127.0.0.1:8082/version
 
 install:
   - travis_retry composer update --prefer-dist --no-interaction --prefer-stable --no-suggest
 
 script:
+    - curl 127.0.0.1:8082/getConfig
+    - curl 127.0.0.1:8082/getReferService
+    - curl 127.0.0.1:8082/version
     - vendor/bin/phpunit --coverage-clover=coverage.xml
 
 after_success:
