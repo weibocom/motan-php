@@ -1,6 +1,5 @@
 <?php
 namespace Motan;
-define('D_CONN_DEBUG', '10.211.55.5:9100');
 define('DEFAULT_GROUP', 'motan-demo-rpc');
 define('DEFAULT_SERVICE', 'com.weibo.HelloMTService');
 define('DEFAULT_PROTOCOL', 'motan2');
@@ -83,6 +82,10 @@ class MClientTest extends \PHPUnit\Framework\TestCase
             $req1, $req2, $req3
         ]);
         $rs = $this->object->getMException($req3);
-        $this->assertEquals($rs, '{"errcode":500,"errmsg":"provider call panic","errtype":1}');
+        if (defined('MESH_CALL')) {
+            $this->assertEquals($rs, '{"errcode":400,"errmsg":"FailOverHA call fail 1 times.Exception:provider call panic","errtype":1}');
+        }else {
+            $this->assertEquals($rs, '{"errcode":500,"errmsg":"provider call panic","errtype":1}');
+        }
     }
 }

@@ -17,10 +17,7 @@ class ClientTest extends \PHPUnit\Framework\TestCase
      */
     protected function setUp()
     {
-        !defined('D_CONN_DEBUG') && define('D_CONN_DEBUG', '10.211.55.5:9100');
-
-        $url_str = 'motan2://127.0.0.1:9981/com.weibo.HelloMTService?group=motan-demo-rpc';
-        $url = new \Motan\URL($url_str);
+        $url = new \Motan\URL(DEFAULT_TEST_URL);
         $url->setConnectionTimeOut(50000);
         $url->setReadTimeOut(50000);
         $this->object = new Client($url);
@@ -76,7 +73,14 @@ class ClientTest extends \PHPUnit\Framework\TestCase
         ];
         $this->object->doCall('Hello', $params);
         $rs = $this->object->getResponseMetadata();
-        $this->assertEquals($rs, []);
+        if (defined('MESH_CALL')) {
+            $this->assertEquals($rs, [
+                'M_e' => '{"errcode":400,"errmsg":"FailOverHA call fail 1 times.Exception:provider call panic","errtype":1}'
+            ]);
+        }
+        else {
+            $this->assertEquals($rs, []);
+        }
     }
 
     /**
@@ -87,7 +91,12 @@ class ClientTest extends \PHPUnit\Framework\TestCase
     {
         $this->object->doCall('HelloX', 222, 123, 124, ['string','arr']);
         $rs = $this->object->getResponseException();
-        $this->assertEquals($rs, '{"errcode":500,"errmsg":"provider call panic","errtype":1}');
+        if (defined('MESH_CALL')) {
+            $this->assertEquals($rs, '{"errcode":400,"errmsg":"FailOverHA call fail 1 times.Exception:deserialize arguments fail.EOF","errtype":1}');
+        }
+        else {
+            $this->assertEquals($rs, '{"errcode":500,"errmsg":"provider call panic","errtype":1}');
+        }
     }
 
     /**
@@ -116,7 +125,12 @@ class ClientTest extends \PHPUnit\Framework\TestCase
             'a'=>'b'
         ];
         $rs = $this->object->doCall('Hello', $params);
-        $this->assertEquals($rs, "[]-------[128 1 2 128 1 2]");
+        if (defined('MESH_CALL')) {
+            $this->assertEquals($rs, NULL);
+        }
+        else {
+            $this->assertEquals($rs, "[]-------[128 1 2 128 1 2]");
+        }
     }
 
     /**
