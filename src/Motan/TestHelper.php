@@ -33,6 +33,7 @@ class TestHelper
     {
         if (isset($_SERVER['HOSTNAME']) && $_SERVER['HOSTNAME'] == 'php') {
             define('CONN_HOST_IP', '10.211.55.7');
+            // define('CONN_HOST_IP', '10.211.55.100');
         }else {
             define('CONN_HOST_IP', '127.0.0.1');
             

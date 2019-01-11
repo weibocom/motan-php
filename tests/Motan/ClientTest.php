@@ -73,8 +73,6 @@ class ClientTest extends \PHPUnit\Framework\TestCase
         ];
         $this->object->doCall('Hello', $params);
         $rs = $this->object->getResponseMetadata();
-        var_dump($rs);
-        var_dump('======>>>>');
         if (defined('MESH_CALL')) {
             $this->assertEquals($rs, []);
         }
@@ -95,7 +93,7 @@ class ClientTest extends \PHPUnit\Framework\TestCase
             $this->assertEquals($rs, '{"errcode":400,"errmsg":"FailOverHA call fail 1 times.Exception:provider call panic","errtype":1}');
         }
         else {
-            $this->assertEquals($rs, '{"errcode":400,"errmsg":"FailOverHA call fail 1 times.Exception:provider call panic","errtype":1}');
+            $this->assertEquals($rs, '{"errcode":500,"errmsg":"provider call panic","errtype":1}');
         }
     }
 
