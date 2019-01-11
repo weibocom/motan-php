@@ -24,5 +24,5 @@ if (null === $rs) {
 <?php
 ?>
 --EXPECTF--
-string(58) "{"errcode":500,"errmsg":"provider call panic","errtype":1}"
+string(97) "{"errcode":400,"errmsg":"FailOverHA call fail 1 times.Exception:provider call panic","errtype":1}"
 ===DONE===

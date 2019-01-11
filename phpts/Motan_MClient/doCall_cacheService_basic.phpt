@@ -1,9 +1,5 @@
 --TEST--
-Test class Motan\Client method  doCall() by calling it with its expected arguments
---SKIPIF--
-<?php
-?>
---INI--
+Test class Motan\MClient parent method  doCall() by calling it with its expected arguments
 
 --FILE--
 <?php
@@ -14,14 +10,15 @@ $group = DEFAULT_GROUP;
 $service = DEFAULT_SERVICE;
 $protocol = DEFAULT_PROTOCOL;
 $cx = new Motan\MClient( $app_name, $group, $service, $protocol );
-$rs = $cx->doCall('HelloX', 'string', 123, 124, ['string','arr']);
+$request = new \Motan\Request($service, 'Hello', ['a'=>'b']);
+$cx->doMultiCall([$request]);
 
-var_dump($rs);
+var_dump( $cx->getMRs( $request ) );
 ?>
 ===DONE===
 --CLEAN--
 <?php
 ?>
 --EXPECTF--
-string(46) "strArg:string-inT64:123-int32:124-[string arr]"
+string(26) "[]-------[128 1 2 128 1 2]"
 ===DONE===

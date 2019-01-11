@@ -1,18 +1,10 @@
 <?php
 require __DIR__.'/../vendor/autoload.php';
 
-if (isset($_SERVER['HOSTNAME']) && $_SERVER['HOSTNAME'] == 'php') {
-    define('CONN_HOST_IP', '10.211.55.152');
-}else {
-    define('CONN_HOST_IP', '127.0.0.1');
-    
-}
+\Motan\TestHelper::TestDefines();
 
-if (isset($_SERVER['MESH_UP']) && $_SERVER['MESH_UP'] == 'yes'){
-    define('MESH_CALL', TRUE);
-    isset($_SERVER['HOSTNAME']) && $_SERVER['HOSTNAME'] == 'php' && define('D_AGENT_ADDR', CONN_HOST_IP . ':9981');
-}else {
-    define('D_CONN_DEBUG', CONN_HOST_IP . ':9100');
-}
+// @TODO testing for mesh panic, and using mesh snapshot
+// this need run mesh in the same node with php client
+// define('AGENT_RUN_PATH', '/run/weibo-mesh');
 
 define('DEFAULT_TEST_URL', 'motan2://127.0.0.1:9981/com.weibo.HelloMTService?group=motan-demo-rpc');

@@ -73,10 +73,10 @@ class ClientTest extends \PHPUnit\Framework\TestCase
         ];
         $this->object->doCall('Hello', $params);
         $rs = $this->object->getResponseMetadata();
+        var_dump($rs);
+        var_dump('======>>>>');
         if (defined('MESH_CALL')) {
-            $this->assertEquals($rs, [
-                'M_e' => '{"errcode":400,"errmsg":"FailOverHA call fail 1 times.Exception:provider call panic","errtype":1}'
-            ]);
+            $this->assertEquals($rs, []);
         }
         else {
             $this->assertEquals($rs, []);
@@ -92,10 +92,10 @@ class ClientTest extends \PHPUnit\Framework\TestCase
         $this->object->doCall('HelloX', 222, 123, 124, ['string','arr']);
         $rs = $this->object->getResponseException();
         if (defined('MESH_CALL')) {
-            $this->assertEquals($rs, '{"errcode":400,"errmsg":"FailOverHA call fail 1 times.Exception:deserialize arguments fail.EOF","errtype":1}');
+            $this->assertEquals($rs, '{"errcode":400,"errmsg":"FailOverHA call fail 1 times.Exception:provider call panic","errtype":1}');
         }
         else {
-            $this->assertEquals($rs, '{"errcode":500,"errmsg":"provider call panic","errtype":1}');
+            $this->assertEquals($rs, '{"errcode":400,"errmsg":"FailOverHA call fail 1 times.Exception:provider call panic","errtype":1}');
         }
     }
 
@@ -126,7 +126,7 @@ class ClientTest extends \PHPUnit\Framework\TestCase
         ];
         $rs = $this->object->doCall('Hello', $params);
         if (defined('MESH_CALL')) {
-            $this->assertEquals($rs, NULL);
+            $this->assertEquals($rs, '[]-------[128 1 2 128 1 2]');
         }
         else {
             $this->assertEquals($rs, "[]-------[128 1 2 128 1 2]");

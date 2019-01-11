@@ -16,8 +16,7 @@ $url = new \Motan\URL($url_str);
 $url->setConnectionTimeOut(50000);
 $url->setReadTimeOut(50000);
 $cx = new \Motan\Client($url);
-$rs = $cx->doCall('HelloX', 'string', 123, 124, ['string','arr']);
-
+$rs = $cx->doCall('HelloX', '222', 123, 124, ['string','arr']);
 var_dump($rs);
 ?>
 ===DONE===
@@ -25,5 +24,5 @@ var_dump($rs);
 <?php
 ?>
 --EXPECTF--
-string(46) "strArg:string-inT64:123-int32:124-[string arr]"
+string(43) "strArg:222-inT64:123-int32:124-[string arr]"
 ===DONE===

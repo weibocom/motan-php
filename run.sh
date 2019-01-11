@@ -118,6 +118,11 @@ show_help() {
                             eg.
                             ./run.sh rutf tests/Motan/Serialize/MotanTest.php
 							
+                            using MESH_UP=yes for testing call through Mesh, default is 
+                            calling derectly
+                            eg.
+                            MESH_UP=yes ./run.sh rutf tests/Motan/MClientTest.php
+							
 
     ./run.sh ncmpt          new phpt test for class methods
                             eg.

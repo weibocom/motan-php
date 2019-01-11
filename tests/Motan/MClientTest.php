@@ -85,7 +85,7 @@ class MClientTest extends \PHPUnit\Framework\TestCase
         if (defined('MESH_CALL')) {
             $this->assertEquals($rs, '{"errcode":400,"errmsg":"FailOverHA call fail 1 times.Exception:provider call panic","errtype":1}');
         }else {
-            $this->assertEquals($rs, '{"errcode":500,"errmsg":"provider call panic","errtype":1}');
+            $this->assertEquals($rs, '{"errcode":400,"errmsg":"FailOverHA call fail 1 times.Exception:provider call panic","errtype":1}');
         }
     }
 }

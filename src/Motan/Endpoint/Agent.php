@@ -59,28 +59,32 @@ class Agent extends \Motan\Endpointer
     }
     
     public function call(...$arguments) {
-        $reqArg = $this->_buildReqArg($this->_url_obj);
+        $reqArg = $this->_buildReqArg($this->_url_obj, ...$arguments);
         $this->_send($reqArg);
         
         return $this->_recv();
     }
 
-    private function _buildReqArg(URL $url_obj) 
+    private function _buildReqArg(URL $url_obj, ...$arguments) 
     {
-        $req_params = $url_obj->getParams();
         $this->_resp_obj = $resp_taged = null;
-        if (!empty($req_params)) {
-            $req_obj = $req_params;
+        if (empty($arguments)) {
+            $req_params = $url_obj->getParams();
+            if (!empty($req_params)) {
+                $req_obj = $req_params;
+            } else {
+                $req_obj = $url_obj->getRawReqObj();
+            }
+            if (Constants::PROTOCOL_GRPC === $url_obj->getProtocol()) {
+                $this->_resp_obj = $req_params['resp_msg'];
+                $req_obj = $req_params['req_msg'];
+                $this->_resp_taged = true;
+            }
+            return $this->_serializer->serialize($req_obj);
         } else {
-            $req_obj = $url_obj->getRawReqObj();
+            // count($arguments) == 1 && $arguments = [$arguments];
+            return $this->_serializer->serializeMulti(...$arguments);
         }
-        if (Constants::PROTOCOL_GRPC === $url_obj->getProtocol()) {
-            $this->_resp_obj = $req_params['resp_msg'];
-            $req_obj = $req_params['req_msg'];
-            $this->_resp_taged = true;
-        }
-        
-        return $this->_serializer->serialize($req_obj);
     }
     
     protected function _send($req_body)
