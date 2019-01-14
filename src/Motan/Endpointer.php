@@ -43,6 +43,8 @@ abstract class  Endpointer
     protected $_response_metadata;
     protected $_response_exception;
 
+    protected $_resp_taged = NULL;
+
     public $request_id;
     protected $_multi_resp;
 
@@ -73,7 +75,7 @@ abstract class  Endpointer
 
     public function doCall(...$arguments)
     {
-        $request_obj = $resp_obj = $resp_taged = NULL;
+        $request_obj = $resp_obj = NULL;
         if (empty($arguments)) {
             $req_params = $this->_url_obj->getParams();
             if (!empty($req_params)) {
@@ -89,7 +91,7 @@ abstract class  Endpointer
             $resp_obj = $req_params['resp_msg'];
             $req_obj_data = $req_params['req_msg'];
             $request_obj = $this->_serializer->serialize($req_obj);
-            $resp_taged = true;
+            $this->_resp_taged = true;
         }
         $this->_buildConnection();
         if (!$this->_connection) {
@@ -137,9 +139,10 @@ abstract class  Endpointer
     {
         list($resp_obj, $resp_body) = $this->doCall(...$arguments);
         $rs = $this->_serializer->deserialize($resp_obj, $resp_body);
-        // if ($resp_taged) {
-            null === $rs && $this->_response_exception = $this->_response->getMetadata()['M_e'];
-        // }
+        if (NULL === $rs || $this->_resp_taged) {
+            $metadata = $this->_response->getMetadata(); 
+            isset($metadata['M_e']) && $this->_response_exception = $metadata['M_e'];
+        }
         return $rs;
     }
 

@@ -126,7 +126,8 @@ class Agent extends \Motan\Endpointer
         $resp_body = $this->_do_recv();
         $rs = $this->_serializer->deserialize($this->_resp_obj, $resp_body);
         if (NULL === $rs || $this->_resp_taged) {
-            NULL === $rs && $this->_response_exception = $this->_response->getMetadata()['M_e'];
+            $metadata = $this->_response->getMetadata(); 
+            isset($metadata['M_e']) && $this->_response_exception = $metadata['M_e'];
         }
         return $rs;
     }
