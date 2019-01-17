@@ -48,6 +48,9 @@ class Client
             $this->_endpoint = new Agent($this->_url_obj);
             $this->_endpoint->setConnection($connection);
         } else {
+            if ($this->_url_obj->getProtocol() === 'memcache') {
+                throw new \Exception('did not support to connect memcache directly.');
+            }
             $this->_endpoint = new Cluster($this->_url_obj);
         }
     }

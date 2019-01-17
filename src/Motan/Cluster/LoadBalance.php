@@ -51,6 +51,9 @@ abstract class  LoadBalance
         if (defined('D_CONN_DEBUG')) {
             return D_CONN_DEBUG;
         }
+        if (!defined('AGENT_RUN_PATH')) {
+            throw new \Exception('need a AGENT_RUN_PATH defined for reading direct connection nodes');
+        }
         $filepath = AGENT_RUN_PATH . "/snapshot/" . $this->_group . '_' . $this->_service_str;
         $snap_str = @file_get_contents($filepath);
         if (!$snap_str) {
