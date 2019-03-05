@@ -27,9 +27,13 @@ cache:
 
 before_install:
   - travis_retry composer self-update
-  - docker run -d --rm --name server --network host zhoujing/wm-testhelper-server
+  - docker run -d --rm --network host --name zk zookeeper
+  - docker run -d --rm --network host --name server zhoujing/wm-testhelper-server
+  - docker run -d --rm --network host --name mc memcached
   - sleep 5 
   - if [[ $MESH_UP = 'yes' ]]; then docker run -d --rm --name mesh --network host zhoujing/wm-testhelper-mesh; fi
+  - if [[ $MESH_UP = 'yes' ]]; then curl 127.0.0.1:8082/200; fi
+  - if [[ $MESH_UP = 'yes' ]]; then sleep 1; fi
   - docker ps -a
 
 install:
