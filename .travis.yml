@@ -29,31 +29,11 @@ cache:
 
 before_install:
   - travis_retry composer self-update
-  - docker run -d --rm --network host --name mc memcached
-  - docker run -d --rm --network host --name zk zookeeper
-  - docker run -d --rm --network host --name ${MESH_CONTAINER_NAME} -v ${MEHS_RUN_PATH}/snapshot:/snapshot zhoujing/wm-testhelper-server
-  - sleep 1
-  - curl 127.0.0.1:8082/200
-  - sleep 1
-  - docker stop ${MESH_CONTAINER_NAME}
-  - docker run -d --rm --network host --name ${MESH_CONTAINER_NAME} -v ${MEHS_RUN_PATH}/snapshot:/snapshot zhoujing/wm-testhelper-server
-  - sleep 1
-  - curl 127.0.0.1:8082/200
-  - sleep 5
-  - if [[ $MESH_UP = 'no' ]]; then curl 127.0.0.1:8082/stop_motan_agent; fi
-  - if [[ $MESH_UP = 'yes' ]]; then docker run -d --rm --name mesh --network host zhoujing/wm-testhelper-mesh; fi
-  - if [[ $MESH_UP = 'yes' ]]; then curl 127.0.0.1:8082/200; fi
-  - if [[ $MESH_UP = 'yes' ]]; then sleep 1; fi
-  - docker ps -a
-  - sleep 1
 
 install:
   - travis_retry composer update --prefer-dist --no-interaction --prefer-stable --no-suggest
 
 script:
-    - if [[ $MESH_UP = 'yes' ]]; then curl 127.0.0.1:8082/getConfig; fi
-    - if [[ $MESH_UP = 'yes' ]]; then curl 127.0.0.1:8082/getReferService; fi
-    - if [[ $MESH_UP = 'yes' ]]; then curl 127.0.0.1:8082/version; fi
     - ./run.sh ci
 
 after_success:

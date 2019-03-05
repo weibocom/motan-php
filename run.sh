@@ -7,14 +7,12 @@
 # ./run.sh                                see help
 ### END ###
 
-# set -x
+set -ex
 
 BASE_DIR=$(dirname $(cd $(dirname "$0") && pwd -P)/$(basename "$0"))
 PHPUNIT_SKELGEN_EXECUTABLE=/usr/local/bin/phpunit-skelgen
 PHPUNIT_EXECUTABLE=${BASE_DIR}/vendor/bin/phpunit
 PHPUNIT_TEST_BOOT_STRAP=${BASE_DIR}/tests/bootstrap.php
-
-PHP_EXECUTABLE=$(which php)
 
 PHPT_SKELGEN_EXECUTABLE=${BASE_DIR}/phpts/generate-phpt
 PHPT_EXECUTABLE=${BASE_DIR}/phpts/run-tests.php
@@ -22,7 +20,13 @@ PHPT_EXECUTABLE=${BASE_DIR}/phpts/run-tests.php
 DEFAULT_PHPT_SECTIONS='skipif:ini:clean:done'
 PHPT_SECTIONS=${PTSEC:-${DEFAULT_PHPT_SECTIONS}}
 
+MESH_TESTHELPER_IMAGE=${MIMG:-"zhoujing/wm-testhelper-server"}
+MESH_CONTAINER_NAME=${MCTNAME:-"mesh-testhelper"}
+MEHS_RUN_PATH=${MRUN_PATH:-"${BASE_DIR}/weibo-mesh-runpath"}
+
 new_ptest_4_cls_method() {
+	local PHP_EXECUTABLE=$(which php)
+
 	local CLASS_FILE="${BASE_DIR}/phpts/bootstrap.php"
 	local CLASS_NAME=$1
 	local METHOD_NAME=$2
@@ -37,6 +41,8 @@ new_ptest_4_cls_method() {
 }
 
 new_ptest_4_func_in_file() {
+	local PHP_EXECUTABLE=$(which php)
+
 	local SRC_FILE=$1
 	local FUNC_NAME=$2
 	local PHPT_FILE_NAME=${FUNC_NAME}_basic.phpt
@@ -132,6 +138,25 @@ show_help() {
     "
 }
 
+check_if_stop_container() {
+	local containers="${1}"
+	if [ ! -z "${containers}" ]; then
+		for container in $(echo ${containers//,/ }); do
+			sudo docker ps | grep "${container}" &&
+				sudo docker stop "${container}"
+		done | column -t
+	fi
+}
+
+prepare_mesh() {
+	sudo docker run -d --rm --network host --name ${MESH_CONTAINER_NAME} \
+		-v ${MEHS_RUN_PATH}/snapshot:/snapshot \
+		${MESH_TESTHELPER_IMAGE}
+	sleep 1
+	curl 127.0.0.1:8082/200
+	sleep 1
+}
+
 case "${1}" in
 nut)
 	if [ $# != 2 ]; then
@@ -173,11 +198,32 @@ rpt)
 	run_ptests $2
 	;;
 ci)
-	${PHPUNIT_EXECUTABLE} --bootstrap=${PHPUNIT_TEST_BOOT_STRAP} \
-		--testdox ${BASE_DIR}/tests \
-		--coverage-html ${BASE_DIR}/tests/coverage/
+	check_if_stop_container "zk,${MESH_CONTAINER_NAME},mc"
+	sudo docker run --network host -d --rm --name mc memcached
+	sudo docker run --network host -d --rm --name zk zookeeper
+	sleep 1
+	prepare_mesh
 
-	[ "${MESH_UP}" = "yes" ] && run_ptests
+	# @TODO check zk bug when first time
+	# there is no /motan/motan-demo-rpc/com.weibo.HelloWorldService/server node in zk
+	# make zk subscrib fail.
+	sudo docker stop ${MESH_CONTAINER_NAME}
+	sleep 1
+	prepare_mesh
+	sleep 1
+
+	if [ "${MESH_UP}" = "no" ]; then
+		curl 127.0.0.1:8082/stop_motan_agent
+		sleep 1
+	fi
+
+	if [ "${MESH_UP}" = "yes" ]; then
+		sudo docker run --network host -e MESH_UP=yes -v ${BASE_DIR}/:/motan-php -w /motan-php zhoujing/idevz-runx-php:1.0.0 ./run.sh raut
+		sudo docker run --network host -e MESH_UP=yes -v ${BASE_DIR}/:/motan-php -w /motan-php zhoujing/idevz-runx-php:1.0.0 ./run.sh rpt
+	fi
+
+	[ "${MESH_UP}" = "no" ] && sudo docker run --network host -e MESH_UP=no -v ${BASE_DIR}/:/motan-php -w /motan-php zhoujing/idevz-runx-php:1.0.0 ./run.sh raut
+	echo "done test"
 	;;
 *)
 	show_help
