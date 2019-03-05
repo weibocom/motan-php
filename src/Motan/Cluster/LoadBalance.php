@@ -60,12 +60,12 @@ abstract class  LoadBalance
             throw new \Exception('open snapshot file err : ' . $filepath);
         }
         $nodes = array();
-        $get_nodes = json_decode($snap_str, true)['nodes']['working'];
+        $get_nodes = json_decode($snap_str, true)['nodes'];
         if (!$get_nodes) {
             throw new \Exception('fetch backup nodes err : ' . json_last_error());
         }
         foreach ($get_nodes as $info) {
-            $nodes[] = $info['host'];
+            $nodes[] = $info['address'];
         }
         return static::select($nodes, $this->_url_obj->getRequestId());
     }

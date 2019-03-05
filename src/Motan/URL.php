@@ -17,8 +17,6 @@
 
 namespace Motan;
 
-use DrSlump\Protobuf\Exception;
-
 /**
  * Motan URL for PHP 5.4+
  * 
@@ -119,7 +117,7 @@ class URL {
                     $this->_endpoint = Constants::ENDPOINT_MOTAN;
                     break;
                 default:
-                    throw new Exception("Didn't support the scheme:" . $url_info['scheme']);
+                    throw new \Exception("Didn't support the scheme:" . $url_info['scheme']);
                     break;
             }
         }
