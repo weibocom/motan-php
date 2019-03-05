@@ -29,6 +29,6 @@ array(2) {
   [0]=>
   string(26) "[]-------[128 1 2 128 1 2]"
   [1]=>
-  string(12) "map[a:a b:b]"
+  string(6) "HelloW"
 }
 ===DONE===

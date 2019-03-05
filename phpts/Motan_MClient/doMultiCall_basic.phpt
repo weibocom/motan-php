@@ -9,7 +9,7 @@ $app_name = 'phpt-test-MClient';
 $group = DEFAULT_GROUP;
 $service = DEFAULT_SERVICE;
 $protocol = DEFAULT_PROTOCOL;
-$cx = new Motan\MClient( $app_name, $group, $service, $protocol );
+$cx = new Motan\MClient( $app_name, $service, $protocol, $group );
 $req1 = new \Motan\Request($service, 'Hello', ['a' => 'b']);
 $req2 = new \Motan\Request($service, 'Hello', ['xx' => 'wwww']);
 $req3 = new \Motan\Request($service, 'HelloX', [33, 123,124,['string','arr']]);
@@ -24,5 +24,5 @@ var_dump($cx->getMException($req3));
 <?php
 ?>
 --EXPECTF--
-string(97) "{"errcode":400,"errmsg":"FailOverHA call fail 1 times.Exception:provider call panic","errtype":1}"
+string(99) "{"errcode":400,"errmsg":"FailOverHA call fail 1 times. Exception: provider call panic","errtype":1}"
 ===DONE===
