@@ -132,42 +132,54 @@ show_help() {
     "
 }
 
-if [ $# != 0 ]; then
-	if [ $1 == "nut" ]; then
-		if [ $# != 2 ]; then
-			echo "err args num.
+case "${1}" in
+nut)
+	if [ $# != 2 ]; then
+		echo "err args num.
             ./run.sh nut class_name class_file_src test_file_src
 			like this:
 					./run.sh nut Motan/Client.php
             "
-			exit 1
-		fi
-		new_utest $2
-	elif [ $1 == "naut" ]; then
-		TO_TEST_DIR=${BASE_DIR}/src
-		if [ ! -z $2 ]; then
-			TO_TEST_DIR=$2
-		fi
-		new_all_utests ${TO_TEST_DIR}
-	elif [ $1 == "raut" ]; then
-		${PHPUNIT_EXECUTABLE} --bootstrap=${PHPUNIT_TEST_BOOT_STRAP} \
-			--testdox ${BASE_DIR}/tests \
-			--coverage-html ${BASE_DIR}/tests/coverage/
-	elif [ $1 == "rutf" ]; then
-		${PHPUNIT_EXECUTABLE} --bootstrap=${PHPUNIT_TEST_BOOT_STRAP} $2
-	elif [ $1 == "ncmpt" ]; then
-		for METHOD in $(echo ${3//,/ }); do
-			new_ptest_4_cls_method $2 ${METHOD}
-		done
-	elif [ $1 == "nfpt" ]; then
-		for FUNC in $(echo ${3//,/ }); do
-			new_ptest_4_func_in_file $2 ${FUNC}
-		done
-	elif [ $1 == "rpt" ]; then
-		run_ptests $2
-	elif [ $1 == "-h" ]; then
-		show_help
+		exit 1
 	fi
-else
+	new_utest $2
+	;;
+naut)
+	TO_TEST_DIR=${BASE_DIR}/src
+	if [ ! -z $2 ]; then
+		TO_TEST_DIR=$2
+	fi
+	new_all_utests ${TO_TEST_DIR}
+	;;
+raut)
+	${PHPUNIT_EXECUTABLE} --bootstrap=${PHPUNIT_TEST_BOOT_STRAP} \
+		--testdox ${BASE_DIR}/tests \
+		--coverage-html ${BASE_DIR}/tests/coverage/
+	;;
+rutf)
+	${PHPUNIT_EXECUTABLE} --bootstrap=${PHPUNIT_TEST_BOOT_STRAP} $2
+	;;
+ncmpt)
+	for METHOD in $(echo ${3//,/ }); do
+		new_ptest_4_cls_method $2 ${METHOD}
+	done
+	;;
+nfpt)
+	for FUNC in $(echo ${3//,/ }); do
+		new_ptest_4_func_in_file $2 ${FUNC}
+	done
+	;;
+rpt)
+	run_ptests $2
+	;;
+ci)
+	${PHPUNIT_EXECUTABLE} --bootstrap=${PHPUNIT_TEST_BOOT_STRAP} \
+		--testdox ${BASE_DIR}/tests \
+		--coverage-html ${BASE_DIR}/tests/coverage/
+
+	run_ptests
+	;;
+*)
 	show_help
-fi
+	;;
+esac
