@@ -177,7 +177,7 @@ ci)
 		--testdox ${BASE_DIR}/tests \
 		--coverage-html ${BASE_DIR}/tests/coverage/
 
-	run_ptests
+	[ "${MESH_UP}" = "yes" ] && run_ptests
 	;;
 *)
 	show_help

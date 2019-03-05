@@ -27,6 +27,7 @@ tests/coverage/
 ./agent_runtime
 testhelpers/mesh-logs/*
 testhelpers/serverlogs/*
+weibo-mesh-runpath/*
 agent.pid
 
 # debugger
