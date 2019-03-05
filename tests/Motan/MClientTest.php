@@ -24,7 +24,7 @@ class MClientTest extends \PHPUnit\Framework\TestCase
         $group = DEFAULT_GROUP;
         $service = DEFAULT_SERVICE;
         $protocol = DEFAULT_PROTOCOL;
-        $this->object = new MClient( $app_name, $group, $service, $protocol );;
+        $this->object = new MClient( $app_name, $service, $protocol, $group );
     }
 
     /**
@@ -83,7 +83,7 @@ class MClientTest extends \PHPUnit\Framework\TestCase
         ]);
         $rs = $this->object->getMException($req3);
         if (defined('MESH_CALL')) {
-            $this->assertEquals($rs, '{"errcode":400,"errmsg":"FailOverHA call fail 1 times.Exception:provider call panic","errtype":1}');
+            $this->assertEquals($rs, '{"errcode":400,"errmsg":"FailOverHA call fail 1 times. Exception: provider call panic","errtype":1}');
         }else {
             $this->assertEquals($rs, '{"errcode":500,"errmsg":"provider call panic","errtype":1}');
         }

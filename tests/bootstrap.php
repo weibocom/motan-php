@@ -1,6 +1,8 @@
 <?php
 require __DIR__.'/../vendor/autoload.php';
 
+isset($_SERVER['CONN_HOST_IP']) && define('CONN_HOST_IP', $_SERVER['CONN_HOST_IP']);
+
 \Motan\TestHelper::TestDefines();
 
 // @TODO testing for mesh panic, and using mesh snapshot
