@@ -20,9 +20,11 @@ PHPT_EXECUTABLE=${BASE_DIR}/phpts/run-tests.php
 DEFAULT_PHPT_SECTIONS='skipif:ini:clean:done'
 PHPT_SECTIONS=${PTSEC:-${DEFAULT_PHPT_SECTIONS}}
 
-MESH_TESTHELPER_IMAGE=${MIMG:-"zhoujing/wm-testhelper-server"}
+MESH_TESTHELPER_IMAGE=${MIMG:-"zhoujing/wm-testhelper:1.0.0"}
 MESH_CONTAINER_NAME=${MCTNAME:-"mesh-testhelper"}
 MEHS_RUN_PATH=${MRUN_PATH:-"${BASE_DIR}/weibo-mesh-runpath"}
+
+PHP_IMAGE=${PIMG:-"zhoujing/idevz-runx-php:7.3.2"}
 
 new_ptest_4_cls_method() {
 	local PHP_EXECUTABLE=$(which php)
@@ -218,11 +220,11 @@ ci)
 	fi
 
 	if [ "${MESH_UP}" = "yes" ]; then
-		sudo docker run --network host -e MESH_UP=yes -v ${BASE_DIR}/:/motan-php -w /motan-php zhoujing/idevz-runx-php:1.0.0 ./run.sh raut
-		sudo docker run --network host -e MESH_UP=yes -v ${BASE_DIR}/:/motan-php -w /motan-php zhoujing/idevz-runx-php:1.0.0 ./run.sh rpt
+		sudo docker run --network host -e MESH_UP=yes -v ${BASE_DIR}/:/motan-php -w /motan-php "${PHP_IMAGE}" ./run.sh raut
+		sudo docker run --network host -e MESH_UP=yes -v ${BASE_DIR}/:/motan-php -w /motan-php "${PHP_IMAGE}" ./run.sh rpt
 	fi
 
-	[ "${MESH_UP}" = "no" ] && sudo docker run --network host -e MESH_UP=no -v ${BASE_DIR}/:/motan-php -w /motan-php zhoujing/idevz-runx-php:1.0.0 ./run.sh raut
+	[ "${MESH_UP}" = "no" ] && sudo docker run --network host -e MESH_UP=no -v ${BASE_DIR}/:/motan-php -w /motan-php "${PHP_IMAGE}" ./run.sh raut
 	echo "done test"
 	;;
 *)
