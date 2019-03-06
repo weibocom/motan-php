@@ -137,6 +137,20 @@ show_help() {
                             ./run.sh ncmpt 'Motan\URL' getMethod,... Methods
     ./run.sh nfpt           new phpt test for functions from a php file
     ./run.sh rpt            run phpt test under phpts dir or any dir have phpts
+
+
+	./run.sh d_nut          run nut in docker
+	./run.sh d_naut         run naut in docker
+	./run.sh d_raut         run raut in docker
+	./run.sh d_rutf         run rutf in docker
+	./run.sh d_ncmpt        run ncmpt in docker
+	./run.sh d_nfpt         run nfpt in docker
+	./run.sh d_rpt			run rpt in docker
+
+
+	./run.sh pred           prepare dev envirnment for docker debug
+	./run.sh clean_d        clean docker contianers
+	./run.sh ci             run phpt test and php unit test for Travis CI
     "
 }
 
@@ -159,47 +173,7 @@ prepare_mesh() {
 	sleep 1
 }
 
-case "${1}" in
-nut)
-	if [ $# != 2 ]; then
-		echo "err args num.
-            ./run.sh nut class_name class_file_src test_file_src
-			like this:
-					./run.sh nut Motan/Client.php
-            "
-		exit 1
-	fi
-	new_utest $2
-	;;
-naut)
-	TO_TEST_DIR=${BASE_DIR}/src
-	if [ ! -z $2 ]; then
-		TO_TEST_DIR=$2
-	fi
-	new_all_utests ${TO_TEST_DIR}
-	;;
-raut)
-	${PHPUNIT_EXECUTABLE} --bootstrap=${PHPUNIT_TEST_BOOT_STRAP} \
-		--testdox ${BASE_DIR}/tests \
-		--coverage-html ${BASE_DIR}/tests/coverage/
-	;;
-rutf)
-	${PHPUNIT_EXECUTABLE} --bootstrap=${PHPUNIT_TEST_BOOT_STRAP} $2
-	;;
-ncmpt)
-	for METHOD in $(echo ${3//,/ }); do
-		new_ptest_4_cls_method $2 ${METHOD}
-	done
-	;;
-nfpt)
-	for FUNC in $(echo ${3//,/ }); do
-		new_ptest_4_func_in_file $2 ${FUNC}
-	done
-	;;
-rpt)
-	run_ptests $2
-	;;
-ci)
+prepare_dev() {
 	check_if_stop_container "zk,${MESH_CONTAINER_NAME},mc"
 	sudo docker run --network host -d --rm --name mc memcached
 	sudo docker run --network host -d --rm --name zk zookeeper
@@ -213,6 +187,73 @@ ci)
 	sleep 1
 	prepare_mesh
 	sleep 1
+}
+
+case "${1}" in
+nut)
+	if [ $# != 2 ]; then
+		echo "err args num.
+            ./run.sh nut class_name class_file_src test_file_src
+			like this:
+					./run.sh nut Motan/Client.php
+            "
+		exit 1
+	fi
+	new_utest $2
+	;;
+d_nut)
+	sudo docker run --network host -e MESH_UP=yes -v ${BASE_DIR}/:/motan-php -w /motan-php "${PHP_IMAGE}" ./run.sh nut $2
+	;;
+naut)
+	TO_TEST_DIR=${BASE_DIR}/src
+	if [ ! -z $2 ]; then
+		TO_TEST_DIR=$2
+	fi
+	new_all_utests ${TO_TEST_DIR}
+	;;
+d_naut)
+	sudo docker run --network host -e MESH_UP=yes -v ${BASE_DIR}/:/motan-php -w /motan-php "${PHP_IMAGE}" ./run.sh d_naut $2
+	;;
+raut)
+	${PHPUNIT_EXECUTABLE} --bootstrap=${PHPUNIT_TEST_BOOT_STRAP} \
+		--testdox ${BASE_DIR}/tests \
+		--coverage-html ${BASE_DIR}/tests/coverage/
+	;;
+d_raut)
+	sudo docker run --network host -e MESH_UP=yes -v ${BASE_DIR}/:/motan-php -w /motan-php "${PHP_IMAGE}" ./run.sh raut
+	;;
+rutf)
+	${PHPUNIT_EXECUTABLE} --bootstrap=${PHPUNIT_TEST_BOOT_STRAP} $2
+	;;
+d_rutf)
+	sudo docker run --network host -e MESH_UP=yes -v ${BASE_DIR}/:/motan-php -w /motan-php "${PHP_IMAGE}" ./run.sh rutf $2
+	;;
+ncmpt)
+	for METHOD in $(echo ${3//,/ }); do
+		new_ptest_4_cls_method $2 ${METHOD}
+	done
+	;;
+d_ncmpt)
+	sudo docker run --network host -e MESH_UP=yes -v ${BASE_DIR}/:/motan-php -w /motan-php "${PHP_IMAGE}" ./run.sh ncmpt $2 $3
+	;;
+nfpt)
+	for FUNC in $(echo ${3//,/ }); do
+		new_ptest_4_func_in_file $2 ${FUNC}
+	done
+	;;
+d_nfpt)
+	sudo docker run --network host -e MESH_UP=yes -v ${BASE_DIR}/:/motan-php -w /motan-php "${PHP_IMAGE}" ./run.sh nfpt $2 $3
+	;;
+rpt)
+	run_ptests $2
+	;;
+d_rpt) sudo docker run --network host -e MESH_UP=yes -v ${BASE_DIR}/:/motan-php -w /motan-php "${PHP_IMAGE}" ./run.sh rpt $2 ;;
+pred) prepare_dev ;;
+clean_d)
+	check_if_stop_container "zk,${MESH_CONTAINER_NAME},mc"
+	;;
+ci)
+	prepare_dev
 
 	if [ "${MESH_UP}" = "no" ]; then
 		curl 127.0.0.1:8082/stop_motan_agent
