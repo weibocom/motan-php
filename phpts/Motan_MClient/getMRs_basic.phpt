@@ -9,7 +9,7 @@ $app_name = 'phpt-test-MClient';
 $group = DEFAULT_GROUP;
 $service = DEFAULT_SERVICE;
 $protocol = DEFAULT_PROTOCOL;
-$cx = new Motan\MClient( $app_name, $service, $protocol, $group );
+$cx = new Motan\MClient( $app_name, $service, $group, $protocol );
 $request = new \Motan\Request($service, 'Hello', ['a'=>'b']);
 $cx->doMultiCall([$request]);
 

@@ -24,7 +24,7 @@ class MClientTest extends \PHPUnit\Framework\TestCase
         $group = DEFAULT_GROUP;
         $service = DEFAULT_SERVICE;
         $protocol = DEFAULT_PROTOCOL;
-        $this->object = new MClient( $app_name, $service, $protocol, $group );
+        $this->object = new MClient( $app_name, $service, $group, $protocol );
     }
 
     /**

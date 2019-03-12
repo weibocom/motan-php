@@ -31,7 +31,7 @@ class MClient extends Client
 {
     const URL_FORMAT="%s://127.0.0.1:9981/%s?group=%s";
     
-    public function __construct($app_name = 'default-appname', $service = NULL, $protocol = 'motan2', $group=NULL)
+    public function __construct($app_name = 'default-appname', $service = NULL, $group=NULL, $protocol = 'motan2')
     {
         $url_obj = new \Motan\URL(sprintf(self::URL_FORMAT, $protocol, $service, $group));
         $url_obj->setAppName($app_name);
