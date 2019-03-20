@@ -9,7 +9,7 @@ $app_name = 'phpt-test-MClient';
 $group = DEFAULT_GROUP;
 $service = DEFAULT_SERVICE;
 $protocol = DEFAULT_PROTOCOL;
-$cx = new Motan\MClient( $app_name, $service, $group, $protocol );
+$cx = new Motan\MClient( $app_name, $service, $protocol, $group );
 $req1 = new \Motan\Request($service, 'Hello', ['a' => 'b']);
 $req2 = new \Motan\Request($service, 'Hello', ['xx' => 'wwww']);
 $req3 = new \Motan\Request($service, 'HelloX', [33, 123,124,['string','arr']]);

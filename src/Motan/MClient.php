@@ -29,12 +29,13 @@ namespace Motan;
  */
 class MClient extends Client
 {
-    const URL_FORMAT="%s://127.0.0.1:9981/%s?group=%s";
-    
-    public function __construct($app_name = 'default-appname', $service = NULL, $group=NULL, $protocol = 'motan2')
+    public function __construct($app_name = NULL)
     {
-        $url_obj = new \Motan\URL(sprintf(self::URL_FORMAT, $protocol, $service, $group));
-        $url_obj->setAppName($app_name);
+        $url_obj = NULL;
+        if (!empty($app_name)) {
+            $url_obj = new \Motan\URL();
+            $url_obj->setAppName($app_name);
+        }
         parent::__construct($url_obj);
     }
 
@@ -46,13 +47,17 @@ class MClient extends Client
         return $this->_endpoint->doMultiCall($request_arr);
     }
 
-    public function getMRs(\Motan\Request $request)
+    public function __call($name, $args)
     {
-        return $this->_endpoint->getMRs($request);
+        throw new \Exception("MClient didn't support Magic Calling, using doCall(\Motan\Request) insteded.", 1);
     }
 
-    public function getMException(\Motan\Request $request)
+    public function doCall($request, ...$arguments)
     {
-        return $this->_endpoint->getMException($request);
+        if ($request instanceof \Motan\Request) {
+            return $this->_endpoint->call($request)->getRs(); 
+        } else {
+            throw new \Exception("MClient doCall must using \Motan\Request as a param", 1);
+        }
     }
 }

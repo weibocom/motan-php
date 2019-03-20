@@ -32,24 +32,27 @@ use Motan\Transport\Connection;
  */
 class Client
 {
-    private $_url_obj;
+    protected $_url_obj;
     protected $_endpoint;
 
-    public function __construct(URL $url_obj)
+    public function __construct(URL $url_obj = NULL)
     {
-        $this->_url_obj = $url_obj;
+        $this->_url_obj = $url_obj != NULL ? $url_obj : new URL();
         $connection = new Connection($this->_url_obj);
-        $agent_addr = NULL;
-        if (defined('D_AGENT_ADDR')) {
-            $agent_addr = D_AGENT_ADDR;
-        }
+        $agent_addr = defined('D_AGENT_ADDR') ? D_AGENT_ADDR : NULL;
         if ($connection->buildConnection($agent_addr)){
             $this->_url_obj->setEndpoint(Constants::ENDPOINT_AGENT);
             $this->_endpoint = new Agent($this->_url_obj);
-            $this->_endpoint->setConnection($connection);
+            $this->_endpoint->setConnectionObj($connection);
         } else {
-            if ($this->_url_obj->getProtocol() === 'memcache') {
+            $_protocol = $this->_url_obj->getProtocol();
+            if ($_protocol === 'memcache') {
                 throw new \Exception('did not support to connect memcache directly.');
+            }
+            if ($_protocol == 'grpc') {
+                $this->_url_obj->setEndpoint(Constants::ENDPOINT_GRPC);
+            } else {
+                $this->_url_obj->setEndpoint(Constants::ENDPOINT_MOTAN);
             }
             $this->_endpoint = new Cluster($this->_url_obj);
         }
@@ -81,49 +84,58 @@ class Client
 
     public function doCall($name, ...$arguments)
     {
-        if ($this->_url_obj->getRequestId() == NULL) {
-            $this->_url_obj->setRequestId(Utils::genRequestId($this->_url_obj));
-        }
-        
-        $this->_url_obj->setMethod($name);
-        return $this->_endpoint->call(...$arguments);
+        $request = new \Motan\Request(
+            $this->_url_obj->getService(),
+            $name, ...$arguments);
+        $request->setGroup($this->_url_obj->getGroup());
+        $request->setProtocol($this->_url_obj->getProtocol());
+        return $this->_endpoint->call($request)->getRs();
     }
 
     public function __call($name, $arguments)
     {
-        $request_id =  (!isset($arguments[2]) || empty($arguments[2])) ? Utils::genRequestId($this->_url_obj) : $arguments[2];
-        isset($arguments[0]) && $this->_url_obj->addParams($arguments[0]);
-        isset($arguments[1]) && $this->_url_obj->addHeaders($arguments[1]);
-        $this->_url_obj->setRequestId($request_id);
+        $request_id = $request_args = $request_header = NULL;
+        isset($arguments[0]) && !empty($arguments[0]) && $request_args = $arguments[0];
+        $request = new \Motan\Request($this->_url_obj->getService(),
+        $name, ...[$request_args]);
+        isset($arguments[1]) && !empty($arguments[1]) && $request->addHeaders($arguments[1]);
+        isset($arguments[2]) && !empty($arguments[2]) && $request->setRequestId($arguments[2]);
+        $request->setGroup($this->_url_obj->getGroup());
         switch ($name) {
             case 'get':
                 $this->_url_obj->setProtocol(Constants::PROTOCOL_CEDRUS);
                 $this->_url_obj->setHttpMethod(Constants::HTTP_METHOD_GET);
+                $request->setProtocol(Constants::PROTOCOL_CEDRUS);
                 break;
             case 'post':
                 $this->_url_obj->setProtocol(Constants::PROTOCOL_CEDRUS);
                 $this->_url_obj->setHttpMethod(Constants::HTTP_METHOD_POST);
+                $request->setProtocol(Constants::PROTOCOL_CEDRUS);
                 break;
             case 'grpc':
                 $this->_url_obj->setEndpoint(Constants::ENDPOINT_GRPC);
                 $this->_url_obj->setProtocol(Constants::PROTOCOL_GRPC);
+                $request->setProtocol(Constants::ENDPOINT_GRPC);
                 break;
             default:
                 $this->_url_obj->setMethod($name);
                 break;
         }
-        return $this->_endpoint->call();
+        return $this->_endpoint->call($request)->getRs();
     } 
 
     public function multiCall(array $url_objs) {
         if (empty($url_objs)) {
             return [];
         }
+        $request_objs = [];
         foreach ($url_objs as $url_obj) {
-            $url_obj->setRequestId(Utils::genRequestId($url_obj));
+            $request = new \Motan\Request($url_obj->getService(),
+            $url_obj->getMethod(), ...[$url_obj->getParams()]);
+            $request->setGroup($url_obj->getGroup());
+            $request_objs[] = $request;
         }
-        
-        return $this->_endpoint->multiCall($url_objs);
+        return $this->_endpoint->multiCall($request_objs);
     }
     
 }

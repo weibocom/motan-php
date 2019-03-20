@@ -9,7 +9,7 @@ $app_name = 'phpt-test-MClient';
 $group = DEFAULT_GROUP;
 $service = 'cn.sina.api.commons.cache.MemcacheClient';
 $protocol = 'memcache';
-$cx = new Motan\MClient( $app_name, $service, $group, $protocol );
+$cx = new Motan\MClient( $app_name, $service, $protocol, $group );
 $request = new \Motan\Request($service, 'Hello', ['a'=>'b']);
 $rs = $cx->doCall("set", "test123456", "你好，世界,123172397129371927391729837129", 104600);
 if (!empty($cx->getResponseException())) {
