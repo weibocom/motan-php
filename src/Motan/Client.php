@@ -40,7 +40,13 @@ class Client
         $this->_url_obj = $url_obj != NULL ? $url_obj : new URL();
         $connection = new Connection($this->_url_obj);
         $agent_addr = defined('D_AGENT_ADDR') ? D_AGENT_ADDR : NULL;
-        if ($connection->buildConnection($agent_addr)){
+        $mesh_isalive = FALSE;
+        try {
+            $mesh_isalive = $connection->buildConnection($agent_addr);
+        } catch (\Exception $e) {
+            echo "weibo-mesh isn't alive " . $e->getMessage() . PHP_EOL;
+        }
+        if ($mesh_isalive){
             $this->_url_obj->setEndpoint(Constants::ENDPOINT_AGENT);
             $this->_endpoint = new Agent($this->_url_obj);
             $this->_endpoint->setConnectionObj($connection);
@@ -56,6 +62,17 @@ class Client
             }
             $this->_endpoint = new Cluster($this->_url_obj);
         }
+    }
+
+    public function setRequestTimeOut($time_out)
+    {
+        $this->_endpoint->setRequestTimeOut($time_out);
+    }
+
+    // this just for Mesh down, connection direct to server.
+    public function setConnectionTimeOut($time_out)
+    {
+        $this->_endpoint->setConnectionTimeOut($time_out);
     }
 
     public function getEndPoint() {
