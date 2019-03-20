@@ -41,7 +41,7 @@ class URL {
     private $_version = Constants::DEFAULT_VERSION;
     /** serialize **/
     private $_serialization = Constants::SERIALIZATION_SIMPLE;
-    private $_protocol = Constants::PROTOCOL_MOTAN_NEW;
+    private $_protocol = Constants::PROTOCOL_MOTAN2;
 
     private $_group = NULL;
     private $_request_id = NULL;
@@ -66,7 +66,7 @@ class URL {
         }
     }
     
-    public function __construct($url)
+    public function __construct($url = NULL)
     {
         if (!empty($url)) {
             $this->_raw_url = $url;
@@ -131,7 +131,7 @@ class URL {
         if (!empty($this->_app_name)) {
             return $this->_app_name;
         }
-        $this->_app_name = defined("APP_NAME") ? APP_NAME:Constants::DEFAULE_APP_NAME; 
+        defined("APP_NAME") && $this->_app_name = APP_NAME;
         return $this->_app_name;
     }
 
