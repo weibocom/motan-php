@@ -36,8 +36,6 @@ class Cluster
     /** @var [\Motan\Cluster\LoadBalance] [default:Motan\Cluster\LoadBalance\Random] */
     private $_load_balance;
 
-    private $_multi_resp;
-
     /**
      * @return mixed
      */
@@ -135,19 +133,23 @@ class Cluster
         
     }
     
-    public function call(...$args)
+    public function call(\Motan\Request $request)
     {
-        return $this->_ha_strategy->call($this->_load_balance, ...$args);
+        return $this->_ha_strategy->call($this->_load_balance, $request);
     } 
 
     public function multiCall(array $url_objs)
     {
         $result = [];
         foreach ($url_objs as $url_obj) {
-            $this->_url_obj = $url_obj;
             $this->_ha_strategy = Utils::getHa($this->_url_obj->getHaStrategy(), $this->_url_obj);
             $this->_load_balance = Utils::getLB($this->_url_obj->getLoadbalance(), $this->_url_obj);
-            $result[] = $this->_ha_strategy->call($this->_load_balance);
+            if ($url_obj instanceof \Motan\Request) {
+                $result[] = $this->_ha_strategy->call($this->_load_balance, $url_obj)->getRs();
+            } else {
+                $this->_url_obj = $url_obj;
+                $result[] = $this->_ha_strategy->call($this->_load_balance)->getRs();
+            }
         }
         
         return $result;
@@ -155,25 +157,15 @@ class Cluster
 
     public function doMultiCall($request_arr)
     {
-        $result = [];
+        $results = [];
         foreach ($request_arr as $request){
-            $method = $request->getMethod();
-            $args = $request->getRequestArgs();
-            count($args) == 1 && $args = [$args];
-            $url_obj = $this->_url_obj;
-            $url_obj->setRequestId($request->getRequestId());
-            $url_obj->setMethod($method);
-            $url_obj->setService($request->getService());
-            $this->_url_obj = $url_obj;
-
             $this->_ha_strategy = Utils::getHa($this->_url_obj->getHaStrategy(), $this->_url_obj);
             $this->_load_balance = Utils::getLB($this->_url_obj->getLoadbalance(), $this->_url_obj);
-            $resp = $this->_ha_strategy->do4Multi($this->_load_balance, ...$args);
+            $resp = $this->_ha_strategy->call($this->_load_balance, $request);
             $request_id = $resp->getRawResp()->getRequestId();
-            $this->_multi_resp[$request_id] = $resp;
-            $result[$request_id] = $resp->getRs();
+            $results[$request_id] = $resp;
         }
-        return $result;
+        return new \Motan\MultiResponse($results);
     }
 
     public function getMException(\Motan\Request $request)
