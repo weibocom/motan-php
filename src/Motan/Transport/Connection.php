@@ -63,8 +63,9 @@ class Connection
         $retryCnt = -1;
         $retry_times = $this->_url_obj->getRetryTimes();
         $connection_time_out = $this->_url_obj->getConnectionTimeOut();
+        $err_code = $err_msg = NULL;
         while ($retryCnt < $retry_times) {
-            $connection = @stream_socket_client($this->_connection_addr, $code, $msg, $connection_time_out);
+            $connection = @stream_socket_client($this->_connection_addr, $err_code, $err_msg, $connection_time_out);
             if ($connection) {
                 break;
             } else {
@@ -73,7 +74,7 @@ class Connection
             }
         }
         if (!$connection) {
-            return false;
+            throw new \Exception("init connection to $this->_connection_addr err. " . $err_msg);
         }
         $this->_connection = $connection;
         $this->_setStreamOpt();
@@ -123,5 +124,4 @@ class Connection
             fclose($this->_connection);
         }
     }
-
 }
