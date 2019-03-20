@@ -31,7 +31,7 @@ use Motan\Utils;
  */
 class Response{
     private $_rs;
-    private $_exception;
+    private $_exception = NULL;
     private $_raw_response;
    
     public function __construct($rs, $exception, $raw_resp)
@@ -54,5 +54,20 @@ class Response{
     public function getRawResp()
     {
         return $this->_raw_response;
+    }
+
+    public function getResponseHeader()
+    {
+        return $this->_raw_response->getHeader();
+    }
+
+    public function getResponseMetadata()
+    {
+        return $this->_raw_response->getMetadata();
+    }
+
+    public function getResponseException()
+    {
+        return $this->_exception;
     }
 }
