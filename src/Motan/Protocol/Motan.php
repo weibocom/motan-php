@@ -71,12 +71,12 @@ class Motan
 
     public static function buildRequestHeader($request_id)
     {
-        return self::buildHeader(MSG_TYPE_REQUEST, false, SERIALIZE_SIMPLE, $request_id, MSG_STATUS_NORMAL);
+        return self::buildHeader(MSG_TYPE_REQUEST, FALSE, SERIALIZE_SIMPLE, $request_id, MSG_STATUS_NORMAL);
     }
 
     public static function buildResponseHeader($request_id, $msg_status)
     {
-        return self::buildHeader(MSG_TYPE_RESPONSE, false, SERIALIZE_SIMPLE, $request_id, $msg_status);
+        return self::buildHeader(MSG_TYPE_RESPONSE, FALSE, SERIALIZE_SIMPLE, $request_id, $msg_status);
     }
 
     public static function encode($request_id, $req_obj, $metadata)
@@ -96,8 +96,13 @@ class Motan
     public static function decode($connection)
     {
         $header_buffer = fread($connection, HEADER_BYTE);
-        if (false == $header_buffer) {
-            throw new \Exception('Error to read header_buffer');
+        if (FALSE == $header_buffer) {
+            $stream_meta = stream_get_meta_data($connection);
+            if($stream_meta['timed_out'] == TRUE) {
+                throw new \Exception('read header timeout.');
+            } else {
+                throw new \Exception('unknow error when read header. stream_meta:' . var_export($stream_meta, TRUE));
+            }
         }
         $header = unpack("nmagic/CmessageType/Cversion_status/Cserialize/Nrequest_id_upper/Nrequest_id_lower", $header_buffer);
         $header['request_id'] = Utils::bigInt2float($header['request_id_upper'], $header['request_id_lower']);
@@ -107,15 +112,25 @@ class Motan
             $header_obj->setGzip(TRUE);
         }
         $metadata_size_buffer = fread($connection, META_SIZE_BYTE);
-        if (false === $metadata_size_buffer) {
-            throw new \Exception('Error to read metadata_size_buffer');
+        if (FALSE === $metadata_size_buffer) {
+            $stream_meta = stream_get_meta_data($connection);
+            if($stream_meta['timed_out'] == TRUE) {
+                throw new \Exception('read metasize timeout.');
+            } else {
+                throw new \Exception('unknow error when read metasize. stream_meta:' . var_export($stream_meta, TRUE));
+            }
         }
         $metasize = unpack("Nmetasize", $metadata_size_buffer);
         $metadata = [];
         if ($metasize['metasize'] > 0) {
             $metadata_buffer = fread($connection, $metasize['metasize']);
-            if (false === $metadata_buffer) {
-                throw new \Exception('Error to read metadata_buffer');
+            if (FALSE === $metadata_buffer) {
+                $stream_meta = stream_get_meta_data($connection);
+                if($stream_meta['timed_out'] == TRUE) {
+                    throw new \Exception('read metadata timeout.');
+                } else {
+                    throw new \Exception('unknow error when read metadata. stream_meta:' . var_export($stream_meta, TRUE));
+                }
             }
             $metadata_arr = explode("\n", unpack("A*metadata", $metadata_buffer)['metadata']);
             for ($i = 0; $i < count($metadata_arr); $i++) {
@@ -124,16 +139,26 @@ class Motan
         }
         // @TODO Exception
         $bodysize_buffer = fread($connection, BODY_SIZE_BYTE);
-        if (false === $bodysize_buffer) {
-            throw new \Exception('Error to read bodysize_buffer');
+        if (FALSE === $bodysize_buffer) {
+            $stream_meta = stream_get_meta_data($connection);
+            if($stream_meta['timed_out'] == TRUE) {
+                throw new \Exception('read bodysize timeout.');
+            } else {
+                throw new \Exception('unknow error when read bodysize. stream_meta:' . var_export($stream_meta, TRUE));
+            }
         }
         $body_size = unpack("Nbodysize", $bodysize_buffer);
 
         $body_buffer = '';
         while (($remaining = $body_size['bodysize'] - strlen($body_buffer)) > 0) {
             $buffer = @fread($connection, $remaining);
-            if ($buffer === false) {
-                return false;
+            if ($buffer === FALSE) {
+                $stream_meta = stream_get_meta_data($connection);
+                if($stream_meta['timed_out'] == TRUE) {
+                    throw new \Exception('read body timeout.');
+                } else {
+                    throw new \Exception('unknow error when read body. stream_meta:' . var_export($stream_meta, TRUE));
+                }
             }
             $body_buffer .= $buffer;
         }
@@ -150,7 +175,7 @@ class Motan
     public static function getMetaDataSize($buffer, $pos)
     {
         $metadata_size_buffer = substr($buffer, $pos, META_SIZE_BYTE);
-        if (false === $metadata_size_buffer) {
+        if (FALSE === $metadata_size_buffer) {
             throw new \Exception('Error to read metadata_size_buffer');
         }
         $metasize = unpack("Nmetasize", $metadata_size_buffer);
@@ -160,7 +185,7 @@ class Motan
     public static function getBodySize($buffer, $pos)
     {
         $bodysize_buffer = substr($buffer, $pos, BODY_SIZE_BYTE);
-        if (false === $bodysize_buffer) {
+        if (FALSE === $bodysize_buffer) {
             throw new \Exception('Error to read bodysize_buffer');
         }
         $body_size = unpack("Nbodysize", $bodysize_buffer);
@@ -196,7 +221,7 @@ class Motan
         $metadata = [];
         if ($metasize > 0) {
             $metadata_buffer = self::getBuffer($buffer, $pos, $metasize);
-            if (false === $metadata_buffer) {
+            if (FALSE === $metadata_buffer) {
                 throw new \Exception('Error to read metadata_buffer');
             }
             $metadata_arr = explode("\n", unpack("A*metadata", $metadata_buffer)['metadata']);
