@@ -52,11 +52,11 @@ class URL {
     private $_host = Constants::DEFAULT_AGENT_HOST;
     private $_port = Constants::DEFAULT_AGENT_PORT;
 
-    private $_connection_time_out = Constants::MOTAN_CONNECTION_TIME_OUT;
-    private $_read_time_out = Constants::MOTAN_READ_TIME_OUT;
+    private $_connection_time_out = 1;
+    private $_read_time_out = 1;
     private $_read_buffer_size = Constants::DEFAULT_SOCKET_BUFFER_SIZE;
     private $_write_buffer_size = Constants::DEFAULT_SOCKET_BUFFER_SIZE;
-    private $_retry_times = Constants::DEFAULT_SOCKET_CONNECT_RETRY_TIMES;
+    private $_retry_times = 3;
 
     private function _initMetaInfo($key, $url_key)
     {
@@ -68,6 +68,10 @@ class URL {
     
     public function __construct($url = NULL)
     {
+        $this->_connection_time_out = defined('WEIBOMESH_CONN_TIME_OUT')?WEIBOMESH_CONN_TIME_OUT:Constants::MOTAN_CONNECTION_TIME_OUT;
+        $this->_read_time_out = defined('WEIBOMESH_REQ_TIME_OUT')?WEIBOMESH_REQ_TIME_OUT:Constants::MOTAN_READ_TIME_OUT;
+        $this->_retry_times = defined('WEIBOMESH_CONN_RETRY_TIMES')?WEIBOMESH_CONN_RETRY_TIMES:Constants::DEFAULT_SOCKET_CONNECT_RETRY_TIMES;
+
         if (!empty($url)) {
             $this->_raw_url = $url;
 

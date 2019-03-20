@@ -66,6 +66,22 @@ abstract class  Endpointer
         return $this->_url_obj->addHeaders($headers);
     }
 
+    public function setRequestTimeOut($time_out)
+    {
+        // setting for agent request time out.
+        if (isset($this->_connection) && is_resource($this->_connection)) {
+            @stream_set_timeout($this->_connection, 0, $time_out * 1000000);
+        }
+        // setting for cluster request time out when mesh down.
+        $this->_url_obj->setReadTimeOut($time_out);
+    }
+
+    public function setConnectionTimeOut($time_out)
+    {
+        // setting just for cluster connection time out when mesh down.
+        $this->_url_obj->setConnectionTimeOut($time_out);
+    }
+
     protected function _buildConnection()
     {
         if (empty($this->_connection_obj)) {
@@ -77,6 +93,7 @@ abstract class  Endpointer
 
     public function setConnectionObj(Connection $conn_obj) {
         $this->_connection_obj = $conn_obj;
+        $this->_connection = $this->_connection_obj->getConnection();
     }
 
     public function call(\Motan\Request $request)

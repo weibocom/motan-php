@@ -113,24 +113,13 @@ class Cluster
             $endpoint->setConnectionTimeOut($time_out);
         }
     }
-    
-    public function setReadTimeOut($time_out = 1)
+
+    public function setRequestTimeOut($time_out)
     {
         $endpoint = $this->getEndpoint();
         if (false !== $endpoint) {
-            $endpoint->setReadTimeOut($time_out);
+            $endpoint->setRequestTimeOut($time_out);
         }
-    }
-    
-    // 对非agent链接方式进行重试，保底措施
-    public function setRetryTimes($times = 0)
-    {
-        $times = $times < 0 ? 0 : $times;
-        $endpoint = $this->getEndpoint();
-        if (false !== $endpoint) {
-            $endpoint->setRetryTimes($times);
-        }
-        
     }
     
     public function call(\Motan\Request $request)
