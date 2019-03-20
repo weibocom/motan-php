@@ -189,6 +189,10 @@ prepare_dev() {
 	sleep 1
 }
 
+clean_containers() {
+	check_if_stop_container "zk,${MESH_CONTAINER_NAME},mc"
+}
+
 case "${1}" in
 nut)
 	if [ $# != 2 ]; then
@@ -266,6 +270,7 @@ ci)
 	fi
 
 	[ "${MESH_UP}" = "no" ] && sudo docker run --network host -e MESH_UP=no -v ${BASE_DIR}/:/motan-php -w /motan-php "${PHP_IMAGE}" ./run.sh raut
+	[ ! -z ${X} ] && clean_containers
 	echo "done test"
 	;;
 *)

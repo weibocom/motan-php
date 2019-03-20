@@ -35,7 +35,7 @@ class Constants
     const REQ_URL_TYPE_RESTY = 'resty';
     const REQ_URL_TYPE_MOTAN = 'motan';
 
-    const PROTOCOL_MOTAN_NEW = 'motan2';
+    const PROTOCOL_MOTAN2 = 'motan2';
     const PROTOCOL_GRPC = 'grpc';
     const PROTOCOL_CEDRUS = 'cedrus';
     const DEFAULT_POST_CONTENTTYPE= 'application/x-www-form-urlencoded';
