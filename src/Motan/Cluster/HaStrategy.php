@@ -52,9 +52,9 @@ abstract class  HaStrategy
         return $this->_endpoint;
     }
 
-    abstract public function call(LoadBalance $load_balance, ...$args);
+    abstract public function call(LoadBalance $load_balance, \Motan\Request $request);
 
-    public function do4Multi(LoadBalance $load_balance, ...$args){
-        return $this->getEndpoint()->setLoadBalance($load_balance)->do4Multi(...$args);
+    public function do4Multi(LoadBalance $load_balance, \Motan\Request $request){
+        return $this->getEndpoint()->setLoadBalance($load_balance)->do4Multi($request);
     }
 }

@@ -29,7 +29,7 @@ namespace Motan\Cluster\Ha;
  */
 class Failover extends \Motan\Cluster\HaStrategy
 {
-    public function call(\Motan\Cluster\LoadBalance $load_balance, ...$args)
+    public function call(\Motan\Cluster\LoadBalance $load_balance, \Motan\Request $request)
     {
         $request_id = $args[3];
         $grpc_client = $load_balance->getGrpcClient($request_id);
