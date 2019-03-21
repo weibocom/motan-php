@@ -8,8 +8,14 @@ Test class Motan\Client method  doCall() by calling it with its expected argumen
 --FILE--
 <?php
 require(dirname(__FILE__) . '/../motan.inc.php');
-exec('tc qdisc add dev lo root netem delay 1000ms');
-exec('tc qdisc add dev eth0 root netem delay 10ms');
+$net_devices_time_delay = [
+    'lo' => 1000,
+];
+exec('ls /sys/class/net', $net_devices);
+foreach($net_devices as $net_dvc) {
+    $delay_time = isset($net_devices_time_delay[$net_dvc]) ? $net_devices_time_delay[$net_dvc] : 10;
+    exec("tc qdisc add dev ${net_dvc} root netem delay ${delay_time}ms");
+}
 
 $app_name = 'phpt-test-MClient';
 $group = DEFAULT_GROUP;
@@ -28,8 +34,9 @@ try{
     var_dump($e->getMessage());
 }
 
-exec('tc qdisc del dev lo root');
-exec('tc qdisc del dev eth0 root');
+foreach($net_devices as $net_dvc) {
+    exec("tc qdisc del dev ${net_dvc} root");
+}
 ?>
 ===DONE===
 --CLEAN--

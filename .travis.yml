@@ -32,14 +32,12 @@ before_install:
   - travis_retry composer self-update
   - sudo apt-get install -y iproute2
   - sudo cp /sbin/tc /usr/sbin/tc
-  - ifconfig
 
 install:
   - travis_retry composer update --prefer-dist --no-interaction --prefer-stable --no-suggest
 
 script:
     - ./run.sh ci
-    - cat phpts/Motan_MClient/connectionTimeout_exception_basic.out
 
 after_success:
     - bash <(curl -s https://codecov.io/bash)
