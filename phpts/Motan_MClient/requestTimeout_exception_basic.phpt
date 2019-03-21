@@ -28,6 +28,6 @@ try{
 <?php
 ?>
 --EXPECTF--
-string(20) "read header timeout."
+string(20) "Read header timeout."
 ===DONE===
 

@@ -107,6 +107,11 @@ class Request{
         return $this->_method;
     }
 
+    public function setMethod($method)
+    {
+        $this->_method = $method;
+    }
+
     public function getRequestArgs()
     {
         return $this->_request_args;
