@@ -37,7 +37,6 @@ class Constants
 
     const PROTOCOL_MOTAN2 = 'motan2';
     const PROTOCOL_GRPC = 'grpc';
-    const PROTOCOL_CEDRUS = 'cedrus';
     const DEFAULT_POST_CONTENTTYPE= 'application/x-www-form-urlencoded';
     const PROTOCOL_CGI = 'cgi';
     const PROTOCOL_MEMCACHE = 'memcache';

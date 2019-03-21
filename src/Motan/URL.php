@@ -36,7 +36,7 @@ class URL {
     private $_headers;
     private $_service;
     private $_method;
-    private $_http_method = Constants::HTTP_METHOD_GET;
+    private $_http_method = NULL;
     private $_endpoint = Constants::ENDPOINT_AGENT;
     private $_version = Constants::DEFAULT_VERSION;
     /** serialize **/

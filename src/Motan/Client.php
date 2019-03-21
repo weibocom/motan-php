@@ -120,15 +120,11 @@ class Client
         $request->setGroup($this->_url_obj->getGroup());
         switch ($name) {
             case 'get':
-                $this->_url_obj->setProtocol(Constants::PROTOCOL_CEDRUS);
                 $this->_url_obj->setHttpMethod(Constants::HTTP_METHOD_GET);
-                $request->setProtocol(Constants::PROTOCOL_CEDRUS);
                 $request->setMethod($this->_url_obj->getMethod());
                 break;
             case 'post':
-                $this->_url_obj->setProtocol(Constants::PROTOCOL_CEDRUS);
                 $this->_url_obj->setHttpMethod(Constants::HTTP_METHOD_POST);
-                $request->setProtocol(Constants::PROTOCOL_CEDRUS);
                 $request->setMethod($this->_url_obj->getMethod());
                 break;
             case 'grpc':

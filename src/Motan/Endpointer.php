@@ -146,7 +146,8 @@ abstract class  Endpointer
         $metadata['M_pp'] = $request->getProtocol();
         $metadata['requestIdFromClient'] = $request_id;
         $metadata['SERIALIZATION'] = $this->_url_obj->getSerialization();
-        $metadata['M_pp'] === Constants::PROTOCOL_CEDRUS && $metadata['HTTP_Method'] = $this->_url_obj->getHttpMethod();
+        $http_method = $this->_url_obj->getHttpMethod();
+        !empty($http_method) && $metadata['HTTP_Method'] = $http_method;
         $buf = Protocol\Motan::encode($request_id, $req_body, $metadata);
         
         $this->_connection_obj->write($buf);
