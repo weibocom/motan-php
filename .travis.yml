@@ -38,6 +38,7 @@ install:
 
 script:
     - ./run.sh ci
+    - cat phpts/Motan_MClient/connectionTimeout_exception_basic.out
 
 after_success:
     - bash <(curl -s https://codecov.io/bash)
