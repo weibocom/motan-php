@@ -10,6 +10,8 @@ env:
     - MESH_UP=yes
     - MEHS_RUN_PATH=$(pwd)/weibo-mesh-runpath
     - MESH_CONTAINER_NAME=mesh-testhelpe
+  matrix:
+  - OS_TYPE=centos OS_VERSION=7
 
 matrix:
   fast_finish: true
