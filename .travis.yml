@@ -29,6 +29,7 @@ cache:
 
 before_install:
   - travis_retry composer self-update
+  - sudo yum install -y tc
 
 install:
   - travis_retry composer update --prefer-dist --no-interaction --prefer-stable --no-suggest
