@@ -74,7 +74,7 @@ class Connection
             }
         }
         if (!$connection) {
-            throw new \Exception("init connection to $this->_connection_addr err. " . $err_msg);
+            throw new \Exception("Connect to $this->_connection_addr fail, err_code:${err_code},err_msg:${err_msg} ");
         }
         $this->_connection = $connection;
         $this->_setStreamOpt();
@@ -101,7 +101,12 @@ class Connection
         while (true) {
             $sent = @fwrite($this->_connection, $buffer, $length);
             if ($sent === false) {
-                throw new \Exception('writeToRemote fail');
+                $stream_meta = stream_get_meta_data($this->_connection);
+                if($stream_meta['timed_out'] == TRUE) {
+                    throw new \Exception('Write to remote timeout.');
+                } else {
+                    throw new \Exception('Unknow error when write to remote. Stream detail:' . var_export($stream_meta, TRUE));
+                }
             }
             if ($sent < $length) {
                 $buffer = substr($buffer, $sent);
