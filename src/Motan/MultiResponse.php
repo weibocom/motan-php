@@ -20,7 +20,7 @@ namespace Motan;
 use Motan\Utils;
 
 /**
- * Motan  Response for PHP 5.4+
+ * Motan  Response for PHP 5.6+
  * 
  * <pre>
  * Motan Response 

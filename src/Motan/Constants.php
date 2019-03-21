@@ -18,7 +18,7 @@
 namespace Motan;
 
 /**
- * Motan PHP Constants for PHP 5.4+
+ * Motan PHP Constants for PHP 5.6+
  * 
  * <pre>
  * Motan PHP Constants

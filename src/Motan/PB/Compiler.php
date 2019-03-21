@@ -5,7 +5,7 @@ namespace Motan\PB;
 use DrSlump\Protobuf;
 
 /**
- * Compiler for PHP 5.4+
+ * Compiler for PHP 5.6+
  * 
  * <pre>
  * Compiler

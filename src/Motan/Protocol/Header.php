@@ -20,7 +20,7 @@ namespace Motan\Protocol;
 use Motan\Utils;
 
 /**
- * Motan Protocol for PHP 5.4+
+ * Motan Protocol for PHP 5.6+
  * 
  * <pre>
  * Motan 协议

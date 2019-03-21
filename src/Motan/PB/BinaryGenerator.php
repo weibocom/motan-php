@@ -21,7 +21,7 @@ use DrSlump\Protobuf;
 use google\protobuf as proto;
 
 /**
- * BinaryGenerator for PHP 5.4+
+ * BinaryGenerator for PHP 5.6+
  * 
  * <pre>
  * BinaryGenerator

@@ -18,7 +18,7 @@
 namespace Motan;
 
 /**
- * Motan TestHelper for PHP 5.4+
+ * Motan TestHelper for PHP 5.6+
  * 
  * <pre>
  * Motan testing helpers

@@ -18,7 +18,7 @@
 namespace Motan;
 
 /**
- * Motan URL for PHP 5.4+
+ * Motan URL for PHP 5.6+
  * 
  * <pre>
  * 请求URL 封装

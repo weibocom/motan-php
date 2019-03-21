@@ -21,7 +21,7 @@ use DrSlump\Protobuf;
 use google\protobuf as proto;
 
 /**
- * WeiboGenerator for PHP 5.4+
+ * WeiboGenerator for PHP 5.6+
  * 
  * <pre>
  * WeiboGenerator

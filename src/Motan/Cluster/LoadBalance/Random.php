@@ -18,7 +18,7 @@
 namespace Motan\Cluster\LoadBalance;
 
 /**
- * LB Random for PHP 5.4+
+ * LB Random for PHP 5.6+
  * 
  * <pre>
  * LB Random

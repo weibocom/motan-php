@@ -25,7 +25,7 @@ use Motan\Utils;
 const AGENT_ADDR = "tcp://127.0.0.1:9981";
 
 /**
- * Motan Agent Endpoint for PHP 5.4+
+ * Motan Agent Endpoint for PHP 5.6+
  * 
  * <pre>
  * Motan Agent Endpoint

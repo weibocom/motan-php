@@ -18,7 +18,7 @@
 namespace Motan\Cluster\Ha;
 
 /**
- * HA failfast for PHP 5.4+
+ * HA failfast for PHP 5.6+
  * 
  * <pre>
  * 快速失败策略

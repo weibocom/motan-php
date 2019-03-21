@@ -18,7 +18,7 @@
 namespace Motan;
 
 /**
- * Motan Cluster for PHP 5.4+
+ * Motan Cluster for PHP 5.6+
  * 
  * <pre>
  * Cluster

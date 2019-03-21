@@ -18,7 +18,7 @@
 namespace Motan;
 
 /**
- * Motan MClient for PHP 5.4+
+ * Motan MClient for PHP 5.6+
  * 
  * <pre>
  * Motan MClient

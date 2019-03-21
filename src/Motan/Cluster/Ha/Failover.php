@@ -18,7 +18,7 @@
 namespace Motan\Cluster\Ha;
 
 /**
- * HA Failover for PHP 5.4+
+ * HA Failover for PHP 5.6+
  * 
  * <pre>
  * 故障转移策略

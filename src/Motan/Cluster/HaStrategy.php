@@ -21,7 +21,7 @@ use Motan\Utils;
 use Motan\URL;
 
 /**
- * HaStrategy for PHP 5.4+
+ * HaStrategy for PHP 5.6+
  * 
  * <pre>
  * HaStrategy

@@ -20,7 +20,7 @@ namespace Motan\Endpoint;
 use Motan\URL;
 
 /**
- * Motan Grpc Endpoint for PHP 5.4+
+ * Motan Grpc Endpoint for PHP 5.6+
  * 
  * <pre>
  * Motan Grpc Endpoint

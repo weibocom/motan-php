@@ -41,7 +41,7 @@ const META_SIZE_BYTE = 4;
 const BODY_SIZE_BYTE = 4;
 
 /**
- * Motan Protocol for PHP 5.4+
+ * Motan Protocol for PHP 5.6+
  * 
  * <pre>
  * Motan 协议

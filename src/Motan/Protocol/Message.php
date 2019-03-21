@@ -18,7 +18,7 @@
 namespace Motan\Protocol;
 
 /**
- * Motan Protocol for PHP 5.4+
+ * Motan Protocol for PHP 5.6+
  * 
  * <pre>
  * Motan 协议

@@ -20,7 +20,7 @@ namespace Motan\Resty;
 use \Motan\Interfaces\RestyConfs as RestyConfsInterface;
 
 /**
- * Motan Resty Confs for PHP 5.4+
+ * Motan Resty Confs for PHP 5.6+
  * 
  * <pre>
  * Resty confs

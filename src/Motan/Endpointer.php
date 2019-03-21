@@ -20,7 +20,7 @@ namespace Motan;
 use Motan\Transport\Connection;
 
 /**
- * Motan Endpointer for PHP 5.4+
+ * Motan Endpointer for PHP 5.6+
  * 
  * <pre>
  * Motan Endpointer

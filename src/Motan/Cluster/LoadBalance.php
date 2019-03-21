@@ -20,7 +20,7 @@ namespace Motan\Cluster;
 use Motan\URL;
 
 /**
- * LoadBalance for PHP 5.4+
+ * LoadBalance for PHP 5.6+
  * 
  * <pre>
  * LoadBalance

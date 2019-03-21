@@ -20,7 +20,7 @@ namespace Motan\Transport;
 use Motan\URL;
 
 /**
- * TCP Connection for PHP 5.4+
+ * TCP Connection for PHP 5.6+
  * 
  * <pre>
  * TCP 连接

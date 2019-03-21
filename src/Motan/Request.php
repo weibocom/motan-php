@@ -21,7 +21,7 @@ use Motan\Utils;
 use Motan\Constants;
 
 /**
- * Motan  Request for PHP 5.4+
+ * Motan  Request for PHP 5.6+
  * 
  * <pre>
  * Motan Request 

@@ -21,7 +21,7 @@ use Motan\Endpoint\Agent;
 use Motan\Transport\Connection;
 
 /**
- * Motan Client for PHP 5.4+
+ * Motan Client for PHP 5.6+
  * 
  * <pre>
  * Motan Client
