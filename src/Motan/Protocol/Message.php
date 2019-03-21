@@ -88,7 +88,7 @@ class Message
     {
         $buffer = $this->_header->buildHeaderBuf();
         if (!isset($this->_metadata['M_p']) || !isset($this->_metadata['M_m'])) {
-            throw new \Exception('None Service Or Method get');
+            throw new \Exception('None service or method get');
         }
         $mt = [];
         foreach ($this->_metadata as $k => $v) {
