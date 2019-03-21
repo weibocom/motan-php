@@ -30,7 +30,7 @@ cache:
 
 before_install:
   - travis_retry composer self-update
-  - sudo apt-get install -y tc
+  - sudo apt-get install -y iproute2
 
 install:
   - travis_retry composer update --prefer-dist --no-interaction --prefer-stable --no-suggest
