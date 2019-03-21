@@ -24,6 +24,7 @@ core.*
 .idea/
 pretty/zj
 tests/coverage/
+zjtest_*
 
 # weibo-mesh
 ./agent_runtime
