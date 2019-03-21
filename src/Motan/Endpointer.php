@@ -183,7 +183,7 @@ abstract class  Endpointer
         foreach ($ret_order as $index) {
             $ret = $this->_doRecv();
             $ret_id = $ret->getResponseHeader()->getRequestId();
-            // @Deprecated 
+            // @Deprecated
             $result[$ret_order[$ret_id]] = $ret->getRs();
         }
         ksort($result);
@@ -194,14 +194,36 @@ abstract class  Endpointer
     {
         $results = $requests = [];
         foreach ($request_objs as $request) {
-            $this->_doSend($request);
-            $requests[] = $request->getRequestId();
+            $request_id = $request->getRequestId();
+            try {
+                $this->_doSend($request);
+            } catch (\Exception $e) {
+                $results[$request_id] = new \Motan\Response(NULL, $e->getMessage(), NULL);
+                continue;
+            }
+            $results[$request_id] = NULL;
+            $requests[$request_id] = $request_id;
         }
 
-        foreach ($requests as $index) {
-            $resp= $this->_doRecv();
+        $multi_exceptions = [];
+        foreach ($results as $req_id => $prepared_resp) {
+            if ($prepared_resp !== NULL) {
+                continue;
+            }
+            try {
+                $resp= $this->_doRecv();
+            } catch (\Exception $e) {
+                array_push($multi_exceptions, $e);
+                continue;
+            }
+
             $request_id = $resp->getResponseHeader()->getRequestId();
             $results[$request_id] = $resp;
+            unset($requests[$request_id]);
+        }
+
+        foreach (array_keys($requests) as $req_id) {
+            $results[$req_id] = new \Motan\Response(NULL, array_pop($multi_exceptions)->getMessage(), NULL);
         }
         return new \Motan\MultiResponse($results);
     }
