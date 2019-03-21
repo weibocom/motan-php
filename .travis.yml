@@ -32,12 +32,14 @@ before_install:
   - travis_retry composer self-update
   - sudo apt-get install -y iproute2
   - sudo cp /sbin/tc /usr/sbin/tc
+  - sudo docker run --network host -e MESH_UP=yes -v /home/travis/build/weibocom/motan-php/:/motan-php --privileged -v /usr/sbin/tc:/usr/sbin/tc -w /motan-php zhoujing/idevz-runx-php:7.3.2 tc qdisc add dev lo root netem delay 1ms
 
 install:
   - travis_retry composer update --prefer-dist --no-interaction --prefer-stable --no-suggest
 
 script:
     - ./run.sh ci
+    - cat phpts/Motan_MClient/connectionTimeout_exception_basic.out
 
 after_success:
     - bash <(curl -s https://codecov.io/bash)
