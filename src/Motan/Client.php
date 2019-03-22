@@ -118,6 +118,8 @@ class Client
         isset($arguments[1]) && !empty($arguments[1]) && $request->addHeaders($arguments[1]);
         isset($arguments[2]) && !empty($arguments[2]) && $request->setRequestId($arguments[2]);
         $request->setGroup($this->_url_obj->getGroup());
+        $http_params = $this->_url_obj->getParams();
+        !empty($http_params) && $request->addHTTPQueryParams($http_params);
         switch ($name) {
             case 'get':
                 $this->_url_obj->setHttpMethod(Constants::HTTP_METHOD_GET);

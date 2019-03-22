@@ -117,6 +117,16 @@ class Request{
         return $this->_request_args;
     }
 
+    public function addHTTPQueryParams($params)
+    {
+        if (empty($params)) {
+            return;
+        }
+        foreach ($params as $key => $value) {
+            $this->_request_args[0][$key] = $value;
+        }
+    }
+
     public function getRequestId()
     {
         return $this->_request_id;
