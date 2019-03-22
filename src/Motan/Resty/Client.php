@@ -21,7 +21,7 @@ use \Motan\Interfaces\RestyConfs as RestyConfsInterface;
 use \Motan\Constants as Consts;
 
 /**
- * Motan Resty Client for PHP 5.4+
+ * Motan Resty Client for PHP 5.6+
  * 
  * <pre>
  * Resty Client

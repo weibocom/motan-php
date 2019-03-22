@@ -20,7 +20,7 @@ namespace Motan;
 define("BIGINT_DIVIDER", 0xffffffff + 1);
 
 /**
- * Motan Utils for PHP 5.4+
+ * Motan Utils for PHP 5.6+
  * 
  * <pre>
  * Motan 工具包

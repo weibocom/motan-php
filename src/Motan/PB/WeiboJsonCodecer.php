@@ -20,7 +20,7 @@ namespace Motan\PB;
 use DrSlump\Protobuf;
 
 /**
- * WeiboJsonCodecer for PHP 5.4+
+ * WeiboJsonCodecer for PHP 5.6+
  * 
  * <pre>
  * WeiboJsonCodecer

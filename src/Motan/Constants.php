@@ -18,7 +18,7 @@
 namespace Motan;
 
 /**
- * Motan PHP Constants for PHP 5.4+
+ * Motan PHP Constants for PHP 5.6+
  * 
  * <pre>
  * Motan PHP Constants
@@ -35,9 +35,8 @@ class Constants
     const REQ_URL_TYPE_RESTY = 'resty';
     const REQ_URL_TYPE_MOTAN = 'motan';
 
-    const PROTOCOL_MOTAN_NEW = 'motan2';
+    const PROTOCOL_MOTAN2 = 'motan2';
     const PROTOCOL_GRPC = 'grpc';
-    const PROTOCOL_CEDRUS = 'cedrus';
     const DEFAULT_POST_CONTENTTYPE= 'application/x-www-form-urlencoded';
     const PROTOCOL_CGI = 'cgi';
     const PROTOCOL_MEMCACHE = 'memcache';
@@ -69,7 +68,7 @@ class Constants
     const MOTAN_CONNECTION_TIME_OUT = 0.2;
     const MOTAN_READ_TIME_OUT = 2;
     const DEFAULT_SOCKET_BUFFER_SIZE = 8192;
-    const DEFAULT_SOCKET_CONNECT_RETRY_TIMES = 1;
+    const DEFAULT_SOCKET_CONNECT_RETRY_TIMES = 3;
 
     const DEFAULT_AGENT_HOST = '127.0.0.1';
     const DEFAULT_AGENT_PORT = 9981;

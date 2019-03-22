@@ -17,11 +17,14 @@ tmtags
 # OSX
 .DS_Store
 ._*
+core.*
 .Spotlight-V100
 .Trashes
 *.swp
+.idea/
 pretty/zj
 tests/coverage/
+zjtest_*
 
 # weibo-mesh
 ./agent_runtime

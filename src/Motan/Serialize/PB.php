@@ -18,7 +18,7 @@
 namespace Motan\Serialize;
 
 /**
- * Motan PB Serializer for PHP 5.4+
+ * Motan PB Serializer for PHP 5.6+
  * 
  * <pre>
  * PB 序列化

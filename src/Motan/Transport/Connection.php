@@ -20,7 +20,7 @@ namespace Motan\Transport;
 use Motan\URL;
 
 /**
- * TCP Connection for PHP 5.4+
+ * TCP Connection for PHP 5.6+
  * 
  * <pre>
  * TCP 连接
@@ -63,8 +63,9 @@ class Connection
         $retryCnt = -1;
         $retry_times = $this->_url_obj->getRetryTimes();
         $connection_time_out = $this->_url_obj->getConnectionTimeOut();
+        $err_code = $err_msg = NULL;
         while ($retryCnt < $retry_times) {
-            $connection = @stream_socket_client($this->_connection_addr, $code, $msg, $connection_time_out);
+            $connection = @stream_socket_client($this->_connection_addr, $err_code, $err_msg, $connection_time_out);
             if ($connection) {
                 break;
             } else {
@@ -73,7 +74,7 @@ class Connection
             }
         }
         if (!$connection) {
-            return false;
+            throw new \Exception("Connect to $this->_connection_addr fail, err_code:${err_code},err_msg:${err_msg} ");
         }
         $this->_connection = $connection;
         $this->_setStreamOpt();
@@ -100,7 +101,12 @@ class Connection
         while (true) {
             $sent = @fwrite($this->_connection, $buffer, $length);
             if ($sent === false) {
-                throw new \Exception('writeToRemote fail');
+                $stream_meta = stream_get_meta_data($this->_connection);
+                if($stream_meta['timed_out'] == TRUE) {
+                    throw new \Exception('Write to remote timeout.');
+                } else {
+                    throw new \Exception('Unknow error when write to remote. Stream detail:' . var_export($stream_meta, TRUE));
+                }
             }
             if ($sent < $length) {
                 $buffer = substr($buffer, $sent);
@@ -123,5 +129,4 @@ class Connection
             fclose($this->_connection);
         }
     }
-
 }

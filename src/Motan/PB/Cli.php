@@ -7,7 +7,7 @@ require_once 'Console/CommandLine.php';
 use DrSlump\Protobuf;
 
 /**
- * Cli for PHP 5.4+
+ * Cli for PHP 5.6+
  * 
  * <pre>
  * Cli

@@ -18,7 +18,7 @@
 namespace Motan\Cluster\LoadBalance;
 
 /**
- * LB RoundRobin for PHP 5.4+
+ * LB RoundRobin for PHP 5.6+
  * 
  * <pre>
  * LB RoundRobin

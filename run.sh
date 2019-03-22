@@ -189,6 +189,10 @@ prepare_dev() {
 	sleep 1
 }
 
+clean_containers() {
+	check_if_stop_container "zk,${MESH_CONTAINER_NAME},mc"
+}
+
 case "${1}" in
 nut)
 	if [ $# != 2 ]; then
@@ -202,7 +206,7 @@ nut)
 	new_utest $2
 	;;
 d_nut)
-	sudo docker run --network host -e MESH_UP=yes -v ${BASE_DIR}/:/motan-php -w /motan-php "${PHP_IMAGE}" ./run.sh nut $2
+	sudo docker run --network host -e MESH_UP=yes -v ${BASE_DIR}/:/motan-php --privileged -v /usr/sbin/tc:/usr/sbin/tc -w /motan-php "${PHP_IMAGE}" ./run.sh nut $2
 	;;
 naut)
 	TO_TEST_DIR=${BASE_DIR}/src
@@ -212,7 +216,7 @@ naut)
 	new_all_utests ${TO_TEST_DIR}
 	;;
 d_naut)
-	sudo docker run --network host -e MESH_UP=yes -v ${BASE_DIR}/:/motan-php -w /motan-php "${PHP_IMAGE}" ./run.sh d_naut $2
+	sudo docker run --network host -e MESH_UP=yes -v ${BASE_DIR}/:/motan-php --privileged -v /usr/sbin/tc:/usr/sbin/tc -w /motan-php "${PHP_IMAGE}" ./run.sh d_naut $2
 	;;
 raut)
 	${PHPUNIT_EXECUTABLE} --bootstrap=${PHPUNIT_TEST_BOOT_STRAP} \
@@ -220,13 +224,13 @@ raut)
 		--coverage-html ${BASE_DIR}/tests/coverage/
 	;;
 d_raut)
-	sudo docker run --network host -e MESH_UP=yes -v ${BASE_DIR}/:/motan-php -w /motan-php "${PHP_IMAGE}" ./run.sh raut
+	sudo docker run --network host -e MESH_UP=yes -v ${BASE_DIR}/:/motan-php --privileged -v /usr/sbin/tc:/usr/sbin/tc -w /motan-php "${PHP_IMAGE}" ./run.sh raut
 	;;
 rutf)
 	${PHPUNIT_EXECUTABLE} --bootstrap=${PHPUNIT_TEST_BOOT_STRAP} $2
 	;;
 d_rutf)
-	sudo docker run --network host -e MESH_UP=yes -v ${BASE_DIR}/:/motan-php -w /motan-php "${PHP_IMAGE}" ./run.sh rutf $2
+	sudo docker run --network host -e MESH_UP=yes -v ${BASE_DIR}/:/motan-php --privileged -v /usr/sbin/tc:/usr/sbin/tc -w /motan-php "${PHP_IMAGE}" ./run.sh rutf $2
 	;;
 ncmpt)
 	for METHOD in $(echo ${3//,/ }); do
@@ -234,7 +238,7 @@ ncmpt)
 	done
 	;;
 d_ncmpt)
-	sudo docker run --network host -e MESH_UP=yes -v ${BASE_DIR}/:/motan-php -w /motan-php "${PHP_IMAGE}" ./run.sh ncmpt $2 $3
+	sudo docker run --network host -e MESH_UP=yes -v ${BASE_DIR}/:/motan-php --privileged -v /usr/sbin/tc:/usr/sbin/tc -w /motan-php "${PHP_IMAGE}" ./run.sh ncmpt $2 $3
 	;;
 nfpt)
 	for FUNC in $(echo ${3//,/ }); do
@@ -242,12 +246,12 @@ nfpt)
 	done
 	;;
 d_nfpt)
-	sudo docker run --network host -e MESH_UP=yes -v ${BASE_DIR}/:/motan-php -w /motan-php "${PHP_IMAGE}" ./run.sh nfpt $2 $3
+	sudo docker run --network host -e MESH_UP=yes -v ${BASE_DIR}/:/motan-php --privileged -v /usr/sbin/tc:/usr/sbin/tc -w /motan-php "${PHP_IMAGE}" ./run.sh nfpt $2 $3
 	;;
 rpt)
 	run_ptests $2
 	;;
-d_rpt) sudo docker run --network host -e MESH_UP=yes -v ${BASE_DIR}/:/motan-php -w /motan-php "${PHP_IMAGE}" ./run.sh rpt $2 ;;
+d_rpt) sudo docker run --network host -e MESH_UP=yes -v ${BASE_DIR}/:/motan-php --privileged -v /usr/sbin/tc:/usr/sbin/tc -w /motan-php "${PHP_IMAGE}" ./run.sh rpt $2 ;;
 pred) prepare_dev ;;
 clean_d)
 	check_if_stop_container "zk,${MESH_CONTAINER_NAME},mc"
@@ -261,11 +265,12 @@ ci)
 	fi
 
 	if [ "${MESH_UP}" = "yes" ]; then
-		sudo docker run --network host -e MESH_UP=yes -v ${BASE_DIR}/:/motan-php -w /motan-php "${PHP_IMAGE}" ./run.sh raut
-		sudo docker run --network host -e MESH_UP=yes -v ${BASE_DIR}/:/motan-php -w /motan-php "${PHP_IMAGE}" ./run.sh rpt
+		sudo docker run --network host -e MESH_UP=yes -v ${BASE_DIR}/:/motan-php --privileged -v /usr/sbin/tc:/usr/sbin/tc -w /motan-php "${PHP_IMAGE}" ./run.sh raut
+		sudo docker run --network host -e MESH_UP=yes -v ${BASE_DIR}/:/motan-php --privileged -v /usr/sbin/tc:/usr/sbin/tc -w /motan-php "${PHP_IMAGE}" ./run.sh rpt
 	fi
 
-	[ "${MESH_UP}" = "no" ] && sudo docker run --network host -e MESH_UP=no -v ${BASE_DIR}/:/motan-php -w /motan-php "${PHP_IMAGE}" ./run.sh raut
+	[ "${MESH_UP}" = "no" ] && sudo docker run --network host -e MESH_UP=no -v ${BASE_DIR}/:/motan-php --privileged -v /usr/sbin/tc:/usr/sbin/tc -w /motan-php "${PHP_IMAGE}" ./run.sh raut
+	[ ! -z ${X} ] && clean_containers
 	echo "done test"
 	;;
 *)

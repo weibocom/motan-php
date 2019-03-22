@@ -18,7 +18,7 @@
 namespace Motan\Cluster\Ha;
 
 /**
- * HA failfast for PHP 5.4+
+ * HA failfast for PHP 5.6+
  * 
  * <pre>
  * 快速失败策略
@@ -34,8 +34,8 @@ class Failfast extends \Motan\Cluster\HaStrategy
 	 * @param  \Motan\Cluster\LoadBalance $load_balance [description]
 	 * @return [type]                                   [description]
 	 */
-    public function call(\Motan\Cluster\LoadBalance $load_balance, ...$args)
+    public function call(\Motan\Cluster\LoadBalance $load_balance, \Motan\Request $request)
     {
-        return $this->getEndpoint()->setLoadBalance($load_balance)->call(...$args);
+        return $this->getEndpoint()->setLoadBalance($load_balance)->call($request);
     }
 }

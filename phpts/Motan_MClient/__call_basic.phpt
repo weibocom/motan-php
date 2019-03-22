@@ -13,12 +13,14 @@ $app_name = 'phpt-test-MClient';
 $group = DEFAULT_GROUP;
 $service = DEFAULT_SERVICE;
 $protocol = DEFAULT_PROTOCOL;
-$cx = new Motan\MClient( $app_name, $service, $group, $protocol );
+$cx = new Motan\MClient( $app_name );
 $params = [
     'hello'=>'motan-php',
     'a'=>'b'
 ];
-$rs = $cx->Hello($params);
+$request = new \Motan\Request(DEFAULT_SERVICE, 'Hello', $params);
+$request->setGroup(DEFAULT_GROUP);
+$rs = $cx->doCall($request);
 var_dump($rs);
 ?>
 ===DONE===

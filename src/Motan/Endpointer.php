@@ -20,7 +20,7 @@ namespace Motan;
 use Motan\Transport\Connection;
 
 /**
- * Motan Endpointer for PHP 5.4+
+ * Motan Endpointer for PHP 5.6+
  * 
  * <pre>
  * Motan Endpointer
@@ -36,7 +36,7 @@ abstract class  Endpointer
     protected $_serializer;
     protected $_connection;
     protected $_connection_addr;
-    protected $_connection_obj;
+    protected $_connection_obj = NULL;
 
     protected $_response;
     protected $_response_header;
@@ -46,13 +46,11 @@ abstract class  Endpointer
     protected $_resp_taged = NULL;
 
     public $request_id;
-    protected $_multi_resp;
 
     public function __construct(URL $url_obj)
     {
         $this->_url_obj = $url_obj;
         $this->_serializer = Utils::getSerializer($this->_url_obj->getSerialization());
-        $this->_connection_obj = new Connection($this->_url_obj);
     }
 
     public function setLoadBalance($loadbalance)
@@ -63,90 +61,175 @@ abstract class  Endpointer
         return $this;
     }
 
+    public function addHeaders($headers = [])
+    {
+        return $this->_url_obj->addHeaders($headers);
+    }
+
+    public function setRequestTimeOut($time_out)
+    {
+        // setting for agent request time out.
+        if (isset($this->_connection) && is_resource($this->_connection)) {
+            @stream_set_timeout($this->_connection, 0, $time_out * 1000000);
+        }
+        // setting for cluster request time out when mesh down.
+        $this->_url_obj->setReadTimeOut($time_out);
+    }
+
+    public function setConnectionTimeOut($time_out)
+    {
+        // setting just for cluster connection time out when mesh down.
+        $this->_url_obj->setConnectionTimeOut($time_out);
+    }
+
     protected function _buildConnection()
     {
+        if (empty($this->_connection_obj)) {
+            $this->_connection_obj = new Connection($this->_url_obj);
+        }
         $this->_connection_obj->buildConnection($this->_loadbalance->getNode());
         return $this->_connection = $this->_connection_obj->getConnection();
     }
 
-    public function setConnection(Connection $conn_obj) {
+    public function setConnectionObj(Connection $conn_obj) {
         $this->_connection_obj = $conn_obj;
+        $this->_connection = $this->_connection_obj->getConnection();
     }
 
-    public function doCall(...$arguments)
+    public function call(\Motan\Request $request)
     {
-        $request_obj = $resp_obj = NULL;
-        if (empty($arguments)) {
-            $req_params = $this->_url_obj->getParams();
-            if (!empty($req_params)) {
-                $req_obj_data = $req_params;
-            } else {
-                $req_obj_data = $this->_url_obj->getRawReqObj();
-            }
-            $request_obj = $this->_serializer->serialize($req_obj_data);
-        } else {
-            $request_obj = $this->_serializer->serializeMulti(...$arguments);
+        $this->_doSend($request);
+
+        // @TODO checke GRPC using \Motan\Request
+        // if (Constants::PROTOCOL_GRPC === $this->_url_obj->getProtocol()) {
+        //     $resp_obj = $req_params['resp_msg'];
+        //     $req_obj_data = $req_params['req_msg'];
+        //     $request_obj = $this->_serializer->serialize($req_obj);
+        //     $this->_resp_taged = true;
+        // }
+
+        $res = $this->_doRecv();
+
+        // @Deprecated start
+        $this->_response = $res->getRawResp();
+        $this->_response_header = $res->getResponseHeader();
+        $this->_response_metadata = $res->getResponseMetadata();
+        $exception = $res->getResponseException();
+        if (!empty($exception)) {
+            $this->_response_exception = $exception;
         }
-        if (Constants::PROTOCOL_GRPC === $this->_url_obj->getProtocol()) {
-            $resp_obj = $req_params['resp_msg'];
-            $req_obj_data = $req_params['req_msg'];
-            $request_obj = $this->_serializer->serialize($req_obj);
-            $this->_resp_taged = true;
-        }
+        // @Deprecated end
+
+        return $res;
+    }
+
+    protected function _doSend(\Motan\Request $request)
+    {
         $this->_buildConnection();
-        if (!$this->_connection) {
-            return false;
+        if( !$this->_connection) {
+            throw new \Exception("Connection has gone away!");
         }
-        $this->_response = $this->_motanCall($request_obj);
-        $this->_response_header = $this->_response->getHeader();
-        $this->_response_metadata = $this->_response->getMetadata();
-        if ($this->_response_header->isGzip()) {
-            $resp_body = zlib_decode($this->_response->getBody());
-        } else {
-            $resp_body = $this->_response->getBody();
+        $req_body = $this->_serializer->serializeMulti(...$request->getRequestArgs());
+
+        // @TODO check GRPC using \Motan\Request
+        // if (Constants::PROTOCOL_GRPC === $url_obj->getProtocol()) {
+        //     $this->_resp_obj = $req_params['resp_msg'];
+        //     $req_obj = $req_params['req_msg'];
+        //     $this->_resp_taged = true;
+        // }
+
+        $request_id = $request->getRequestId();
+        $metadata = $request->getRequestHeaders();
+        $app_name = $this->_url_obj->getAppName();
+        !empty($app_name) && $metadata['M_s'] = $app_name;
+        $metadata['M_p'] = $request->getService();
+        $metadata['M_m'] = $request->getMethod();
+        $metadata['M_g'] = $request->getGroup();
+        $metadata['M_pp'] = $request->getProtocol();
+        $metadata['requestIdFromClient'] = $request_id;
+        $metadata['SERIALIZATION'] = $this->_url_obj->getSerialization();
+        $http_method = $this->_url_obj->getHttpMethod();
+        !empty($http_method) && $metadata['HTTP_Method'] = $http_method;
+        $buf = Protocol\Motan::encode($request_id, $req_body, $metadata);
+        
+        $this->_connection_obj->write($buf);
+    }
+
+    protected function _doRecv($resp_obj = NULL)
+    {
+        $resp_msg = $this->_connection_obj->read();
+        $resp_body = $resp_msg->getBody();
+        if ($resp_msg->getHeader()->isGzip()) {
+            $resp_body = zlib_decode($resp_body);
         }
-        return [$resp_obj, $resp_body];
-    }
-
-    public function do4Multi(...$arguments)
-    {
-        $rs = $exception = NULL;
-        list($resp_obj, $resp_body) = $this->doCall(...$arguments);
-        $rs = $this->_serializer->deserialize($resp_obj, $resp_body);
-        null === $rs && $this->_response_exception = $this->_response->getMetadata()['M_e'];
-        if (NULL === $rs) {
-            $get_exception = $this->_response->getMetadata()['M_e'];
-            !empty($get_exception) && $exception = $get_exception;
+        $res = $exception = NULL;
+        $res = $this->_serializer->deserialize($resp_obj, $resp_body);
+        // @TODO Check resp_taged for grpc
+        $resp_meta = $resp_msg->getMetadata();
+        if (isset($resp_meta['M_e'])) {
+            $exception = $resp_meta['M_e'];
         }
-        return new \Motan\Response(
-            $rs,
-            $exception,
-            $this->_response
-        );
+        return new \Motan\Response($res, $exception, $resp_msg);
     }
-
-    public function getMException(\Motan\Request $request)
+    
+    public function multiCall(array $request_objs)
     {
-        return $this->_multi_resp[$request->getRequestId()]->getException();
-    }
-
-    public function getMRs(\Motan\Request $request)
-    {
-        return $this->_multi_resp[$request->getRequestId()]->getRs();
-    }
-
-    public function call(...$arguments)
-    {
-        list($resp_obj, $resp_body) = $this->doCall(...$arguments);
-        $rs = $this->_serializer->deserialize($resp_obj, $resp_body);
-        if (NULL === $rs || $this->_resp_taged) {
-            $metadata = $this->_response->getMetadata(); 
-            isset($metadata['M_e']) && $this->_response_exception = $metadata['M_e'];
+        $result = [];
+        $ret_order = [];
+        $i = 0;
+        foreach ($request_objs as $request) {
+            $seqId = $request->getRequestId();
+            $this->_doSend($request);
+            $ret_order[$seqId] = $i;
+            $i++;
         }
-        return $rs;
+        foreach ($ret_order as $index) {
+            $ret = $this->_doRecv();
+            $ret_id = $ret->getResponseHeader()->getRequestId();
+            // @Deprecated
+            $result[$ret_order[$ret_id]] = $ret->getRs();
+        }
+        ksort($result);
+        return $result;
     }
 
-    abstract function multiCall(array $call_arr);
+    public function doMultiCall($request_objs)
+    {
+        $results = $requests = [];
+        foreach ($request_objs as $request) {
+            $request_id = $request->getRequestId();
+            try {
+                $this->_doSend($request);
+            } catch (\Exception $e) {
+                $results[$request_id] = new \Motan\Response(NULL, $e->getMessage(), NULL);
+                continue;
+            }
+            $results[$request_id] = NULL;
+            $requests[$request_id] = $request_id;
+        }
+
+        $multi_exceptions = [];
+        foreach ($results as $req_id => $prepared_resp) {
+            if ($prepared_resp !== NULL) {
+                continue;
+            }
+            try {
+                $resp= $this->_doRecv();
+            } catch (\Exception $e) {
+                array_push($multi_exceptions, $e);
+                continue;
+            }
+
+            $request_id = $resp->getResponseHeader()->getRequestId();
+            $results[$request_id] = $resp;
+            unset($requests[$request_id]);
+        }
+
+        foreach (array_keys($requests) as $req_id) {
+            $results[$req_id] = new \Motan\Response(NULL, array_pop($multi_exceptions)->getMessage(), NULL);
+        }
+        return new \Motan\MultiResponse($results);
+    }
 
     public function getResponseHeader()
     {
@@ -166,22 +249,5 @@ abstract class  Endpointer
     public function getResponse()
     {
         return $this->_response;
-    }
-
-    protected function _motanCall($request_obj)
-    {
-        $request_id = $this->_url_obj->getRequestId();
-        $metadata = $this->_url_obj->getHeaders();
-        $metadata['M_s'] = $this->_url_obj->getAppName();
-        $metadata['M_p'] = $this->_url_obj->getService();
-        $metadata['M_m'] = $this->_url_obj->getMethod();
-        $metadata['M_g'] = $this->_url_obj->getGroup();
-        $metadata['M_pp'] = $this->_url_obj->getProtocol();
-        $metadata['requestIdFromClient'] = $request_id;
-        $metadata['SERIALIZATION'] = $this->_url_obj->getSerialization();
-        $metadata['M_pp'] === 'cedrus' && $metadata['HTTP_Method'] = $this->_url_obj->getHttpMethod();
-        $buf = Protocol\Motan::encode($request_id, $request_obj, $metadata);
-        $this->_connection_obj->write($buf);
-        return $this->_connection_obj->read();
     }
 }

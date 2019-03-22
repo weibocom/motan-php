@@ -21,10 +21,7 @@ class MClientTest extends \PHPUnit\Framework\TestCase
     protected function setUp()
     {
         $app_name = 'phpt-test-MClient';
-        $group = DEFAULT_GROUP;
-        $service = DEFAULT_SERVICE;
-        $protocol = DEFAULT_PROTOCOL;
-        $this->object = new MClient( $app_name, $service, $group, $protocol );
+        $this->object = new MClient( $app_name );
     }
 
     /**
@@ -43,11 +40,14 @@ class MClientTest extends \PHPUnit\Framework\TestCase
     {
         $req1 = new \Motan\Request(DEFAULT_SERVICE, 'Hello', ['a' => 'b']);
         $req2 = new \Motan\Request(DEFAULT_SERVICE, 'Hello', ['xx' => 'wwww']);
-        $req3 = new \Motan\Request(DEFAULT_SERVICE, 'HelloX', ['string', 123,124,['string','arr']]);
-        $rs = $this->object->doMultiCall([
+        $req3 = new \Motan\Request(DEFAULT_SERVICE, 'HelloX', 'string', 123,124,['string','arr']);
+        $req1->setGroup(DEFAULT_GROUP);
+        $req2->setGroup(DEFAULT_GROUP);
+        $req3->setGroup(DEFAULT_GROUP);
+        $multi_resp =  $this->object->doMultiCall([
             $req1, $req2, $req3
         ]);
-        $this->assertEquals($this->object->getMRs($req1), "[]-------[128 1 2 128 1 2]");
+        $this->assertEquals($multi_resp->getRs($req1), "[]-------[128 1 2 128 1 2]");
 
         $rs_empty = $this->object->doMultiCall([]);
         $this->assertEquals($rs_empty, []);
@@ -61,11 +61,14 @@ class MClientTest extends \PHPUnit\Framework\TestCase
     {
         $req1 = new \Motan\Request(DEFAULT_SERVICE, 'Hello', ['a' => 'b']);
         $req2 = new \Motan\Request(DEFAULT_SERVICE, 'Hello', ['xx' => 'wwww']);
-        $req3 = new \Motan\Request(DEFAULT_SERVICE, 'HelloX', [33, 123,124,['string','arr']]);
-        $this->object->doMultiCall([
+        $req3 = new \Motan\Request(DEFAULT_SERVICE, 'HelloX', 'string', 123,124,['string','arr']);
+        $req1->setGroup(DEFAULT_GROUP);
+        $req2->setGroup(DEFAULT_GROUP);
+        $req3->setGroup(DEFAULT_GROUP);
+        $multi_resp = $this->object->doMultiCall([
             $req1, $req2, $req3
         ]);
-        $rs = $this->object->getMRs($req1);
+        $rs = $multi_resp->getRs($req1);
         $this->assertEquals($rs, "[]-------[128 1 2 128 1 2]");
     }
 
@@ -77,11 +80,14 @@ class MClientTest extends \PHPUnit\Framework\TestCase
     {
         $req1 = new \Motan\Request(DEFAULT_SERVICE, 'Hello', ['a' => 'b']);
         $req2 = new \Motan\Request(DEFAULT_SERVICE, 'Hello', ['xx' => 'wwww']);
-        $req3 = new \Motan\Request(DEFAULT_SERVICE, 'HelloX', [33, 123,124,['string','arr']]);
-        $this->object->doMultiCall([
+        $req3 = new \Motan\Request(DEFAULT_SERVICE, 'HelloX', 33, 123,124,['string','arr']);
+        $req1->setGroup(DEFAULT_GROUP);
+        $req2->setGroup(DEFAULT_GROUP);
+        $req3->setGroup(DEFAULT_GROUP);
+        $multi_resp = $this->object->doMultiCall([
             $req1, $req2, $req3
         ]);
-        $rs = $this->object->getMException($req3);
+        $rs = $multi_resp->getException($req3);
         if (defined('MESH_CALL')) {
             $this->assertEquals($rs, '{"errcode":400,"errmsg":"FailOverHA call fail 1 times. Exception: provider call panic","errtype":1}');
         }else {

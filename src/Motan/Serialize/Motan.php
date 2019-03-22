@@ -21,7 +21,7 @@ use Motan\Constants;
 use Motan\Utils;
 
 /**
- * Motan Simple Serializer for PHP 5.4+
+ * Motan Simple Serializer for PHP 5.6+
  * 
  * <pre>
  * Motan 简单序列化
