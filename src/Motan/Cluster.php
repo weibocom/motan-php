@@ -150,8 +150,14 @@ class Cluster
         foreach ($request_arr as $request){
             $this->_ha_strategy = Utils::getHa($this->_url_obj->getHaStrategy(), $this->_url_obj);
             $this->_load_balance = Utils::getLB($this->_url_obj->getLoadbalance(), $this->_url_obj);
-            $resp = $this->_ha_strategy->call($this->_load_balance, $request);
-            $request_id = $resp->getRawResp()->getRequestId();
+            $resp = NULL;
+            $request_id = $request->getRequestId();
+            try {
+                $resp = $this->_ha_strategy->call($this->_load_balance, $request);
+            } catch (\Exception $e) {
+                $results[$request_id] = new \Motan\Response(NULL, $e->getMessage(), NULL);
+                continue;
+            }
             $results[$request_id] = $resp;
         }
         return new \Motan\MultiResponse($results);

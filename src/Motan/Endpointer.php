@@ -98,13 +98,7 @@ abstract class  Endpointer
 
     public function call(\Motan\Request $request)
     {
-        try {
-            $this->_doSend($request);
-        } catch (\Exception $e) {
-            $exception = '_doSend fail, error:' . $e->getMessage();
-            $this->_response_exception = $exception;
-            return new \Motan\Response(NULL, $exception, NULL);
-        }
+        $this->_doSend($request);
 
         // @TODO checke GRPC using \Motan\Request
         // if (Constants::PROTOCOL_GRPC === $this->_url_obj->getProtocol()) {
@@ -114,19 +108,16 @@ abstract class  Endpointer
         //     $this->_resp_taged = true;
         // }
 
-        $res = NULL;
-        try {
-            $res = $this->_doRecv();
-        } catch (\Exception $e) {
-            $exception = '_doRecv fail, error:' . $e->getMessage();
-            $this->_response_exception = $exception;
-            return new \Motan\Response(NULL, $exception, NULL);
-        }
+        $res = $this->_doRecv();
 
         // @Deprecated start
         $this->_response = $res->getRawResp();
         $this->_response_header = $res->getResponseHeader();
         $this->_response_metadata = $res->getResponseMetadata();
+        $exception = $res->getResponseException();
+        if (!empty($exception)) {
+            $this->_response_exception = $exception;
+        }
         // @Deprecated end
 
         return $res;
