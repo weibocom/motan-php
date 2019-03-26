@@ -1,6 +1,6 @@
 {
   "name": "motan/motan-php",
-  "version": "v1.0-Rc3",
+  "version": "v1.1",
   "description": "Motan For PHP",
   "autoload": {
     "psr-4": {
@@ -17,6 +17,6 @@
     }
   },
   "require-dev": {
-    "phpunit/phpunit": "7.2.6"
+    "phpunit/phpunit": "5.7"
   }
 }

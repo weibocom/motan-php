@@ -64,8 +64,15 @@ abstract class  LoadBalance
         if (!$get_nodes) {
             throw new \Exception('fetch backup nodes err : ' . json_last_error());
         }
-        foreach ($get_nodes as $info) {
-            $nodes[] = $info['address'];
+        if (key_exists($get_nodes, 'working')) {
+            $working_nodes = $get_nodes['working'];
+            foreach ($working_nodes as $info) {
+                $nodes[] = $info['host'];
+            }
+        } else {
+            foreach ($get_nodes as $info) {
+                $nodes[] = $info['address'];
+            }
         }
         return static::select($nodes, $this->_url_obj->getRequestId());
     }
