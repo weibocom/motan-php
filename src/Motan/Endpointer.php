@@ -125,6 +125,9 @@ abstract class  Endpointer
 
     protected function _doSend(\Motan\Request $request)
     {
+        if ($this->_url_obj->getUrlType() == Constants::REQ_URL_TYPE_RESTY) {
+            $request = $request->buildHTTPParams();
+        }
         $this->_buildConnection();
         if( !$this->_connection) {
             throw new \Exception("Connection has gone away!");
