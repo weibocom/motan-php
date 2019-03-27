@@ -119,7 +119,7 @@ class Request{
 
     public function buildHTTPParams()
     {
-        if (\count($this->_request_args) == 1) {
+        if (\count($this->_request_args) == 1 && !empty($this->_request_args[0])) {
             $string_string_map = [];
             foreach ($this->_request_args[0] as $key => $value) {
                 $string_string_map[$key] = strval($value);
