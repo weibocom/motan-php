@@ -117,6 +117,18 @@ class Request{
         return $this->_request_args;
     }
 
+    public function buildHTTPParams()
+    {
+        if (\count($this->_request_args) == 1) {
+            $string_string_map = [];
+            foreach ($this->_request_args[0] as $key => $value) {
+                $string_string_map[$key] = strval($value);
+            }
+            $this->_request_args[0] = $string_string_map;
+        }
+        return $this;
+    }
+
     public function addHTTPQueryParams($params)
     {
         if (empty($params)) {
