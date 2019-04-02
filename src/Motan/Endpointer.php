@@ -126,7 +126,7 @@ abstract class  Endpointer
     protected function _doSend(\Motan\Request $request)
     {
         if ($this->_url_obj->getUrlType() == Constants::REQ_URL_TYPE_RESTY
-            || strpos($request->getMethod(), '/')) {
+            || FALSE !== strpos($request->getMethod(), '/')) {
             $request = $request->buildHTTPParams();
         }
         $this->_buildConnection();
