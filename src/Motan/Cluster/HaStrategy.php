@@ -53,6 +53,7 @@ abstract class  HaStrategy
     }
 
     abstract public function call(LoadBalance $load_balance, \Motan\Request $request);
+    abstract public function doUpload(LoadBalance $load_balance, \Motan\Request $request);
 
     public function do4Multi(LoadBalance $load_balance, \Motan\Request $request){
         return $this->getEndpoint()->setLoadBalance($load_balance)->do4Multi($request);

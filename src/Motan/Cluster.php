@@ -125,7 +125,12 @@ class Cluster
     public function call(\Motan\Request $request)
     {
         return $this->_ha_strategy->call($this->_load_balance, $request);
-    } 
+    }
+
+    public function doUpload(\Motan\Request $request)
+    {
+        return $this->_ha_strategy->doUpload($this->_load_balance, $request);
+    }
 
     public function multiCall(array $url_objs)
     {

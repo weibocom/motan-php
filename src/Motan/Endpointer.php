@@ -96,6 +96,89 @@ abstract class  Endpointer
         $this->_connection = $this->_connection_obj->getConnection();
     }
 
+    public function doUpload(\Motan\Request $request)
+    {
+        $this->_buildConnection();
+        if( !$this->_connection) {
+            throw new \Exception("Connection has gone away!");
+        }
+
+        $request_id = $request->getRequestId();
+        $metadata = $request->getRequestHeaders();
+        $app_name = $this->_url_obj->getAppName();
+        !empty($app_name) && $metadata['M_s'] = $app_name;
+        $metadata['M_p'] = $request->getService();
+        $metadata['M_m'] = $request->getMethod();
+        $metadata['M_g'] = $request->getGroup();
+        $metadata['M_pp'] = $request->getProtocol();
+        $metadata['requestIdFromClient'] = $request_id;
+        $metadata['SERIALIZATION'] = $this->_url_obj->getSerialization();
+
+
+        $header = Protocol\Motan::buildRequestHeader($request_id);
+        $header->setSerialize(6);
+        $buffer = $header->buildHeaderBuf();
+        $mt = [];
+        foreach ($metadata as $k => $v) {
+            if (is_array($v)) {
+                continue;
+            }
+            $mt[] = $k . "\n" . $v;
+        }
+        $mt_str = implode("\n", $mt);
+        $file = $request->getRequestArgs()[0]['file_path'];
+        $file_size = \filesize($file);
+        
+        $buffer = $buffer . pack('N', strlen($mt_str)) . $mt_str . pack('N', $file_size + 5) . pack('C', Constants::DTYPE_STRING) . pack('N', $file_size);
+
+        $length = strlen($buffer);
+        while (true) {
+            $sent = @fwrite($this->_connection, $buffer, $length);
+            if ($sent === false) {
+                $stream_meta = stream_get_meta_data($this->_connection);
+                if($stream_meta['timed_out'] == TRUE) {
+                    throw new \Exception('Write to remote timeout.');
+                } else {
+                    throw new \Exception('Unknow error when write to remote. Stream detail:' . var_export($stream_meta, TRUE));
+                }
+            }
+            if ($sent < $length) {
+                $buffer = substr($buffer, $sent);
+                $length -= $sent;
+            } else {
+                break;
+            }
+            usleep(5);
+        }
+
+        if (!$in = @fopen($file, "rb")) {
+            throw new \Exception('fail to open the upload file.');
+        }
+
+        $sent = 0;
+        while ($buff = fread($in, 4096)) {
+            $sent += @fwrite($this->_connection, $buff);
+        }
+        if ($sent != $file_size) {
+            throw new \Exception("upload fail, need to upload:${file_size}, but only uploaded:${sent}" . var_export(stream_get_meta_data($this->_connection), TRUE));
+        }
+        @fclose($in);
+
+        $res = $this->_doRecv();
+
+        // @Deprecated start
+        $this->_response = $res->getRawResp();
+        $this->_response_header = $res->getResponseHeader();
+        $this->_response_metadata = $res->getResponseMetadata();
+        $exception = $res->getResponseException();
+        if (!empty($exception)) {
+            $this->_response_exception = $exception;
+        }
+        // @Deprecated end
+
+        return $res;
+    }
+
     public function call(\Motan\Request $request)
     {
         $this->_doSend($request);
