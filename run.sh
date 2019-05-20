@@ -20,7 +20,7 @@ PHPT_EXECUTABLE=${BASE_DIR}/phpts/run-tests.php
 DEFAULT_PHPT_SECTIONS='skipif:ini:clean:done'
 PHPT_SECTIONS=${PTSEC:-${DEFAULT_PHPT_SECTIONS}}
 
-MESH_TESTHELPER_IMAGE=${MIMG:-"zhoujing/wm-testhelper:1.0.0"}
+MESH_TESTHELPER_IMAGE=${MIMG:-"zhoujing/wm-testhelper:1.0.1"}
 MESH_CONTAINER_NAME=${MCTNAME:-"mesh-testhelper"}
 MEHS_RUN_PATH=${MRUN_PATH:-"${BASE_DIR}/weibo-mesh-runpath"}
 
