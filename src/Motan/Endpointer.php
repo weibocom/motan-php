@@ -44,6 +44,7 @@ abstract class  Endpointer
     protected $_response_exception;
 
     protected $_resp_taged = NULL;
+    protected $_back_to_httpcall = FALSE;
 
     public $request_id;
 
@@ -87,7 +88,14 @@ abstract class  Endpointer
         if (empty($this->_connection_obj)) {
             $this->_connection_obj = new Connection($this->_url_obj);
         }
-        $this->_connection_obj->buildConnection($this->_loadbalance->getNode());
+        $nodes = [];
+        try {
+            $nodes = $this->_loadbalance->getNode();
+        } catch (\Exception $e) {
+            $this->_back_to_httpcall = TRUE;
+            return FALSE;
+        }
+        $this->_connection_obj->buildConnection($nodes);
         return $this->_connection = $this->_connection_obj->getConnection();
     }
 
@@ -179,9 +187,54 @@ abstract class  Endpointer
         return $res;
     }
 
+    protected function _doHTTPCall(\Motan\Request $request)
+    {
+        $host = $request->getService();
+        $uri = $request->getMethod();
+        $request_args = $request->getRequestArgs();
+        $tmp_headers = $request->getRequestHeaders();
+        $headers = [];
+        foreach ($tmp_headers as $key => $value) {
+            $headers[] = "$key: $value";
+        }
+        if (count($request_args[0]) > 0) {
+            $query_str = http_build_query($request_args[0]);
+            $uri = "$uri?$query_str";
+        }
+        $url = "http://$host$uri";
+        $ch = \curl_init($url);
+        \curl_setopt_array($ch, [
+            CURLOPT_HTTPHEADER => $headers,
+            CURLOPT_RETURNTRANSFER => TRUE,
+            CURLOPT_TIMEOUT => 1
+        ]);
+        $res = \curl_exec($ch);
+        $status_code = \curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        $exception = NULL;
+        if ($status_code >= 400) {
+            $exception = \Exception("back to httpcalling error, url is ${url}");
+        }
+        $request_id = $request->getRequestId();
+        $raw_header = \Motan\Protocol\Motan::buildResponseHeader($request_id, $status_code);
+        $metadata['M_p'] = $request->getService();
+        $metadata['M_m'] = $request->getMethod();
+        $metadata['M_g'] = $request->getGroup();
+        $metadata['M_pp'] = $request->getProtocol();
+        $metadata['requestIdFromClient'] = $request_id;
+        $raw_msg = new \Motan\Protocol\Message($raw_header, $metadata, $res, 1);
+        return new \Motan\Response($res, $exception, $raw_msg);
+    }
+
     public function call(\Motan\Request $request)
     {
-        $this->_doSend($request);
+        try {
+            $this->_doSend($request);
+        } catch (\Exception $e) {
+            if ($this->_back_to_httpcall === TRUE) {
+                return $this->_doHTTPCall($request);
+            }
+            throw $e;
+        }
 
         // @TODO checke GRPC using \Motan\Request
         // if (Constants::PROTOCOL_GRPC === $this->_url_obj->getProtocol()) {
