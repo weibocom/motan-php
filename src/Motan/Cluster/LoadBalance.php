@@ -64,7 +64,7 @@ abstract class  LoadBalance
         if (!$get_nodes) {
             throw new \Exception('fetch backup nodes err : ' . json_last_error());
         }
-        if (key_exists($get_nodes, 'working')) {
+        if (key_exists('working', $get_nodes)) {
             $working_nodes = $get_nodes['working'];
             foreach ($working_nodes as $info) {
                 $nodes[] = $info['host'];
