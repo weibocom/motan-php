@@ -46,6 +46,22 @@ abstract class  LoadBalance
     abstract public function select($nodes, $requestid);
     abstract public function selectToHolder();
 
+    /**
+     * @param string $group
+     */
+    public function setGroup($group)
+    {
+        $this->_group = $group;
+    }
+
+    /**
+     * @param mixed $service_str
+     */
+    public function setService($service_str)
+    {
+        $this->_service_str = $service_str;
+    }
+
     public function getNode()
     {
         if (defined('D_CONN_DEBUG')) {
