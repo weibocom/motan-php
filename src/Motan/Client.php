@@ -40,6 +40,9 @@ class Client
         $this->_url_obj = $url_obj != NULL ? $url_obj : new URL();
         $connection = new Connection($this->_url_obj);
         $agent_addr = defined('D_AGENT_ADDR') ? D_AGENT_ADDR : NULL;
+        if (defined('MESH_SOCK_FILE')) {
+            $agent_addr = "unix://" . MESH_SOCK_FILE;
+        }
         $mesh_isalive = FALSE;
         try {
             $mesh_isalive = $connection->buildConnection($agent_addr);

@@ -38,4 +38,13 @@ class Failfast extends \Motan\Cluster\HaStrategy
     {
         return $this->getEndpoint()->setLoadBalance($load_balance)->call($request);
     }
+	/**
+	 * [call description]
+	 * @param  \Motan\Cluster\LoadBalance $load_balance [description]
+	 * @return [type]                                   [description]
+	 */
+    public function doUpload(\Motan\Cluster\LoadBalance $load_balance, \Motan\Request $request)
+    {
+        return $this->getEndpoint()->setLoadBalance($load_balance)->doUpload($request);
+    }
 }

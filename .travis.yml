@@ -4,7 +4,7 @@ language: php
 
 services:
   - docker
-  
+
 env:
   global:
     - MESH_UP=yes
@@ -37,10 +37,10 @@ install:
   - travis_retry composer update --prefer-dist --no-interaction --prefer-stable --no-suggest
 
 script:
-    - ./run.sh ci
+  - ./run.sh ci
 
 after_success:
-    - bash <(curl -s https://codecov.io/bash)
+  - bash <(curl -s https://codecov.io/bash)
 
 notifications:
   email:

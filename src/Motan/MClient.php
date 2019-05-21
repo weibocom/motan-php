@@ -52,6 +52,18 @@ class MClient extends Client
         throw new \Exception("MClient didn't support Magic Calling, using doCall(\Motan\Request) insteded.", 1);
     }
 
+    public function doUpload($request)
+    {
+        if ($request instanceof \Motan\Request) {
+            return $this->_endpoint->doUpload($request)->getRs();
+        } else {
+            throw new \Exception("MClient doCall must using \Motan\Request as a param", 1);
+        }
+    }
+
+    // this '...$arguments' is usless,
+    // here just because MClient extends Client,
+    // and Client's doCall method need this '...$arguments'
     public function doCall($request, ...$arguments)
     {
         if ($request instanceof \Motan\Request) {
