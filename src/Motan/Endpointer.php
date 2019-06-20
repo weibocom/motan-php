@@ -197,7 +197,7 @@ abstract class  Endpointer
         foreach ($tmp_headers as $key => $value) {
             $headers[] = "$key: $value";
         }
-        if (count($request_args[0]) > 0 && is_array($request_args[0])) {
+        if (is_array($request_args[0]) && count($request_args[0]) > 0) {
             $query_str = http_build_query($request_args[0]);
             $uri = "$uri?$query_str";
         }
