@@ -164,8 +164,16 @@ check_if_stop_container() {
 	fi
 }
 
+check_docker_net() {
+	if [ -z "$(sudo docker network ls --format {{.Name}} | grep -E '^weibo-mesh$')" ]; then
+		sudo docker network create --subnet=173.18.0.0/16 weibo-mesh
+	fi
+	sleep 1
+}
+
 prepare_mesh() {
-	sudo docker run -d --rm --network host --name ${MESH_CONTAINER_NAME} \
+	check_docker_net
+	sudo docker run -d --rm --net weibo-mesh --name ${MESH_CONTAINER_NAME} \
 		-v ${MEHS_RUN_PATH}/snapshot:/snapshot \
 		${MESH_TESTHELPER_IMAGE}
 	sleep 1
@@ -174,15 +182,16 @@ prepare_mesh() {
 }
 
 prepare_dev() {
-	check_if_stop_container "zk,${MESH_CONTAINER_NAME},mc"
-	sudo docker run --network host -d --rm --name mc memcached
-	sudo docker run --network host -d --rm --name zk zookeeper
+	check_docker_net
+	check_if_stop_container "mesh_test_zk,${MESH_CONTAINER_NAME},mesh_test_mc"
+	sudo docker run --net weibo-mesh -d --rm --name mesh_test_mc memcached
+	sudo docker run --net weibo-mesh -d --rm --name mesh_test_zk zookeeper
 	sleep 1
 	prepare_mesh
 
-	# @TODO check zk bug when first time
-	# there is no /motan/motan-demo-rpc/com.weibo.HelloWorldService/server node in zk
-	# make zk subscrib fail.
+	# @TODO check mesh_test_zk bug when first time
+	# there is no /motan/motan-demo-rpc/com.weibo.HelloWorldService/server node in mesh_test_zk
+	# make mesh_test_zk subscrib fail.
 	sudo docker stop ${MESH_CONTAINER_NAME}
 	sleep 1
 	prepare_mesh
@@ -190,7 +199,7 @@ prepare_dev() {
 }
 
 clean_containers() {
-	check_if_stop_container "zk,${MESH_CONTAINER_NAME},mc"
+	check_if_stop_container "mesh_test_zk,${MESH_CONTAINER_NAME},mesh_test_mc"
 }
 
 case "${1}" in
@@ -206,7 +215,7 @@ nut)
 	new_utest $2
 	;;
 d_nut)
-	sudo docker run --network host -e MESH_UP=yes -v ${BASE_DIR}/:/motan-php --privileged -v /usr/sbin/tc:/usr/sbin/tc -w /motan-php "${PHP_IMAGE}" ./run.sh nut $2
+	sudo docker run --net weibo-mesh -e MESH_UP=yes -v ${BASE_DIR}/:/motan-php --privileged -v /usr/sbin/tc:/usr/sbin/tc -w /motan-php "${PHP_IMAGE}" ./run.sh nut $2
 	;;
 naut)
 	TO_TEST_DIR=${BASE_DIR}/src
@@ -216,7 +225,7 @@ naut)
 	new_all_utests ${TO_TEST_DIR}
 	;;
 d_naut)
-	sudo docker run --network host -e MESH_UP=yes -v ${BASE_DIR}/:/motan-php --privileged -v /usr/sbin/tc:/usr/sbin/tc -w /motan-php "${PHP_IMAGE}" ./run.sh d_naut $2
+	sudo docker run --net weibo-mesh -e MESH_UP=yes -v ${BASE_DIR}/:/motan-php --privileged -v /usr/sbin/tc:/usr/sbin/tc -w /motan-php "${PHP_IMAGE}" ./run.sh d_naut $2
 	;;
 raut)
 	${PHPUNIT_EXECUTABLE} --bootstrap=${PHPUNIT_TEST_BOOT_STRAP} \
@@ -224,13 +233,13 @@ raut)
 		--coverage-html ${BASE_DIR}/tests/coverage/
 	;;
 d_raut)
-	sudo docker run --network host -e MESH_UP=yes -v ${BASE_DIR}/:/motan-php --privileged -v /usr/sbin/tc:/usr/sbin/tc -w /motan-php "${PHP_IMAGE}" ./run.sh raut
+	sudo docker run --net weibo-mesh -e MESH_UP=yes -v ${BASE_DIR}/:/motan-php --privileged -v /usr/sbin/tc:/usr/sbin/tc -w /motan-php "${PHP_IMAGE}" ./run.sh raut
 	;;
 rutf)
 	${PHPUNIT_EXECUTABLE} --bootstrap=${PHPUNIT_TEST_BOOT_STRAP} $2
 	;;
 d_rutf)
-	sudo docker run --network host -e MESH_UP=yes -v ${BASE_DIR}/:/motan-php --privileged -v /usr/sbin/tc:/usr/sbin/tc -w /motan-php "${PHP_IMAGE}" ./run.sh rutf $2
+	sudo docker run --net weibo-mesh -e MESH_UP=yes -v ${BASE_DIR}/:/motan-php --privileged -v /usr/sbin/tc:/usr/sbin/tc -w /motan-php "${PHP_IMAGE}" ./run.sh rutf $2
 	;;
 ncmpt)
 	for METHOD in $(echo ${3//,/ }); do
@@ -238,7 +247,7 @@ ncmpt)
 	done
 	;;
 d_ncmpt)
-	sudo docker run --network host -e MESH_UP=yes -v ${BASE_DIR}/:/motan-php --privileged -v /usr/sbin/tc:/usr/sbin/tc -w /motan-php "${PHP_IMAGE}" ./run.sh ncmpt $2 $3
+	sudo docker run --net weibo-mesh -e MESH_UP=yes -v ${BASE_DIR}/:/motan-php --privileged -v /usr/sbin/tc:/usr/sbin/tc -w /motan-php "${PHP_IMAGE}" ./run.sh ncmpt $2 $3
 	;;
 nfpt)
 	for FUNC in $(echo ${3//,/ }); do
@@ -246,15 +255,15 @@ nfpt)
 	done
 	;;
 d_nfpt)
-	sudo docker run --network host -e MESH_UP=yes -v ${BASE_DIR}/:/motan-php --privileged -v /usr/sbin/tc:/usr/sbin/tc -w /motan-php "${PHP_IMAGE}" ./run.sh nfpt $2 $3
+	sudo docker run --net weibo-mesh -e MESH_UP=yes -v ${BASE_DIR}/:/motan-php --privileged -v /usr/sbin/tc:/usr/sbin/tc -w /motan-php "${PHP_IMAGE}" ./run.sh nfpt $2 $3
 	;;
 rpt)
 	run_ptests $2
 	;;
-d_rpt) sudo docker run --network host -e MESH_UP=yes -v ${BASE_DIR}/:/motan-php --privileged -v /usr/sbin/tc:/usr/sbin/tc -w /motan-php "${PHP_IMAGE}" ./run.sh rpt $2 ;;
+d_rpt) sudo docker run --net weibo-mesh -e MESH_UP=yes -v ${BASE_DIR}/:/motan-php --privileged -v /usr/sbin/tc:/usr/sbin/tc -w /motan-php "${PHP_IMAGE}" ./run.sh rpt $2 ;;
 pred) prepare_dev ;;
 clean_d)
-	check_if_stop_container "zk,${MESH_CONTAINER_NAME},mc"
+	check_if_stop_container "mesh_test_zk,${MESH_CONTAINER_NAME},mesh_test_mc"
 	;;
 ci)
 	prepare_dev
@@ -265,11 +274,11 @@ ci)
 	fi
 
 	if [ "${MESH_UP}" = "yes" ]; then
-		sudo docker run --network host -e MESH_UP=yes -v ${BASE_DIR}/:/motan-php --privileged -v /usr/sbin/tc:/usr/sbin/tc -w /motan-php "${PHP_IMAGE}" ./run.sh raut
-		sudo docker run --network host -e MESH_UP=yes -v ${BASE_DIR}/:/motan-php --privileged -v /usr/sbin/tc:/usr/sbin/tc -w /motan-php "${PHP_IMAGE}" ./run.sh rpt
+		sudo docker run --net weibo-mesh -e MESH_UP=yes -v ${BASE_DIR}/:/motan-php --privileged -v /usr/sbin/tc:/usr/sbin/tc -w /motan-php "${PHP_IMAGE}" ./run.sh raut
+		sudo docker run --net weibo-mesh -e MESH_UP=yes -v ${BASE_DIR}/:/motan-php --privileged -v /usr/sbin/tc:/usr/sbin/tc -w /motan-php "${PHP_IMAGE}" ./run.sh rpt
 	fi
 
-	[ "${MESH_UP}" = "no" ] && sudo docker run --network host -e MESH_UP=no -v ${BASE_DIR}/:/motan-php --privileged -v /usr/sbin/tc:/usr/sbin/tc -w /motan-php "${PHP_IMAGE}" ./run.sh raut
+	[ "${MESH_UP}" = "no" ] && sudo docker run --net weibo-mesh -e MESH_UP=no -v ${BASE_DIR}/:/motan-php --privileged -v /usr/sbin/tc:/usr/sbin/tc -w /motan-php "${PHP_IMAGE}" ./run.sh raut
 	[ ! -z ${X} ] && clean_containers
 	echo "done test"
 	;;

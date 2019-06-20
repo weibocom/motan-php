@@ -46,6 +46,8 @@ abstract class  Endpointer
     protected $_resp_taged = NULL;
     protected $_back_to_httpcall = FALSE;
 
+    private $_using_snapshot = FALSE;
+
     public $request_id;
 
     public function __construct(URL $url_obj)
@@ -88,14 +90,17 @@ abstract class  Endpointer
         if (empty($this->_connection_obj)) {
             $this->_connection_obj = new Connection($this->_url_obj);
         }
-        $nodes = [];
         try {
             $nodes = $this->_loadbalance->getNode();
         } catch (\Exception $e) {
+            /* when mesh down, and we couldn't find a snapshot to direct connect to server, 
+            we will try http backup call.*/
             $this->_back_to_httpcall = TRUE;
             return FALSE;
         }
         $this->_connection_obj->buildConnection($nodes);
+        // when we find a correct snapshot, set using_snapshot to true, means snapshot backup call
+        $this->_using_snapshot = TRUE;
         return $this->_connection = $this->_connection_obj->getConnection();
     }
 
@@ -211,8 +216,11 @@ abstract class  Endpointer
         $res = \curl_exec($ch);
         $status_code = \curl_getinfo($ch, CURLINFO_HTTP_CODE);
         $exception = NULL;
+        if ($status_code == 0) {
+            $exception = new \Exception("bad request to httpcalling error, url is ${url}");
+        }
         if ($status_code >= 400) {
-            $exception = \Exception("back to httpcalling error, url is ${url}");
+            $exception = new \Exception("back to httpcalling error, url is ${url}");
         }
         $request_id = $request->getRequestId();
         $raw_header = \Motan\Protocol\Motan::buildResponseHeader($request_id, $status_code);
@@ -222,7 +230,17 @@ abstract class  Endpointer
         $metadata['M_pp'] = $request->getProtocol();
         $metadata['requestIdFromClient'] = $request_id;
         $raw_msg = new \Motan\Protocol\Message($raw_header, $metadata, $res, 1);
-        return new \Motan\Response($res, $exception, $raw_msg);
+        $res = new \Motan\Response($res, $exception, $raw_msg);
+        // @Deprecated start
+        $this->_response = $res->getRawResp();
+        $this->_response_header = $res->getResponseHeader();
+        $this->_response_metadata = $res->getResponseMetadata();
+        $exception = $res->getResponseException();
+        if (!empty($exception)) {
+            $this->_response_exception = $exception;
+        }
+        // @Deprecated end
+        return $res;
     }
 
     public function call(\Motan\Request $request)
@@ -266,6 +284,17 @@ abstract class  Endpointer
             $request = $request->buildHTTPParams();
         }
         $this->_buildConnection();
+        $group = "";
+        if (!$this->_using_snapshot) {
+            $group = $request->getGroup();
+        } else {
+            // when make a snapshot backup call to direct connect to server, a group is must required
+            $group = $request->getGroup() ? $request->getGroup()
+                : ($this->_loadbalance->getGroup() ? $this->_loadbalance->getGroup() : "");
+            if ($group == "") {
+                throw new \Exception("Couldn't get correct group.");
+            }
+        }
         if( !$this->_connection) {
             throw new \Exception("Connection has gone away!");
         }
@@ -284,7 +313,7 @@ abstract class  Endpointer
         !empty($app_name) && $metadata['M_s'] = $app_name;
         $metadata['M_p'] = $request->getService();
         $metadata['M_m'] = $request->getMethod();
-        $metadata['M_g'] = $request->getGroup();
+        $metadata['M_g'] = $group;
         $metadata['M_pp'] = $request->getProtocol();
         $metadata['requestIdFromClient'] = $request_id;
         $metadata['SERIALIZATION'] = $this->_url_obj->getSerialization();
