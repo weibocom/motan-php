@@ -167,6 +167,7 @@ check_if_stop_container() {
 	fi
 }
 
+# for independence network for env clean, we build a single network 'weibo-mesh'
 check_docker_net() {
 	if [ -z "$(sudo docker network ls --format {{.Name}} | grep -E '^weibo-mesh$')" ]; then
 		sudo docker network create --subnet=172.19.0.0/16 weibo-mesh
@@ -189,6 +190,7 @@ prepare_dev() {
 	check_docker_net
 	check_if_stop_container "${MESH_ZK_CONTAINER_NAME},${MESH_CONTAINER_NAME},${MESH_MC_CONTAINER_NAME}"
 	sleep 1
+	# first we run mc container using a independence network we had create above, and then we add other container to this network
 	sudo docker run --net weibo-mesh --ip 172.19.0.10 -d --rm --name ${MESH_MC_CONTAINER_NAME} memcached:1.5.16
 	sudo docker run --net=container:${MESH_MC_CONTAINER_NAME} -d --rm --name ${MESH_ZK_CONTAINER_NAME} zookeeper:3.4.13
 	sleep 1
