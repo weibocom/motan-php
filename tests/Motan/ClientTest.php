@@ -90,7 +90,7 @@ class ClientTest extends \PHPUnit\Framework\TestCase
         $this->object->doCall('HelloX', 222, 123, 124, ['string','arr']);
         $rs = $this->object->getResponseException();
         if (defined('MESH_CALL')) {
-            $this->assertEquals($rs, '{"errcode":400,"errmsg":"FailOverHA call fail 1 times. Exception: provider call panic","errtype":1}');
+            $this->assertEquals($rs, '{"errcode":500,"errmsg":"FailOverHA call fail 1 times. Exception: provider call panic","errtype":1}');
         }
         else {
             $this->assertEquals($rs, '{"errcode":500,"errmsg":"provider call panic","errtype":1}');

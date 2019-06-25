@@ -26,5 +26,5 @@ var_dump($rs->getException($req3));
 <?php
 ?>
 --EXPECTF--
-string(99) "{"errcode":400,"errmsg":"FailOverHA call fail 1 times. Exception: provider call panic","errtype":1}"
+string(99) "{"errcode":500,"errmsg":"FailOverHA call fail 1 times. Exception: provider call panic","errtype":1}"
 ===DONE===
