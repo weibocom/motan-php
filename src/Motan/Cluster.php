@@ -124,6 +124,8 @@ class Cluster
     
     public function call(\Motan\Request $request)
     {
+        $this->_load_balance->setService($request->getService());
+        $this->_load_balance->setGroup($request->getGroup());
         return $this->_ha_strategy->call($this->_load_balance, $request);
     }
 

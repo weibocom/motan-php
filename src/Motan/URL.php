@@ -79,7 +79,7 @@ class URL {
             $this->_path = ltrim($url_info['path'], '/');
             $this->_host = $url_info['host'];
             $this->_port = $url_info['port'];
-            parse_str($url_info['query'], $this->_params);
+            isset($url_info['query']) && parse_str($url_info['query'], $this->_params);
 
             $this->_initMetaInfo(Constants::URL_SERVICE_KEY, '_service');
             $this->_initMetaInfo(Constants::URL_GROUP_KEY, '_group');

@@ -47,7 +47,7 @@ class Client
         try {
             $mesh_isalive = $connection->buildConnection($agent_addr);
         } catch (\Exception $e) {
-            echo "weibo-mesh isn't alive " . $e->getMessage() . PHP_EOL;
+            error_log("weibo-mesh isn't alive " . $e->getMessage() );
         }
         if ($mesh_isalive){
             $this->_url_obj->setEndpoint(Constants::ENDPOINT_AGENT);
