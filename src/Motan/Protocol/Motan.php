@@ -42,11 +42,11 @@ const BODY_SIZE_BYTE = 4;
 
 /**
  * Motan Protocol for PHP 5.6+
- * 
+ *
  * <pre>
  * Motan 协议
  * </pre>
- * 
+ *
  * @author idevz <zhoujing00k@gmail.com>
  * @version V1.0 [created at: 2016-10-02]
  */
@@ -82,12 +82,21 @@ class Motan
     public static function encode($request_id, $req_obj, $metadata)
     {
         $header = self::buildRequestHeader($request_id);
-        if (defined('MOTAN_SERIALIZATION_TYPE')
-            && (MOTAN_SERIALIZATION_TYPE === Client::MOTAN_SERIALIZATION_SIMPLE)) {
-            $header->setSerialize(6);
-        }
-        if (isset($metadata['SERIALIZATION']) && $metadata['SERIALIZATION'] === Constants::SERIALIZATION_SIMPLE) {
-            $header->setSerialize(6);
+        if (isset($metadata['SERIALIZATION'])) {
+            switch ($metadata['SERIALIZATION']) {
+                case Constants::SERIALIZATION_SIMPLE:
+                    $header->setSerialize(6);
+                    break;
+                case Constants::SERIALIZATION_BREEZE:
+                    $header->setSerialize(8);
+                    break;
+                case Constants::SERIALIZATION_PB:// grpcPB
+                    $header->setSerialize(1);
+                    break;
+                case Constants::SERIALIZATION_GRPC_JSON:
+                    $header->setSerialize(7);
+                    break;
+            }
         }
         $msg = new Message($header, $metadata, $req_obj, MSG_TYPE_REQUEST);
         return $msg->encode();
@@ -98,7 +107,7 @@ class Motan
         $header_buffer = fread($connection, HEADER_BYTE);
         if (FALSE == $header_buffer) {
             $stream_meta = stream_get_meta_data($connection);
-            if($stream_meta['timed_out'] == TRUE) {
+            if ($stream_meta['timed_out'] == TRUE) {
                 throw new \Exception('Read header timeout.');
             } else {
                 throw new \Exception('Unknow error when read header. Stream detail:' . var_export($stream_meta, TRUE));
@@ -114,7 +123,7 @@ class Motan
         $metadata_size_buffer = fread($connection, META_SIZE_BYTE);
         if (FALSE === $metadata_size_buffer) {
             $stream_meta = stream_get_meta_data($connection);
-            if($stream_meta['timed_out'] == TRUE) {
+            if ($stream_meta['timed_out'] == TRUE) {
                 throw new \Exception('Read metasize timeout.');
             } else {
                 throw new \Exception('Unknow error when read metasize. Stream detail:' . var_export($stream_meta, TRUE));
@@ -126,7 +135,7 @@ class Motan
             $metadata_buffer = fread($connection, $metasize['metasize']);
             if (FALSE === $metadata_buffer) {
                 $stream_meta = stream_get_meta_data($connection);
-                if($stream_meta['timed_out'] == TRUE) {
+                if ($stream_meta['timed_out'] == TRUE) {
                     throw new \Exception('Read metadata timeout.');
                 } else {
                     throw new \Exception('Unknow error when read metadata. Stream detail:' . var_export($stream_meta, TRUE));
@@ -141,7 +150,7 @@ class Motan
         $bodysize_buffer = fread($connection, BODY_SIZE_BYTE);
         if (FALSE === $bodysize_buffer) {
             $stream_meta = stream_get_meta_data($connection);
-            if($stream_meta['timed_out'] == TRUE) {
+            if ($stream_meta['timed_out'] == TRUE) {
                 throw new \Exception('Read bodysize timeout.');
             } else {
                 throw new \Exception('Unknow error when read bodysize. Stream detail:' . var_export($stream_meta, TRUE));
@@ -154,7 +163,7 @@ class Motan
             $buffer = @fread($connection, $remaining);
             if ($buffer === FALSE) {
                 $stream_meta = stream_get_meta_data($connection);
-                if($stream_meta['timed_out'] == TRUE) {
+                if ($stream_meta['timed_out'] == TRUE) {
                     throw new \Exception('Read body timeout.');
                 } else {
                     throw new \Exception('Unknow error when read body. Stream detail:' . var_export($stream_meta, TRUE));

@@ -21,11 +21,11 @@ define("BIGINT_DIVIDER", 0xffffffff + 1);
 
 /**
  * Motan Utils for PHP 5.6+
- * 
+ *
  * <pre>
  * Motan 工具包
  * </pre>
- * 
+ *
  * @author idevz <zhoujing00k@gmail.com>
  * @version V1.0 [created at: 2016-10-08]
  */
@@ -36,7 +36,7 @@ class Utils
     public static function genRequestId(URL $url_obj = NULL)
     {
         $time = explode(" ", microtime());
-        $request_id = sprintf("%d%06d%03d", $time[1], (int) ($time[0]*1000000), mt_rand(1, 999));
+        $request_id = sprintf("%d%06d%03d", $time[1], (int)($time[0] * 1000000), mt_rand(1, 999));
         return $request_id;
     }
 
@@ -47,23 +47,23 @@ class Utils
 
     public static function is_assoc($var)
     {
-        return is_array($var) && array_diff_key($var,array_keys(array_keys($var)));
+        return is_array($var) && array_diff_key($var, array_keys(array_keys($var)));
     }
-    
+
     public static function get_bytes($string)
-    {  
+    {
         $bytes = array();
-        for($i = 0; $i < strlen($string); $i++){
+        for ($i = 0; $i < strlen($string); $i++) {
             $bytes[] = ord($string[$i]);
         }
         return $bytes;
     }
-    
+
     public static function toStr($bytes)
-    {  
-        $str = ''; 
-        foreach($bytes as $ch) {
-            $str .= chr($ch);  
+    {
+        $str = '';
+        foreach ($bytes as $ch) {
+            $str .= chr($ch);
         }
         return $str;
     }
@@ -92,7 +92,7 @@ class Utils
     {
         return $upper * BIGINT_DIVIDER + $lower;
     }
-    
+
     public static function getSerializer($type)
     {
         $serializer = null;
@@ -106,6 +106,8 @@ class Utils
             case Constants::SERIALIZATION_GRPC_JSON:
                 $serializer = new \Motan\Serialize\GrpcJson();
                 break;
+            case Constants::SERIALIZATION_BREEZE:
+                $serializer = new \Motan\Serialize\Breeze();
         }
         return $serializer;
     }
@@ -156,12 +158,13 @@ class Utils
     }
 
     static $agent_conf = NULL;
+
     public static function GetAgentConf()
     {
         if (!function_exists('yaml_parse_file')) {
             throw new \Exception('you should install yaml extension!');
         }
-        
+
         if (static::$agent_conf !== NULL) {
             return static::$agent_conf;
         }
@@ -171,6 +174,7 @@ class Utils
     }
 
     static $service_conf = NULL;
+
     public static function GetServiceConf()
     {
         if (static::$service_conf !== NULL) {
@@ -231,14 +235,14 @@ class Utils
         $high = bcdiv($value, 4294967296);
         $low = bcmod($value, 4294967296);
         if (bccomp($high, 2147483647) > 0) {
-            $high = (int) bcsub($high, 4294967296);
+            $high = (int)bcsub($high, 4294967296);
         } else {
-            $high = (int) $high;
+            $high = (int)$high;
         }
         if (bccomp($low, 2147483647) > 0) {
-            $low = (int) bcsub($low, 4294967296);
+            $low = (int)bcsub($low, 4294967296);
         } else {
-            $low = (int) $low;
+            $low = (int)$low;
         }
 
         if ($neg) {
@@ -281,7 +285,7 @@ class Utils
             $low = ~$low;
             $low++;
             if (!$low) {
-                $high = (int) ($high + 1);
+                $high = (int)($high + 1);
             }
         }
         $result = bcadd(bcmul($high, 4294967296), $low);
@@ -289,7 +293,7 @@ class Utils
             $result = bcadd($result, 4294967296);
         }
         if ($neg) {
-          $result = bcsub(0, $result);
+            $result = bcsub(0, $result);
         }
         return $result;
     }
@@ -311,7 +315,7 @@ class Utils
                 $bits = 7 * $count;
                 if ($bits >= 32) {
                     $high |= (($b & 0x7F) << ($bits - 32));
-                } else if ($bits > 25){
+                } else if ($bits > 25) {
                     // $bits is 28 in this case.
                     $low |= (($b & 0x7F) << 28);
                     $high = ($b & 0x7F) >> 4;
