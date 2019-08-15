@@ -19,11 +19,11 @@ namespace Motan;
 
 /**
  * Motan PHP Constants for PHP 5.6+
- * 
+ *
  * <pre>
  * Motan PHP Constants
  * </pre>
- * 
+ *
  * @author idevz <zhoujing00k@gmail.com>
  * @version V1.0 [created at: 2016-08-08]
  */
@@ -37,13 +37,14 @@ class Constants
 
     const PROTOCOL_MOTAN2 = 'motan2';
     const PROTOCOL_GRPC = 'grpc';
-    const DEFAULT_POST_CONTENTTYPE= 'application/x-www-form-urlencoded';
+    const DEFAULT_POST_CONTENTTYPE = 'application/x-www-form-urlencoded';
     const PROTOCOL_CGI = 'cgi';
     const PROTOCOL_MEMCACHE = 'memcache';
 
     const SERIALIZATION_SIMPLE = 'simple';
     const SERIALIZATION_PB = 'pb';
     const SERIALIZATION_GRPC_JSON = 'grpc-json';
+    const SERIALIZATION_BREEZE = 'breeze';
 
     const MOTAN_HA_FAILFAST = 'failfast';
     const MOTAN_HA_FAILOVER = 'failover';
@@ -63,7 +64,7 @@ class Constants
     const URL_SERIALIZE_KEY = 'serialize';
     const URL_METHOD_KEY = 'method';
 
-    const DEFAULE_APP_NAME='motan-php-with-none-appname';
+    const DEFAULE_APP_NAME = 'motan-php-with-none-appname';
 
     const MOTAN_CONNECTION_TIME_OUT = 0.2;
     const MOTAN_READ_TIME_OUT = 2;
