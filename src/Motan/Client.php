@@ -22,11 +22,11 @@ use Motan\Transport\Connection;
 
 /**
  * Motan Client for PHP 5.6+
- * 
+ *
  * <pre>
  * Motan Client
  * </pre>
- * 
+ *
  * @author idevz <zhoujing00k@gmail.com>
  * @version V1.0 [created at: 2016-08-02]
  */
@@ -107,6 +107,7 @@ class Client
         $request = new \Motan\Request(
             $this->_url_obj->getService(),
             $name, ...$arguments);
+        $request->addHeaders($this->_url_obj->getHeaders());
         $request->setGroup($this->_url_obj->getGroup());
         $request->setProtocol($this->_url_obj->getProtocol());
         return $this->_endpoint->call($request)->getRs();
@@ -118,6 +119,7 @@ class Client
         isset($arguments[0]) && !empty($arguments[0]) && $request_args = $arguments[0];
         $request = new \Motan\Request($this->_url_obj->getService(),
         $name, ...[$request_args]);
+        $request->addHeaders($this->_url_obj->getHeaders());
         isset($arguments[1]) && !empty($arguments[1]) && $request->addHeaders($arguments[1]);
         isset($arguments[2]) && !empty($arguments[2]) && $request->setRequestId($arguments[2]);
         $request->setGroup($this->_url_obj->getGroup());
@@ -142,7 +144,7 @@ class Client
                 break;
         }
         return $this->_endpoint->call($request)->getRs();
-    } 
+    }
 
     public function multiCall(array $url_objs) {
         if (empty($url_objs)) {
@@ -152,10 +154,10 @@ class Client
         foreach ($url_objs as $url_obj) {
             $request = new \Motan\Request($url_obj->getService(),
             $url_obj->getMethod(), ...[$url_obj->getParams()]);
+            $request->addHeaders($url_obj->getHeaders());
             $request->setGroup($url_obj->getGroup());
             $request_objs[] = $request;
         }
         return $this->_endpoint->multiCall($request_objs);
     }
-    
 }
