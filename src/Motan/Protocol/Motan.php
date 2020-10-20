@@ -73,10 +73,14 @@ class Motan
         }
 
         $status = 0x08 | ($msg_status & 0x07);
-        $serial = 0x00 | ($serialize<<3 & 0x1f);
+        $serial = 0x00 | ($serialize << 3);
         return new Header($m_type, $status, $serial, $request_id);
     }
 
+    /**
+     * @param $request_id
+     * @return Header
+     */
     public static function buildRequestHeader($request_id)
     {
         return self::buildHeader(MSG_TYPE_REQUEST, FALSE, SERIALIZE_SIMPLE, $request_id, MSG_STATUS_NORMAL);
@@ -84,15 +88,13 @@ class Motan
 
     /**
      * @param $request_id
-     * @param $serialize $serialize is raw number in protocol header
+     * @param $serialize $serialize is hunman readable number
      * @param $msg_status
      * @return Header
      */
     public static function buildResponseHeader($request_id, $serialize,$msg_status)
     {
-        $status = 0x08 | ($msg_status & 0x07);
-        return new Header(MSG_TYPE_RESPONSE, $status, $serialize, $request_id);
-        //return self::buildHeader(MSG_TYPE_RESPONSE, FALSE, $serialize, $request_id, $msg_status);
+        return self::buildHeader(MSG_TYPE_RESPONSE, FALSE, $serialize, $request_id, $msg_status);
     }
 
     public static function encode($request_id, $req_obj, $metadata)
@@ -131,7 +133,8 @@ class Motan
         }
         $header = unpack("nmagic/CmessageType/Cversion_status/Cserialize/Nrequest_id_upper/Nrequest_id_lower", $header_buffer);
         $header['request_id'] = Utils::bigInt2float($header['request_id_upper'], $header['request_id_lower']);
-        $header_obj = self::buildResponseHeader($header['request_id'], $header['serialize'],$header['version_status']);
+        $status = 0x08 | ($header['version_status'] & 0x07);
+        $header_obj= new Header(MSG_TYPE_RESPONSE, $status, $header['serialize'], $header['request_id']);
         if (($header['messageType'] & 0x08) == 0x08) {
             $header_obj->setGzip(TRUE);
         }

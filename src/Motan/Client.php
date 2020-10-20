@@ -166,7 +166,6 @@ class Client
             $request->addHeaders($url_obj->getHeaders());
             $request->setGroup($url_obj->getGroup());
             $request_objs[] = $request;
-
         }
         return $this->_endpoint->multiCall($request_objs);
     }
