@@ -133,8 +133,7 @@ class Motan
         }
         $header = unpack("nmagic/CmessageType/Cversion_status/Cserialize/Nrequest_id_upper/Nrequest_id_lower", $header_buffer);
         $header['request_id'] = Utils::bigInt2float($header['request_id_upper'], $header['request_id_lower']);
-        $status = 0x08 | ($header['version_status'] & 0x07);
-        $header_obj= new Header(MSG_TYPE_RESPONSE, $status, $header['serialize'], $header['request_id']);
+        $header_obj= new Header(MSG_TYPE_RESPONSE, $header['version_status'], $header['serialize'], $header['request_id']);
         if (($header['messageType'] & 0x08) == 0x08) {
             $header_obj->setGzip(TRUE);
         }
