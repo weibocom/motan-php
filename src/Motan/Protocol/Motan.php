@@ -65,7 +65,7 @@ class Motan
         }
 
         $status = 0x08 | ($msg_status & 0x07);
-        $serial = 0x00 | ($serialize << 3);
+        $serial = 0x00 | $serialize;
         return new Header($m_type, $status, $serial, $request_id);
     }
 
@@ -74,9 +74,9 @@ class Motan
         return self::buildHeader(MSG_TYPE_REQUEST, FALSE, SERIALIZE_SIMPLE, $request_id, MSG_STATUS_NORMAL);
     }
 
-    public static function buildResponseHeader($request_id, $msg_status)
+    public static function buildResponseHeader($request_id, $serialize,$msg_status)
     {
-        return self::buildHeader(MSG_TYPE_RESPONSE, FALSE, SERIALIZE_SIMPLE, $request_id, $msg_status);
+        return self::buildHeader(MSG_TYPE_RESPONSE, FALSE, $serialize, $request_id, $msg_status);
     }
 
     public static function encode($request_id, $req_obj, $metadata)
@@ -115,11 +115,11 @@ class Motan
         }
         $header = unpack("nmagic/CmessageType/Cversion_status/Cserialize/Nrequest_id_upper/Nrequest_id_lower", $header_buffer);
         $header['request_id'] = Utils::bigInt2float($header['request_id_upper'], $header['request_id_lower']);
-
-        $header_obj = self::buildResponseHeader($header['request_id'], $header['version_status']);
+        $header_obj = self::buildResponseHeader($header['request_id'], $header['serialize'],$header['version_status']);
         if (($header['messageType'] & 0x08) == 0x08) {
             $header_obj->setGzip(TRUE);
         }
+
         $metadata_size_buffer = fread($connection, META_SIZE_BYTE);
         if (FALSE === $metadata_size_buffer) {
             $stream_meta = stream_get_meta_data($connection);

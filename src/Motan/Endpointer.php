@@ -18,14 +18,15 @@
 namespace Motan;
 
 use Motan\Transport\Connection;
+use Motan\Utils;
 
 /**
  * Motan Endpointer for PHP 5.6+
- * 
+ *
  * <pre>
  * Motan Endpointer
  * </pre>
- * 
+ *
  * @author idevz <zhoujing00k@gmail.com>
  * @version V1.0 [created at: 2016-08-15]
  */
@@ -93,7 +94,7 @@ abstract class  Endpointer
         try {
             $nodes = $this->_loadbalance->getNode();
         } catch (\Exception $e) {
-            /* when mesh down, and we couldn't find a snapshot to direct connect to server, 
+            /* when mesh down, and we couldn't find a snapshot to direct connect to server,
             we will try http backup call.*/
             $this->_back_to_httpcall = TRUE;
             return FALSE;
@@ -141,7 +142,7 @@ abstract class  Endpointer
         $mt_str = implode("\n", $mt);
         $file = $request->getRequestArgs()[0]['file_path'];
         $file_size = \filesize($file);
-        
+
         $buffer = $buffer . pack('N', strlen($mt_str)) . $mt_str . pack('N', $file_size + 5) . pack('C', Constants::DTYPE_STRING) . pack('N', $file_size);
 
         $length = strlen($buffer);
@@ -279,6 +280,14 @@ abstract class  Endpointer
 
     protected function _doSend(\Motan\Request $request)
     {
+        // aquires seialization type from request itself.
+        // notice: $request_seria is a string typed flag.
+        $request_seria=$request->getSerialization();
+        // create seialization object from $request_seria.
+        $serialization=empty($request_seria)?$this->_url_obj->getSerialization():$request_seria;
+        // if create fail, using $this->_serializer as default serializer.
+        $serializer=empty($request_seria)?$this->_serializer:$request->getSerializer();
+
         if ($this->_url_obj->getUrlType() == Constants::REQ_URL_TYPE_RESTY
             || FALSE !== strpos($request->getMethod(), '/')) {
             $request = $request->buildHTTPParams();
@@ -298,7 +307,7 @@ abstract class  Endpointer
         if( !$this->_connection) {
             throw new \Exception("Connection has gone away!");
         }
-        $req_body = $this->_serializer->serializeMulti(...$request->getRequestArgs());
+        $req_body = $serializer->serializeMulti(...$request->getRequestArgs());
 
         // @TODO check GRPC using \Motan\Request
         // if (Constants::PROTOCOL_GRPC === $url_obj->getProtocol()) {
@@ -316,11 +325,11 @@ abstract class  Endpointer
         $metadata['M_g'] = $group;
         $metadata['M_pp'] = $request->getProtocol();
         $metadata['requestIdFromClient'] = $request_id;
-        $metadata['SERIALIZATION'] = $this->_url_obj->getSerialization();
+        $metadata['SERIALIZATION'] = $serialization;
         $http_method = $this->_url_obj->getHttpMethod();
         !empty($http_method) && $metadata['HTTP_Method'] = $http_method;
         $buf = Protocol\Motan::encode($request_id, $req_body, $metadata);
-        
+
         $this->_connection_obj->write($buf);
     }
 
@@ -331,8 +340,16 @@ abstract class  Endpointer
         if ($resp_msg->getHeader()->isGzip()) {
             $resp_body = zlib_decode($resp_body);
         }
+        // aquires seialization type from response header.
+        $resp_seria=$resp_msg->getHeader()->getSerialize();
+        // create seialization object from $resp_seria.
+        // notice: $resp_seria is a int typed flag.
+        $serializer=Utils::getSerializer($resp_seria);
+        // if create fail, using $this->_serializer as default serializer.
+        empty($serializer)&&$serializer=$this->_serializer;
+
         $res = $exception = NULL;
-        $res = $this->_serializer->deserialize($resp_obj, $resp_body);
+        $res = $serializer->deserialize($resp_obj, $resp_body);
         // @TODO Check resp_taged for grpc
         $resp_meta = $resp_msg->getMetadata();
         if (isset($resp_meta['M_e'])) {
@@ -340,7 +357,7 @@ abstract class  Endpointer
         }
         return new \Motan\Response($res, $exception, $resp_msg);
     }
-    
+
     public function multiCall(array $request_objs)
     {
         $result = [];
