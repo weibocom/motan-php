@@ -19,6 +19,7 @@ namespace Motan;
 
 use Motan\Transport\Connection;
 use Motan\Utils;
+use const Motan\Protocol\SERIALIZE_SIMPLE;
 
 /**
  * Motan Endpointer for PHP 5.6+
@@ -224,7 +225,7 @@ abstract class  Endpointer
             $exception = new \Exception("back to httpcalling error, url is ${url}");
         }
         $request_id = $request->getRequestId();
-        $raw_header = \Motan\Protocol\Motan::buildResponseHeader($request_id, $status_code);
+        $raw_header = \Motan\Protocol\Motan::buildResponseHeader($request_id,SERIALIZE_SIMPLE, $status_code);
         $metadata['M_p'] = $request->getService();
         $metadata['M_m'] = $request->getMethod();
         $metadata['M_g'] = $request->getGroup();
@@ -329,7 +330,6 @@ abstract class  Endpointer
         $http_method = $this->_url_obj->getHttpMethod();
         !empty($http_method) && $metadata['HTTP_Method'] = $http_method;
         $buf = Protocol\Motan::encode($request_id, $req_body, $metadata);
-
         $this->_connection_obj->write($buf);
     }
 

@@ -37,6 +37,13 @@ class Header
     private $_serialize;
     private $_request_id;
 
+    /**
+     * Header constructor.
+     * @param $msg_type
+     * @param $version_status
+     * @param $serialize $serialize is raw number in protocol header
+     * @param $request_id
+     */
     public function __construct($msg_type, $version_status, $serialize, $request_id)
     {
         $this->_magic = MAGIC;

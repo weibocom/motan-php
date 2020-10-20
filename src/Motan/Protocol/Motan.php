@@ -52,6 +52,14 @@ const BODY_SIZE_BYTE = 4;
  */
 class Motan
 {
+    /**
+     * @param $msg_type
+     * @param $proxy
+     * @param $serialize  $serialize is hunman readable number
+     * @param $request_id
+     * @param $msg_status
+     * @return Header
+     */
     private static function buildHeader($msg_type, $proxy, $serialize, $request_id, $msg_status)
     {
         $m_type = 0x00;
@@ -65,7 +73,7 @@ class Motan
         }
 
         $status = 0x08 | ($msg_status & 0x07);
-        $serial = 0x00 | $serialize;
+        $serial = 0x00 | ($serialize<<3 & 0x1f);
         return new Header($m_type, $status, $serial, $request_id);
     }
 
@@ -74,9 +82,17 @@ class Motan
         return self::buildHeader(MSG_TYPE_REQUEST, FALSE, SERIALIZE_SIMPLE, $request_id, MSG_STATUS_NORMAL);
     }
 
+    /**
+     * @param $request_id
+     * @param $serialize $serialize is raw number in protocol header
+     * @param $msg_status
+     * @return Header
+     */
     public static function buildResponseHeader($request_id, $serialize,$msg_status)
     {
-        return self::buildHeader(MSG_TYPE_RESPONSE, FALSE, $serialize, $request_id, $msg_status);
+        $status = 0x08 | ($msg_status & 0x07);
+        return new Header(MSG_TYPE_RESPONSE, $status, $serialize, $request_id);
+        //return self::buildHeader(MSG_TYPE_RESPONSE, FALSE, $serialize, $request_id, $msg_status);
     }
 
     public static function encode($request_id, $req_obj, $metadata)
