@@ -52,6 +52,14 @@ const BODY_SIZE_BYTE = 4;
  */
 class Motan
 {
+    /**
+     * @param $msg_type
+     * @param $proxy
+     * @param $serialize  $serialize is hunman readable number
+     * @param $request_id
+     * @param $msg_status
+     * @return Header
+     */
     private static function buildHeader($msg_type, $proxy, $serialize, $request_id, $msg_status)
     {
         $m_type = 0x00;
@@ -69,14 +77,24 @@ class Motan
         return new Header($m_type, $status, $serial, $request_id);
     }
 
+    /**
+     * @param $request_id
+     * @return Header
+     */
     public static function buildRequestHeader($request_id)
     {
         return self::buildHeader(MSG_TYPE_REQUEST, FALSE, SERIALIZE_SIMPLE, $request_id, MSG_STATUS_NORMAL);
     }
 
-    public static function buildResponseHeader($request_id, $msg_status)
+    /**
+     * @param $request_id
+     * @param $serialize $serialize is hunman readable number
+     * @param $msg_status
+     * @return Header
+     */
+    public static function buildResponseHeader($request_id, $serialize,$msg_status)
     {
-        return self::buildHeader(MSG_TYPE_RESPONSE, FALSE, SERIALIZE_SIMPLE, $request_id, $msg_status);
+        return self::buildHeader(MSG_TYPE_RESPONSE, FALSE, $serialize, $request_id, $msg_status);
     }
 
     public static function encode($request_id, $req_obj, $metadata)
@@ -115,11 +133,11 @@ class Motan
         }
         $header = unpack("nmagic/CmessageType/Cversion_status/Cserialize/Nrequest_id_upper/Nrequest_id_lower", $header_buffer);
         $header['request_id'] = Utils::bigInt2float($header['request_id_upper'], $header['request_id_lower']);
-
-        $header_obj = self::buildResponseHeader($header['request_id'], $header['version_status']);
+        $header_obj= new Header(MSG_TYPE_RESPONSE, $header['version_status'], $header['serialize'], $header['request_id']);
         if (($header['messageType'] & 0x08) == 0x08) {
             $header_obj->setGzip(TRUE);
         }
+
         $metadata_size_buffer = fread($connection, META_SIZE_BYTE);
         if (FALSE === $metadata_size_buffer) {
             $stream_meta = stream_get_meta_data($connection);

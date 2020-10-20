@@ -146,14 +146,23 @@ class Client
         return $this->_endpoint->call($request)->getRs();
     }
 
-    public function multiCall(array $url_objs) {
+    /**
+     * multiCall calls a method on multiple backend.
+     * @param array $url_objs array of backend URL object.
+     * @param string $method  RPC method name.
+     * @param mixed ...$args  arguments will pass to method.
+     * @return array arary of called result, index 0 is the first response of $url_objs.
+     * @throws \Exception, you should try to catch it.
+     */
+    public function multiCall(array $url_objs,string $method, ...$args) {
         if (empty($url_objs)) {
             return [];
         }
+
         $request_objs = [];
         foreach ($url_objs as $url_obj) {
             $request = new \Motan\Request($url_obj->getService(),
-            $url_obj->getMethod(), ...[$url_obj->getParams()]);
+            $method, ...$args);
             $request->addHeaders($url_obj->getHeaders());
             $request->setGroup($url_obj->getGroup());
             $request_objs[] = $request;

@@ -22,15 +22,16 @@ use Motan\Constants;
 
 /**
  * Motan  Request for PHP 5.6+
- * 
+ *
  * <pre>
- * Motan Request 
+ * Motan Request
  * </pre>
- * 
+ *
  * @author idevz <zhoujing00k@gmail.com>
  * @version V1.0 [created at: 2019-01-06]
  */
-class Request{
+class Request
+{
     private $_protocol;
     private $_group;
     private $_service;
@@ -38,7 +39,9 @@ class Request{
     private $_request_args;
     private $_request_id;
     private $_request_headers = [];
-   
+    private $_serialization;
+    private $_serializer;
+
     public function __construct($service, $method, ...$request_args)
     {
         if (empty($service) || empty($method)) {
@@ -56,7 +59,7 @@ class Request{
                 $this->_request_args[0][$key] = $value;
             }
         }
-        $this->_request_id = Utils::genRequestId(NULL); 
+        $this->_request_id = Utils::genRequestId(NULL);
     }
 
     public function setProtocol($protocol)
@@ -147,5 +150,40 @@ class Request{
     public function getGroup()
     {
         return $this->_group;
+    }
+
+    /**
+     * setSerialization sets serialization of the request
+     * @param $serialization, value is string typed.such as: simple, breeze
+     */
+    public function setSerialization($serialization)
+    {
+        $this->_serialization = $serialization;
+    }
+
+    /**
+     * setSerialization acquires serialization type of the request.
+     * @return string value is string typed. such as: simple, breeze
+     */
+    public function getSerialization()
+    {
+        return $this->_serialization;
+    }
+
+    /**
+     * getSerializer acquires serialization object of this request,
+     * if serialization type not supported,null will be returned.
+     * @return Serialize\Breeze|Serialize\GrpcJson|Serialize\Motan|Serialize\PB|null
+     */
+    public function getSerializer()
+    {
+        if (is_object($this->_serializer)) {
+            return $this->_serializer;
+        }
+        if (empty($this->getSerialization())) {
+            return null;
+        }
+        $this->_serializer = Utils::getSerializer($this->getSerialization());
+        return $this->_serializer;
     }
 }

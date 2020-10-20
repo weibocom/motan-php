@@ -95,6 +95,24 @@ class Utils
 
     public static function getSerializer($type)
     {
+        // support for numeric type, change it to string flag
+        if(is_numeric($type)){
+            switch ($type) {
+                case 6:
+                    $type=Constants::SERIALIZATION_SIMPLE;
+                    break;
+                case 8:
+                    $type=Constants::SERIALIZATION_BREEZE;
+                    break;
+                case 1:// grpcPB
+                    $type=Constants::SERIALIZATION_PB;
+                    break;
+                case 7:
+                    $type=Constants::SERIALIZATION_GRPC_JSON;
+                    break;
+            }
+        }
+
         $serializer = null;
         switch ($type) {
             case Constants::SERIALIZATION_SIMPLE:
