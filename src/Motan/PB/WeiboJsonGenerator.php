@@ -21,7 +21,7 @@ use DrSlump\Protobuf;
 use google\protobuf as proto;
 
 /**
- * WeiboJsonGenerator for PHP 5.4+
+ * WeiboJsonGenerator for PHP 5.6+
  * 
  * <pre>
  * WeiboJsonGenerator

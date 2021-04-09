@@ -18,7 +18,7 @@
 namespace Motan;
 
 /**
- * Motan TestHelper for PHP 5.4+
+ * Motan TestHelper for PHP 5.6+
  * 
  * <pre>
  * Motan testing helpers
@@ -32,17 +32,20 @@ class TestHelper
     public static function TestDefines()
     {
         if (isset($_SERVER['HOSTNAME']) && $_SERVER['HOSTNAME'] == 'php') {
-            define('CONN_HOST_IP', '10.211.55.2');
-            // define('CONN_HOST_IP', '10.211.55.100');
+            /* if set a Environmental variable 'CONN_HOST_IP', 
+               using it as a direct address for mesh or server;
+               default is '127.0.0.1'. */
+            ! defined('CONN_HOST_IP') && define('CONN_HOST_IP', '127.0.0.1');
         }else {
             define('CONN_HOST_IP', '127.0.0.1');
-            
         }
 
         if (isset($_SERVER['MESH_UP']) && $_SERVER['MESH_UP'] == 'yes'){
             define('MESH_CALL', TRUE);
+            // set the remote mesh at @CONN_HOST_IP
             isset($_SERVER['HOSTNAME']) && $_SERVER['HOSTNAME'] == 'php' && define('D_AGENT_ADDR', CONN_HOST_IP . ':9981');
         }else {
+            // for direct connection debug
             define('D_CONN_DEBUG', CONN_HOST_IP . ':9100');
         }
     }

@@ -23,7 +23,7 @@ namespace Motan\Interfaces;
  */
 
 /**
- * Interface RestyConfs for PHP 5.4+
+ * Interface RestyConfs for PHP 5.6+
  *
  * <pre>
  * Motan Endpoint

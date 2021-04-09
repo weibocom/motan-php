@@ -1,21 +1,24 @@
+sudo: required
 dist: xenial
 language: php
 
 services:
   - docker
-  
+
 env:
   global:
     - MESH_UP=yes
+    - MEHS_RUN_PATH=$(pwd)/weibo-mesh-runpath
+    - MESH_CONTAINER_NAME=mesh-testhelpe
 
 matrix:
   fast_finish: true
   include:
-    - php: 7.1
-    - php: 7.1
+    - php: 5.6
+    - php: 5.6
       env: MESH_UP=no
-    - php: 7.2
-    - php: 7.2
+    - php: 7.1
+    - php: 7.1
       env: MESH_UP=no
     - php: 7.3
     - php: 7.3
@@ -27,24 +30,17 @@ cache:
 
 before_install:
   - travis_retry composer self-update
-  - docker pull docker.io/zhoujing/wm-testhelper-server
-  - docker run -d --rm --name server --network host zhoujing/wm-testhelper-server
-  - sleep 5 
-  - if [[ $MESH_UP = 'yes' ]]; then docker pull docker.io/zhoujing/wm-testhelper-mesh; fi
-  - if [[ $MESH_UP = 'yes' ]]; then docker run -d --rm --name mesh --network host zhoujing/wm-testhelper-mesh; fi
-  - docker ps -a
+  - sudo apt-get install -y iproute2
+  - sudo cp /sbin/tc /usr/sbin/tc
 
 install:
   - travis_retry composer update --prefer-dist --no-interaction --prefer-stable --no-suggest
 
 script:
-    - if [[ $MESH_UP = 'yes' ]]; then curl 127.0.0.1:8082/getConfig; fi
-    - if [[ $MESH_UP = 'yes' ]]; then curl 127.0.0.1:8082/getReferService; fi
-    - if [[ $MESH_UP = 'yes' ]]; then curl 127.0.0.1:8082/version; fi
-    - vendor/bin/phpunit --coverage-clover=coverage.xml
+  - ./run.sh ci
 
 after_success:
-    - bash <(curl -s https://codecov.io/bash)
+  - bash <(curl -s https://codecov.io/bash)
 
 notifications:
   email:

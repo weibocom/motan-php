@@ -20,7 +20,7 @@ namespace Motan\Protocol;
 use Motan\Utils;
 
 /**
- * Motan Protocol for PHP 5.4+
+ * Motan Protocol for PHP 5.6+
  * 
  * <pre>
  * Motan 协议
@@ -37,6 +37,13 @@ class Header
     private $_serialize;
     private $_request_id;
 
+    /**
+     * Header constructor.
+     * @param $msg_type
+     * @param $version_status
+     * @param $serialize $serialize is raw number in protocol header
+     * @param $request_id
+     */
     public function __construct($msg_type, $version_status, $serialize, $request_id)
     {
         $this->_magic = MAGIC;

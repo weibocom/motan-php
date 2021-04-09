@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (c) 2009-2017. Weibo, Inc.
+ * Copyright (c) 2009-2019. Weibo, Inc.
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -15,27 +15,38 @@
  *    limitations under the License.
  */
 
+
 namespace Motan\Serialize;
 
-/**
- * Motan PB Serializer for PHP 5.6+
- * 
- * <pre>
- * PB 序列化
- * </pre>
- * 
- * @author idevz <zhoujing00k@gmail.com>
- * @version V1.0 [created at: 2016-12-23]
- */
-class PB implements \Motan\Serializer
+
+use Breeze\BreezeReader;
+use Breeze\BreezeWriter;
+use Breeze\Buffer;
+
+class Breeze implements \Motan\Serializer
 {
+
     public function serialize($params)
     {
-        return $params->serialize();
+        $buf = new Buffer();
+        BreezeWriter::writeValue($buf, $params);
+        return $buf->buffer();
     }
 
     public function deserialize($obj, $data)
     {
-        return $obj->deserialize($data);
+        if (empty($data)) {
+            return $obj;
+        }
+        return BreezeReader::readValue(new Buffer($data));
+    }
+
+    public function serializeMulti(...$params)
+    {
+        $buf = new Buffer();
+        foreach ($params as $param) {
+            BreezeWriter::writeValue($buf, $param);
+        }
+        return $buf->buffer();
     }
 }

@@ -12,19 +12,20 @@ This project is the PHP Motan implementation. Provides PHP motan client.
 
 ## Installation
 
-_Using composer:_
+**Using composer:**
 
-**Just** clone this project and add it to your `composer.json`.
+Just clone this project and add it to your `composer.json`.
 
-_WithOut Composer:_
+**WithOut Composer:**
 
-**If** you didn't use composer for php libraries management, you would install motan-php by hand,like `git clone`, please check the demo at [motan-example](https://github.com/motan-ecosystem/motan-examples#for-php) .
+If you didn't use composer for php libraries management, you would install motan-php by hand,like `git clone`, please check the demo at [motan-example](https://github.com/motan-ecosystem/motan-examples#for-php) .
 
-**_Usage:_**
+**Usage:**
+
 we need an defined constant `MOTAN_PHP_ROOT` for load the motan php libs. Just like the demo does.
 
 ```php
-define('MOTAN_PHP_ROOT', '/media/psf/g/idevz/code/z/git/motan-examples/php/vendor/motan/motan-php/src/Motan/');
+define('MOTAN_PHP_ROOT', './vendor/motan/motan-php/src/Motan/');
 require MOTAN_PHP_ROOT . 'init.php';
 ```
 
@@ -45,8 +46,8 @@ We use Weibo-Mesh to support a PHP Server, Weibo-Mesh is a local agent writen in
     CGI_HOST: 10.211.55.3
     CGI_PORT: 9000
     CGI_REQUEST_METHOD: GET
-    CGI_SCRIPT_FILENAME: /media/psf/g/idevz/code/z/git/motan-examples/php-server/index.php
-    CGI_DOCUMENT_ROOT: /media/psf/g/idevz/code/z/git/motan-examples/php-server
+    CGI_SCRIPT_FILENAME: /motan-examples/php-server/index.php
+    CGI_DOCUMENT_ROOT: /motan-examples/php-server
     basicRefer: mesh-server-basicService
 ```
 
@@ -62,26 +63,30 @@ We use Weibo-Mesh to support a PHP Server, Weibo-Mesh is a local agent writen in
     basicRefer: mesh-server-basicService
 ```
 
-## Motan client
+## Motan Client
+
+Here is a simple example about Motan Client, it will call a remote service provider by [Weibo-Mesh Testhelper][testhelper], you can find more example in the [phpt tests][phpts], you can just run `./run.sh` to find more.
 
 ```php
-define('D_CONN_DEBUG', '10.211.55.3:1234');
-$url_str = 'motan2://127.0.0.1:9983/com.weibo.motan.status?group=idevz-test-static';
-$url = new \Motan\URL($url_str);
-$cx = new \Motan\Client($url);
-$rs = $cx->show_batch(['name'=>'idevz']);
-if (null === $rs) {
-   print_r($cx->getResponseException());
+$app_name = 'search';
+$service = 'com.weibo.HelloMTService';
+$group = 'motan-demo-rpc';
+$remote_method = 'HelloW';
+$params = ['idevz'=>'for weibo-mesh'];
+$cx = new Motan\MClient( $app_name );
+$request = new \Motan\Request($service, $remote_method, $params);
+$request->setGroup($group);
+try{
+    $res = $cx->doCall($request);
+} catch(Exception $e) {
+    var_dump($e->getMessage());
 }
-print_r($cx->getResponseHeader());
-print_r($cx->getResponseMetadata());
-print_r($cx);
-print_r($rs);
 ```
 
 # Contributors
 
 * 周晶([@idevz](https://github.com/idevz))
+* 罗明刚[@lion2luo](https://github.com/lion2luo)
 * 郭万韬
 * 丁振凯
 
@@ -90,3 +95,5 @@ print_r($rs);
 Motan is released under the [Apache License 2.0](http://www.apache.org/licenses/LICENSE-2.0).
 
 [motan]:https://github.com/weibocom/motan
+[testhelper]:https://github.com/weibo-mesh/testhelpers
+[phpts]:https://github.com/weibocom/motan-php/tree/master/phpts/Motan_MClient

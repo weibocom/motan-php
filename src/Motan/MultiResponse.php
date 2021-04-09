@@ -29,45 +29,36 @@ use Motan\Utils;
  * @author idevz <zhoujing00k@gmail.com>
  * @version V1.0 [created at: 2019-01-06]
  */
-class Response{
-    private $_rs;
-    private $_exception = NULL;
-    private $_raw_response;
+class MultiResponse {
+    private $_rs_map;
    
-    public function __construct($rs, $exception, $raw_resp)
+    public function __construct($rs_map)
     {
-        $this->_rs = $rs;
-        $this->_exception = $exception;
-        $this->_raw_response = $raw_resp;
+        $this->_rs_map = $rs_map;
     }
 
-    public function getException()
+    public function getException(\Motan\Request $request)
     {
-        return $this->_exception;
+        return $this->_rs_map[$request->getRequestId()]->getException();
     }
 
-    public function getRs()
+    public function getRs(\Motan\Request $request)
     {
-        return $this->_rs;
+        return $this->_rs_map[$request->getRequestId()]->getRs();
     }
     
-    public function getRawResp()
+    public function getRawResp(\Motan\Request $request)
     {
-        return $this->_raw_response;
+        return $this->_rs_map[$request->getRequestId()]->getRawResp();
     }
 
-    public function getResponseHeader()
+    public function getResponseHeader(\Motan\Request $request)
     {
-        return $this->_raw_response->getHeader();
+        return $this->_rs_map[$request->getRequestId()]->getResponseHeader();
     }
 
-    public function getResponseMetadata()
+    public function getResponseMetadata(\Motan\Request $request)
     {
-        return $this->_raw_response->getMetadata();
-    }
-
-    public function getResponseException()
-    {
-        return $this->_exception;
+        return $this->_rs_map[$request->getRequestId()]->getResponseMetadata();
     }
 }

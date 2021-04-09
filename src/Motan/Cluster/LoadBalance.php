@@ -20,7 +20,7 @@ namespace Motan\Cluster;
 use Motan\URL;
 
 /**
- * LoadBalance for PHP 5.4+
+ * LoadBalance for PHP 5.6+
  * 
  * <pre>
  * LoadBalance
@@ -46,6 +46,48 @@ abstract class  LoadBalance
     abstract public function select($nodes, $requestid);
     abstract public function selectToHolder();
 
+    /**
+     * @param string $group
+     */
+    public function setGroup($group)
+    {
+        $this->_group = $group;
+    }
+
+    public function getGroup()
+    {
+        return $this->_group;
+    }
+
+    /**
+     * @param mixed $service_str
+     */
+    public function setService($service_str)
+    {
+        $this->_service_str = $service_str;
+    }
+
+    private function _getSnapshotFile()
+    {
+        $snap_dir = AGENT_RUN_PATH . "/snapshot/";
+        $origin_snapshot_file = $snap_dir . $this->_group . '_' . $this->_service_str;
+        // echo $origin_snapshot_file;
+        if (is_file($origin_snapshot_file)) {
+            return $origin_snapshot_file;
+        }
+        $sdir = scandir($snap_dir, SCANDIR_SORT_NONE);
+        $svc_len = strlen($this->_service_str);
+        foreach ($sdir as $index => $snapshot_file_name) {
+            $svc_pos = stripos($snapshot_file_name, $this->_service_str);
+            $snapshot_file = $snap_dir . DIRECTORY_SEPARATOR . $snapshot_file_name;
+            if (is_file($snapshot_file)
+            && $svc_pos > 0 && substr($snapshot_file_name, $svc_pos + $svc_len) == "") {
+                $this->_group = \substr($snapshot_file_name, 0, $svc_pos-1);
+                return $snapshot_file;
+            }
+        }
+    }
+
     public function getNode()
     {
         if (defined('D_CONN_DEBUG')) {
@@ -54,18 +96,25 @@ abstract class  LoadBalance
         if (!defined('AGENT_RUN_PATH')) {
             throw new \Exception('need a AGENT_RUN_PATH defined for reading direct connection nodes');
         }
-        $filepath = AGENT_RUN_PATH . "/snapshot/" . $this->_group . '_' . $this->_service_str;
+        $filepath = $this->_getSnapshotFile();
         $snap_str = @file_get_contents($filepath);
         if (!$snap_str) {
             throw new \Exception('open snapshot file err : ' . $filepath);
         }
         $nodes = array();
-        $get_nodes = json_decode($snap_str, true)['nodes']['working'];
+        $get_nodes = json_decode($snap_str, true)['nodes'];
         if (!$get_nodes) {
             throw new \Exception('fetch backup nodes err : ' . json_last_error());
         }
-        foreach ($get_nodes as $info) {
-            $nodes[] = $info['host'];
+        if (key_exists('working', $get_nodes)) {
+            $working_nodes = $get_nodes['working'];
+            foreach ($working_nodes as $info) {
+                $nodes[] = $info['host'];
+            }
+        } else {
+            foreach ($get_nodes as $info) {
+                $nodes[] = $info['address'];
+            }
         }
         return static::select($nodes, $this->_url_obj->getRequestId());
     }

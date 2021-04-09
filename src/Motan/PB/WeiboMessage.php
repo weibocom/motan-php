@@ -20,7 +20,7 @@ namespace Motan\PB;
 use DrSlump\Protobuf;
 
 /**
- * WeiboMessage for PHP 5.4+
+ * WeiboMessage for PHP 5.6+
  * 
  * <pre>
  * WeiboMessage

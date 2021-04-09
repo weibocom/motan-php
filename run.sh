@@ -7,14 +7,12 @@
 # ./run.sh                                see help
 ### END ###
 
-# set -x
+set -ex
 
 BASE_DIR=$(dirname $(cd $(dirname "$0") && pwd -P)/$(basename "$0"))
 PHPUNIT_SKELGEN_EXECUTABLE=/usr/local/bin/phpunit-skelgen
 PHPUNIT_EXECUTABLE=${BASE_DIR}/vendor/bin/phpunit
 PHPUNIT_TEST_BOOT_STRAP=${BASE_DIR}/tests/bootstrap.php
-
-PHP_EXECUTABLE=$(which php)
 
 PHPT_SKELGEN_EXECUTABLE=${BASE_DIR}/phpts/generate-phpt
 PHPT_EXECUTABLE=${BASE_DIR}/phpts/run-tests.php
@@ -22,7 +20,18 @@ PHPT_EXECUTABLE=${BASE_DIR}/phpts/run-tests.php
 DEFAULT_PHPT_SECTIONS='skipif:ini:clean:done'
 PHPT_SECTIONS=${PTSEC:-${DEFAULT_PHPT_SECTIONS}}
 
+MESH_TESTHELPER_IMAGE=${MIMG:-"zhoujing/wm-testhelper:1.0.1"}
+MESH_CONTAINER_NAME=${MCTNAME:-"mesh-testhelper"}
+MEHS_RUN_PATH=${MRUN_PATH:-"${BASE_DIR}/weibo-mesh-runpath"}
+
+MESH_MC_CONTAINER_NAME="mesh-test-mc"
+MESH_ZK_CONTAINER_NAME="mesh-test-zk"
+
+PHP_IMAGE=${PIMG:-"zhoujing/idevz-runx-php:7.3.2"}
+
 new_ptest_4_cls_method() {
+	local PHP_EXECUTABLE=$(which php)
+
 	local CLASS_FILE="${BASE_DIR}/phpts/bootstrap.php"
 	local CLASS_NAME=$1
 	local METHOD_NAME=$2
@@ -37,6 +46,8 @@ new_ptest_4_cls_method() {
 }
 
 new_ptest_4_func_in_file() {
+	local PHP_EXECUTABLE=$(which php)
+
 	local SRC_FILE=$1
 	local FUNC_NAME=$2
 	local PHPT_FILE_NAME=${FUNC_NAME}_basic.phpt
@@ -129,45 +140,161 @@ show_help() {
                             ./run.sh ncmpt 'Motan\URL' getMethod,... Methods
     ./run.sh nfpt           new phpt test for functions from a php file
     ./run.sh rpt            run phpt test under phpts dir or any dir have phpts
+
+
+	./run.sh d_nut          run nut in docker (running these funcs in docker should run $(./run.sh pred) first)
+	./run.sh d_naut         run naut in docker
+	./run.sh d_raut         run raut in docker
+	./run.sh d_rutf         run rutf in docker
+	./run.sh d_ncmpt        run ncmpt in docker
+	./run.sh d_nfpt         run nfpt in docker
+	./run.sh d_rpt			run rpt in docker
+
+
+	./run.sh pred           prepare dev envirnment for docker debug
+	./run.sh clean_d        clean docker contianers
+	./run.sh ci             run phpt test and php unit test for Travis CI
     "
 }
 
-if [ $# != 0 ]; then
-	if [ $1 == "nut" ]; then
-		if [ $# != 2 ]; then
-			echo "err args num.
+check_if_stop_container() {
+	local containers="${1}"
+	if [ ! -z "${containers}" ]; then
+		for container in $(echo ${containers//,/ }); do
+			sudo docker ps | grep "${container}" &&
+				sudo docker stop "${container}"
+		done | column -t
+	fi
+}
+
+# for independence network for env clean, we build a single network 'weibo-mesh'
+check_docker_net() {
+	if [ -z "$(sudo docker network ls --format {{.Name}} | grep -E '^weibo-mesh$')" ]; then
+		sudo docker network create --subnet=172.19.0.0/16 weibo-mesh
+	fi
+	sleep 1
+}
+
+prepare_mesh() {
+	sudo docker run -d --rm --privileged --net=container:${MESH_MC_CONTAINER_NAME} --name ${MESH_CONTAINER_NAME} \
+		-v ${MEHS_RUN_PATH}/snapshot:/snapshot \
+		-v ${MEHS_RUN_PATH}/mesh-logs:/mesh-logs \
+		-v ${MEHS_RUN_PATH}/mtserver-logs:/mtserver-logs \
+		-v ${MEHS_RUN_PATH}/mtclient-logs:/mtclient-logs \
+		${MESH_TESTHELPER_IMAGE}
+	sleep 1
+	sudo docker run --rm --net=container:${MESH_MC_CONTAINER_NAME} "${PHP_IMAGE}" curl -s 127.0.0.1:8082/200
+}
+
+prepare_dev() {
+	check_docker_net
+	check_if_stop_container "${MESH_ZK_CONTAINER_NAME},${MESH_CONTAINER_NAME},${MESH_MC_CONTAINER_NAME}"
+	sleep 1
+	# first we run mc container using a independence network we had create above, and then we add other container to this network
+	sudo docker run --net weibo-mesh --ip 172.19.0.10 -d --rm --name ${MESH_MC_CONTAINER_NAME} memcached:1.5.16
+	sudo docker run --net=container:${MESH_MC_CONTAINER_NAME} -d --rm --name ${MESH_ZK_CONTAINER_NAME} zookeeper:3.4.13
+	sleep 1
+	prepare_mesh
+	sleep 1
+
+	# @TODO check ${MESH_ZK_CONTAINER_NAME} bug when first time
+	# there is no /motan/motan-demo-rpc/com.weibo.HelloWorldService/server node in ${MESH_ZK_CONTAINER_NAME}
+	# make ${MESH_ZK_CONTAINER_NAME} subscrib fail.
+	sudo docker stop ${MESH_CONTAINER_NAME}
+	sleep 1
+	prepare_mesh
+	sleep 1
+}
+
+clean_containers() {
+	check_if_stop_container "${MESH_ZK_CONTAINER_NAME},${MESH_CONTAINER_NAME},${MESH_MC_CONTAINER_NAME}"
+}
+
+case "${1}" in
+nut)
+	if [ $# != 2 ]; then
+		echo "err args num.
             ./run.sh nut class_name class_file_src test_file_src
 			like this:
 					./run.sh nut Motan/Client.php
             "
-			exit 1
-		fi
-		new_utest $2
-	elif [ $1 == "naut" ]; then
-		TO_TEST_DIR=${BASE_DIR}/src
-		if [ ! -z $2 ]; then
-			TO_TEST_DIR=$2
-		fi
-		new_all_utests ${TO_TEST_DIR}
-	elif [ $1 == "raut" ]; then
-		${PHPUNIT_EXECUTABLE} --bootstrap=${PHPUNIT_TEST_BOOT_STRAP} \
-			--testdox ${BASE_DIR}/tests \
-			--coverage-html ${BASE_DIR}/tests/coverage/
-	elif [ $1 == "rutf" ]; then
-		${PHPUNIT_EXECUTABLE} --bootstrap=${PHPUNIT_TEST_BOOT_STRAP} $2
-	elif [ $1 == "ncmpt" ]; then
-		for METHOD in $(echo ${3//,/ }); do
-			new_ptest_4_cls_method $2 ${METHOD}
-		done
-	elif [ $1 == "nfpt" ]; then
-		for FUNC in $(echo ${3//,/ }); do
-			new_ptest_4_func_in_file $2 ${FUNC}
-		done
-	elif [ $1 == "rpt" ]; then
-		run_ptests $2
-	elif [ $1 == "-h" ]; then
-		show_help
+		exit 1
 	fi
-else
+	new_utest $2
+	;;
+d_nut)
+	sudo docker run --net=container:${MESH_MC_CONTAINER_NAME} -e MESH_UP=yes -v ${BASE_DIR}/:/motan-php --privileged -v /usr/sbin/tc:/usr/sbin/tc -w /motan-php "${PHP_IMAGE}" ./run.sh nut $2
+	;;
+naut)
+	TO_TEST_DIR=${BASE_DIR}/src
+	if [ ! -z $2 ]; then
+		TO_TEST_DIR=$2
+	fi
+	new_all_utests ${TO_TEST_DIR}
+	;;
+d_naut)
+	sudo docker run --net=container:${MESH_MC_CONTAINER_NAME} -e MESH_UP=yes -v ${BASE_DIR}/:/motan-php --privileged -v /usr/sbin/tc:/usr/sbin/tc -w /motan-php "${PHP_IMAGE}" ./run.sh d_naut $2
+	;;
+raut)
+	${PHPUNIT_EXECUTABLE} --bootstrap=${PHPUNIT_TEST_BOOT_STRAP} \
+		--debug --verbose \
+		--testdox ${BASE_DIR}/tests \
+		--coverage-html ${BASE_DIR}/tests/coverage/
+	;;
+d_raut)
+	sudo docker run --net=container:${MESH_MC_CONTAINER_NAME} -e MESH_UP=yes -v ${BASE_DIR}/:/motan-php --privileged -v /usr/sbin/tc:/usr/sbin/tc -w /motan-php "${PHP_IMAGE}" ./run.sh raut
+	;;
+rutf)
+	${PHPUNIT_EXECUTABLE} --bootstrap=${PHPUNIT_TEST_BOOT_STRAP} --verbose --debug $2
+	;;
+d_rutf)
+	sudo docker run --net=container:${MESH_MC_CONTAINER_NAME} -e MESH_UP=yes -v ${BASE_DIR}/:/motan-php --privileged -v /usr/sbin/tc:/usr/sbin/tc -w /motan-php "${PHP_IMAGE}" ./run.sh rutf $2
+	;;
+ncmpt)
+	for METHOD in $(echo ${3//,/ }); do
+		new_ptest_4_cls_method $2 ${METHOD}
+	done
+	;;
+d_ncmpt)
+	sudo docker run --net=container:${MESH_MC_CONTAINER_NAME} -e MESH_UP=yes -v ${BASE_DIR}/:/motan-php --privileged -v /usr/sbin/tc:/usr/sbin/tc -w /motan-php "${PHP_IMAGE}" ./run.sh ncmpt $2 $3
+	;;
+nfpt)
+	for FUNC in $(echo ${3//,/ }); do
+		new_ptest_4_func_in_file $2 ${FUNC}
+	done
+	;;
+d_nfpt)
+	sudo docker run --net=container:${MESH_MC_CONTAINER_NAME} -e MESH_UP=yes -v ${BASE_DIR}/:/motan-php --privileged -v /usr/sbin/tc:/usr/sbin/tc -w /motan-php "${PHP_IMAGE}" ./run.sh nfpt $2 $3
+	;;
+rpt)
+	run_ptests $2
+	;;
+d_rpt)
+	sudo docker run --net=container:${MESH_MC_CONTAINER_NAME} -e MESH_UP=yes -v ${BASE_DIR}/:/motan-php --privileged -v /usr/sbin/tc:/usr/sbin/tc -w /motan-php "${PHP_IMAGE}" ./run.sh rpt $2
+	;;
+pred) prepare_dev ;;
+clean_d)
+	check_if_stop_container "${MESH_ZK_CONTAINER_NAME},${MESH_CONTAINER_NAME},${MESH_MC_CONTAINER_NAME}"
+	;;
+ci)
+	prepare_dev
+	sudo docker images
+
+	if [ "${MESH_UP}" = "no" ]; then
+		sudo docker run --rm --net=container:${MESH_MC_CONTAINER_NAME} "${PHP_IMAGE}" curl -s 127.0.0.1:8082/stop_motan_agent
+		sleep 1
+	fi
+
+	if [ "${MESH_UP}" = "yes" ]; then
+		sudo docker run --net=container:${MESH_MC_CONTAINER_NAME} -e MESH_UP=yes -v ${BASE_DIR}/:/motan-php --privileged -v /usr/sbin/tc:/usr/sbin/tc -w /motan-php "${PHP_IMAGE}" ./run.sh raut
+		sudo docker run --net=container:${MESH_MC_CONTAINER_NAME} -e MESH_UP=yes -v ${BASE_DIR}/:/motan-php --privileged -v /usr/sbin/tc:/usr/sbin/tc -w /motan-php "${PHP_IMAGE}" ./run.sh rpt
+	fi
+
+	[ "${MESH_UP}" = "no" ] && sudo docker run --net=container:${MESH_MC_CONTAINER_NAME} -e MESH_UP=no -v ${BASE_DIR}/:/motan-php --privileged -v /usr/sbin/tc:/usr/sbin/tc -w /motan-php "${PHP_IMAGE}" ./run.sh raut
+	[ ! -z ${X} ] && clean_containers
+	echo "done test"
+	;;
+*)
 	show_help
-fi
+	;;
+esac
