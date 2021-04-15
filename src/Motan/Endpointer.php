@@ -179,7 +179,7 @@ abstract class  Endpointer
         }
         @fclose($in);
 
-        $res = $this->_doRecv($request->getRespObj());
+        $res = $this->_doRecv($request->getRespSerializerObj());
 
         // @Deprecated start
         $this->_response = $res->getRawResp();
@@ -264,7 +264,7 @@ abstract class  Endpointer
         //     $this->_resp_taged = true;
         // }
 
-        $res = $this->_doRecv($request->getRespObj());
+        $res = $this->_doRecv($request->getRespSerializerObj());
 
         // @Deprecated start
         $this->_response = $res->getRawResp();
@@ -379,7 +379,7 @@ abstract class  Endpointer
             $i++;
         }
         foreach ($ret_order as $seqId => $index) {
-            $ret = $this->_doRecv($requests[$seqId]->getRespObj());
+            $ret = $this->_doRecv($requests[$seqId]->getRespSerializerObj());
             $ret_id = $ret->getResponseHeader()->getRequestId();
             // @Deprecated
             $result[$ret_order[$ret_id]] = $ret->getRs();
@@ -416,7 +416,7 @@ abstract class  Endpointer
                 continue;
             }
             try {
-                $resp= $this->_doRecv($requests[$req_id]->getRespObj());
+                $resp= $this->_doRecv($requests[$req_id]->getRespSerializerObj());
             } catch (\Exception $e) {
                 array_push($multi_exceptions, $e);
                 continue;

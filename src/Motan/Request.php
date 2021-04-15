@@ -41,7 +41,7 @@ class Request
     private $_request_headers = [];
     private $_serialization;
     private $_serializer;
-    private $_resp_obj = null;
+    private $_resp_serializer_obj = null;
 
     public function __construct($service, $method, ...$request_args)
     {
@@ -160,8 +160,8 @@ class Request
      *
      * @return void
      */
-    public function setRespObj($obj) {
-        $this->_resp_obj = $obj;
+    public function setRespSerializerObj($obj) {
+        $this->_resp_serializer_obj = $obj;
     }
 
     /**
@@ -169,8 +169,8 @@ class Request
      *
      * @return object
      */
-    public function getRespObj() {
-        return $this->_resp_obj;
+    public function getRespSerializerObj() {
+        return $this->_resp_serializer_obj;
     }
 
     /**
