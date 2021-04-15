@@ -86,9 +86,10 @@ try{
 # Contributors
 
 * 周晶([@idevz](https://github.com/idevz))
-* 罗明刚[@lion2luo](https://github.com/lion2luo)
+* 罗明刚([@lion2luo](https://github.com/lion2luo))
 * 郭万韬
 * 丁振凯
+* 李枨煊([@flyhope](https://github.com/flyhope))
 
 # License
 

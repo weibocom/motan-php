@@ -179,7 +179,7 @@ abstract class  Endpointer
         }
         @fclose($in);
 
-        $res = $this->_doRecv();
+        $res = $this->_doRecv($request->getRespSerializerObj());
 
         // @Deprecated start
         $this->_response = $res->getRawResp();
@@ -264,7 +264,7 @@ abstract class  Endpointer
         //     $this->_resp_taged = true;
         // }
 
-        $res = $this->_doRecv();
+        $res = $this->_doRecv($request->getRespSerializerObj());
 
         // @Deprecated start
         $this->_response = $res->getRawResp();
@@ -358,19 +358,28 @@ abstract class  Endpointer
         return new \Motan\Response($res, $exception, $resp_msg);
     }
 
+    /**
+     * multi call
+     *
+     * @param Request[] $request_objs
+     *
+     * @return array
+     */
     public function multiCall(array $request_objs)
     {
         $result = [];
         $ret_order = [];
+        $requests = [];
         $i = 0;
         foreach ($request_objs as $request) {
             $seqId = $request->getRequestId();
             $this->_doSend($request);
             $ret_order[$seqId] = $i;
+            $requests[$seqId] = $request;
             $i++;
         }
-        foreach ($ret_order as $index) {
-            $ret = $this->_doRecv();
+        foreach ($ret_order as $seqId => $index) {
+            $ret = $this->_doRecv($requests[$seqId]->getRespSerializerObj());
             $ret_id = $ret->getResponseHeader()->getRequestId();
             // @Deprecated
             $result[$ret_order[$ret_id]] = $ret->getRs();
@@ -379,6 +388,13 @@ abstract class  Endpointer
         return $result;
     }
 
+    /**
+     * do multi caall
+     *
+     * @param Request[] $request_objs
+     *
+     * @return MultiResponse
+     */
     public function doMultiCall($request_objs)
     {
         $results = $requests = [];
@@ -391,7 +407,7 @@ abstract class  Endpointer
                 continue;
             }
             $results[$request_id] = NULL;
-            $requests[$request_id] = $request_id;
+            $requests[$request_id] = $request;
         }
 
         $multi_exceptions = [];
@@ -400,7 +416,8 @@ abstract class  Endpointer
                 continue;
             }
             try {
-                $resp= $this->_doRecv();
+                $resp_obj = isset($requests[$req_id]) ? $requests[$req_id]->getRespSerializerObj() : null;
+                $resp= $this->_doRecv($resp_obj);
             } catch (\Exception $e) {
                 array_push($multi_exceptions, $e);
                 continue;

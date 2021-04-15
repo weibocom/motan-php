@@ -10,12 +10,6 @@
   "bin": [
     "weibo-protoc-gen-php.php"
   ],
-  "repositories": {
-    "packagist": {
-      "type": "composer",
-      "url": "https://packagist.phpcomposer.com"
-    }
-  },
   "require-dev": {
     "phpunit/phpunit": "5.7"
   },

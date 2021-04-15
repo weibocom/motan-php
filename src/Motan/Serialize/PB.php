@@ -19,11 +19,11 @@ namespace Motan\Serialize;
 
 /**
  * Motan PB Serializer for PHP 5.6+
- * 
+ *
  * <pre>
  * PB 序列化
  * </pre>
- * 
+ *
  * @author idevz <zhoujing00k@gmail.com>
  * @version V1.0 [created at: 2016-12-23]
  */
@@ -31,11 +31,29 @@ class PB implements \Motan\Serializer
 {
     public function serialize($params)
     {
-        return $params->serialize();
+        return $params->serializeToString();
+    }
+
+    /**
+     * only support one param
+     *
+     * @param mixed ...$params
+     *
+     * @return string
+     */
+    public function serializeMulti(...$params)
+    {
+        if (!$params) {
+            return '';
+        }
+        return $params[0]->serializeToString();
     }
 
     public function deserialize($obj, $data)
     {
-        return $obj->deserialize($data);
+        if ($data) {
+            $obj->mergeFromString($data);
+        }
+        return $obj;
     }
 }

@@ -148,7 +148,7 @@ class Client
 
     /**
      * multiCall calls a method on multiple backend.
-     * @param array $url_objs array of backend URL object.
+     * @param URL[] $url_objs array of backend URL object.
      * @param string $method  RPC method name.
      * @param mixed ...$args  arguments will pass to method.
      * @return array arary of called result, index 0 is the first response of $url_objs.
