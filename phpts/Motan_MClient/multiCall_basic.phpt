@@ -1,5 +1,5 @@
 --TEST--
-Test class Motan\Client method  doCall() by calling it with its expected arguments
+Test class Motan\MClient method  doCall() by calling it with its expected arguments
 --SKIPIF--
 <?php
 ?>
