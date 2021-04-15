@@ -416,7 +416,8 @@ abstract class  Endpointer
                 continue;
             }
             try {
-                $resp= $this->_doRecv($requests[$req_id]->getRespSerializerObj());
+                $resp_obj = isset($requests[$req_id]) ? $requests[$req_id]->getRespSerializerObj() : null;
+                $resp= $this->_doRecv($resp_obj);
             } catch (\Exception $e) {
                 array_push($multi_exceptions, $e);
                 continue;
