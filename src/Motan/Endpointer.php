@@ -308,7 +308,9 @@ abstract class  Endpointer
         if( !$this->_connection) {
             throw new \Exception("Connection has gone away!");
         }
-        $req_body = $serializer->serializeMulti(...$request->getRequestArgs());
+        if(!is_null($request->getRequestArgs())){
+            $req_body = $serializer->serializeMulti(...$request->getRequestArgs());
+        }
 
         // @TODO check GRPC using \Motan\Request
         // if (Constants::PROTOCOL_GRPC === $url_obj->getProtocol()) {
