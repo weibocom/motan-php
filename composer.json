@@ -20,6 +20,6 @@
     "phpunit/phpunit": "5.7"
   },
   "require": {
-    "wei-breeze/breeze": "dev-release-v0.1.0"
+    "wei-breeze/breeze": "v0.1.0"
   }
 }
