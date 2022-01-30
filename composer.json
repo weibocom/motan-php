@@ -1,6 +1,6 @@
 {
   "name": "motan/motan-php",
-  "version": "v1.1.6",
+  "version": "v1.1.8",
   "description": "Motan For PHP",
   "autoload": {
     "psr-4": {
@@ -14,6 +14,6 @@
     "phpunit/phpunit": "5.7"
   },
   "require": {
-    "wei-breeze/breeze": "dev-release-v0.1.0"
+    "wei-breeze/breeze": "v0.1.0"
   }
 }
