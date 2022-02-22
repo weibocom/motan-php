@@ -17,6 +17,8 @@
 
 namespace Motan\Cluster\Ha;
 
+use Motan\Cluster\LoadBalance;
+
 /**
  * HA Failover for PHP 5.6+
  * 
@@ -31,17 +33,22 @@ class Failover extends \Motan\Cluster\HaStrategy
 {
     public function call(\Motan\Cluster\LoadBalance $load_balance, \Motan\Request $request)
     {
-        $request_id = $args[3];
-        $grpc_client = $load_balance->getGrpcClient($request_id);
-        unset($args[3]);
-        if (is_callable([$grpc_client, $func_name])) {
-            $func_call = call_user_func_array([$grpc_client, $func_name], $args);
-            list($rs, $status) = $func_call->wait();
-            if ($status->code === 0) {
-                return $rs;
-            } else {
-                throw new \Exception($status->details . PHP_EOL . print_r($status->metadata, true));
-            }
-        }
+//        $request_id = $args[3];
+//        $grpc_client = $load_balance->getGrpcClient($request_id);
+//        unset($args[3]);
+//        if (is_callable([$grpc_client, $func_name])) {
+//            $func_call = call_user_func_array([$grpc_client, $func_name], $args);
+//            list($rs, $status) = $func_call->wait();
+//            if ($status->code === 0) {
+//                return $rs;
+//            } else {
+//                throw new \Exception($status->details . PHP_EOL . print_r($status->metadata, true));
+//            }
+//        }
+    }
+
+    public function doUpload(LoadBalance $load_balance, \Motan\Request $request)
+    {
+        // TODO: Implement doUpload() method.
     }
 }
