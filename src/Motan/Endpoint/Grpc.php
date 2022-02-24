@@ -56,7 +56,7 @@ class Grpc extends \Motan\Endpointer
         ]);
     }
 
-    public function call(...$arguments)
+    public function call(\Motan\Request $request)
     {
 //      @TODO add GRPC Request Options support
         $args[0] = $this->_url_obj->getParams()['req_msg'];

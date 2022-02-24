@@ -51,9 +51,10 @@ class PB implements \Motan\Serializer
 
     public function deserialize($obj, $data)
     {
-        if ($data) {
+        if ($data && $obj != null) {
             $obj->mergeFromString($data);
+            return $obj;
         }
-        return $obj;
+        return $data;
     }
 }

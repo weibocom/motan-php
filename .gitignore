@@ -25,6 +25,7 @@ core.*
 pretty/zj
 tests/coverage/
 zjtest_*
+.phpunit.result.cache
 
 # weibo-mesh
 ./agent_runtime
@@ -35,3 +36,4 @@ agent.pid
 
 # debugger
 .gdb*
+/tests/MockServer/log.txt

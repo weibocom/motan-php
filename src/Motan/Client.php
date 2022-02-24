@@ -113,6 +113,21 @@ class Client
         return $this->_endpoint->call($request)->getRs();
     }
 
+    public function doCallWithRespObj($name, $resp_obj, ...$arguments)
+    {
+        if ($resp_obj == null) {
+            throw new \Exception("doCallWithRespObj param resp_obj is empty");
+        }
+        $request = new \Motan\Request(
+            $this->_url_obj->getService(),
+            $name, ...$arguments);
+        $request->addHeaders($this->_url_obj->getHeaders());
+        $request->setGroup($this->_url_obj->getGroup());
+        $request->setRespSerializerObj($resp_obj);
+        $request->setProtocol($this->_url_obj->getProtocol());
+        return $this->_endpoint->call($request)->getRs();
+    }
+
     public function __call($name, $arguments)
     {
         $request_id = $request_args = $request_header = NULL;

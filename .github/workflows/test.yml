@@ -1,0 +1,61 @@
+name: PHPUnit for motan-php
+on:
+  push:
+    branches:
+      - master
+      - dev
+  pull_request:
+    branches:
+      - master
+      - dev
+jobs:
+  testing:
+    runs-on: ${{ matrix.operating-system }}
+    strategy:
+      matrix:
+        operating-system: [ubuntu-latest]
+        php-versions: [7.2, 7.3, 7.4]
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Install php
+        uses: shivammathur/setup-php@v2
+        env:
+          runner: self-hosted
+        with:
+          php-version: ${{ matrix.php-versions }}
+
+      - name: Install dependencies
+        run: composer install --ignore-platform-reqs
+
+      - name: Run tests
+        run: composer test
+
+  codecov:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Set php
+        uses: shivammathur/setup-php@v2
+        env:
+          runner: self-hosted
+        with:
+          php-version: 7.4
+          coverage: pcov
+
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Install dependencies
+        run: composer install --ignore-platform-reqs
+
+      - name: Generate coverage report
+        run: composer test-coverage
+
+      - name: Uplaod coverage report
+        uses: codecov/codecov-action@v2.1.0
+        with:
+          token: "fe6d871b-9785-470b-9c3d-eb1669fcb2ef"
+          file: ./tests/coverage/clover.xml
+          flags: unittests
+          name: codecov-umbrella

@@ -1,6 +1,7 @@
 # Motan-PHP
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://github.com/weibocom/motan/blob/master/LICENSE)
-[![https://travis-ci.org/weibocom/motan-php.svg?branch=master](https://travis-ci.org/weibocom/motan-php.svg?branch=master)](https://travis-ci.org/weibocom/motan-php)
+[![codecov](https://codecov.io/gh/weibocom/motan-php/branch/master/graph/badge.svg)](https://codecov.io/gh/weibocom/motan-php)
+[![PHPUnit for motan-php](https://github.com/weibocom/motan-php/workflows/PHPUnit%20for%20motan-php/badge.svg)](https://github.com/weibocom/motan-php/actions)
 
 # Overview
 [Motan][motan] is a cross-language remote procedure call(RPC) framework for rapid development of high performance distributed services.
@@ -83,6 +84,32 @@ try{
 }
 ```
 
+# Unit Test
+
+If you use the local php environment to run unit tests, please make sure that your php version is between 7.2 and 7.4, supports functions such as pcntl_fork, posix_kill, pcntl_signal, etc., and downloaded the composer component.
+You can run unit tests by following the instructions below。
+```shell
+git clone https://github.com/weibocom/motan-php.git
+cd motan-php
+git checkout $(test branch)
+composer install
+composer test              # just run phpunit
+composer test-coverage     # run phpunit and generate report
+```
+
+If you do not want to install a php-related environment, it is recommended that you use docker to avoid problems with inconsistent environments.
+You can follow the instructions below.
+```shell
+git clone https://github.com/weibocom/motan-php.git
+cd motan-php
+git checkout $(test branch)
+docker run --rm -it -v $PWD:/mnt --entrypoint="" snail007/php:7.4 bash
+cd /mnt
+composer install
+composer test              # just run phpunit
+composer test-coverage     # run phpunit and generate report
+```
+
 # Contributors
 
 * 周晶([@idevz](https://github.com/idevz))
@@ -90,11 +117,12 @@ try{
 * 郭万韬
 * 丁振凯
 * 李枨煊([@flyhope](https://github.com/flyhope))
+* 吴桦([@cocowh](https://github.com/cocowh))
 
 # License
 
 Motan is released under the [Apache License 2.0](http://www.apache.org/licenses/LICENSE-2.0).
 
 [motan]:https://github.com/weibocom/motan
-[testhelper]:https://github.com/weibo-mesh/testhelpers
-[phpts]:https://github.com/weibocom/motan-php/tree/master/phpts/Motan_MClient
+
+Welcome to submit issue and contribute code！

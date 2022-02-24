@@ -18,18 +18,28 @@ class MClientTest extends \PHPUnit\Framework\TestCase
      * Sets up the fixture, for example, opens a network connection.
      * This method is called before a test is executed.
      */
-    protected function setUp()
+    public function setUp() : void
     {
-        $app_name = 'phpt-test-MClient';
-        $this->object = new MClient( $app_name );
+        $this->object = new MClient();
     }
 
     /**
      * Tears down the fixture, for example, closes a network connection.
      * This method is called after a test is executed.
      */
-    protected function tearDown()
+    public function tearDown() : void
     {
+    }
+
+    /**
+     * @covers Motan\MClient::doCall
+     * @todo   Implement testDoCall().
+     */
+    public function testDoCall()
+    {
+        $req1 = new Request(DEFAULT_SERVICE, 'Hello', "testmsg");
+        $res = $this->object->doCall($req1, "testmsg");
+        $this->assertEquals("hello testmsg", $res);
     }
 
     /**
@@ -38,60 +48,50 @@ class MClientTest extends \PHPUnit\Framework\TestCase
      */
     public function testDoMultiCall()
     {
-        $req1 = new \Motan\Request(DEFAULT_SERVICE, 'Hello', ['a' => 'b']);
-        $req2 = new \Motan\Request(DEFAULT_SERVICE, 'Hello', ['xx' => 'wwww']);
-        $req3 = new \Motan\Request(DEFAULT_SERVICE, 'HelloX', 'string', 123,124,['string','arr']);
+        $req1 = new Request(DEFAULT_SERVICE, 'Hello', "testmsg");
+        $req2 = new Request(DEFAULT_SERVICE, 'HelloX', 'string', 123,124,['string','arr']);
         $req1->setGroup(DEFAULT_GROUP);
         $req2->setGroup(DEFAULT_GROUP);
-        $req3->setGroup(DEFAULT_GROUP);
         $multi_resp =  $this->object->doMultiCall([
-            $req1, $req2, $req3
+            $req1, $req2
         ]);
-        $this->assertEquals($multi_resp->getRs($req1), "[]-------[128 1 2 128 1 2]");
+        $this->assertEquals("hello testmsg", $multi_resp->getRs($req1));
 
         $rs_empty = $this->object->doMultiCall([]);
-        $this->assertEquals($rs_empty, []);
+        $this->assertEquals([], $rs_empty);
     }
 
     /**
-     * @covers Motan\MClient::getMRs
+     * @covers Motan\MClient::doMultiCall
      * @todo   Implement testGetMRs().
      */
     public function testGetMRs()
     {
-        $req1 = new \Motan\Request(DEFAULT_SERVICE, 'Hello', ['a' => 'b']);
-        $req2 = new \Motan\Request(DEFAULT_SERVICE, 'Hello', ['xx' => 'wwww']);
-        $req3 = new \Motan\Request(DEFAULT_SERVICE, 'HelloX', 'string', 123,124,['string','arr']);
+        $req1 = new Request(DEFAULT_SERVICE, 'Hello', "testmsg");
+        $req2 = new Request(DEFAULT_SERVICE, 'HelloX', 'string', 123,124,['string','arr']);
         $req1->setGroup(DEFAULT_GROUP);
         $req2->setGroup(DEFAULT_GROUP);
-        $req3->setGroup(DEFAULT_GROUP);
-        $multi_resp = $this->object->doMultiCall([
-            $req1, $req2, $req3
+        $multi_resp =  $this->object->doMultiCall([
+            $req1, $req2
         ]);
         $rs = $multi_resp->getRs($req1);
-        $this->assertEquals($rs, "[]-------[128 1 2 128 1 2]");
+        $this->assertEquals("hello testmsg", $rs);
     }
 
     /**
-     * @covers Motan\MClient::getMException
+     * @covers Motan\MClient::doMultiCall
      * @todo   Implement testGetMException().
      */
     public function testGetMException()
     {
-        $req1 = new \Motan\Request(DEFAULT_SERVICE, 'Hello', ['a' => 'b']);
-        $req2 = new \Motan\Request(DEFAULT_SERVICE, 'Hello', ['xx' => 'wwww']);
-        $req3 = new \Motan\Request(DEFAULT_SERVICE, 'HelloX', 33, 123,124,['string','arr']);
+        $req1 = new Request(DEFAULT_SERVICE, 'Hello', "testmsg");
+        $req2 = new Request(DEFAULT_SERVICE, 'HelloX', 'string', 123,124,['string','arr']);
         $req1->setGroup(DEFAULT_GROUP);
         $req2->setGroup(DEFAULT_GROUP);
-        $req3->setGroup(DEFAULT_GROUP);
-        $multi_resp = $this->object->doMultiCall([
-            $req1, $req2, $req3
+        $multi_resp =  $this->object->doMultiCall([
+            $req1, $req2
         ]);
-        $rs = $multi_resp->getException($req3);
-        if (defined('MESH_CALL')) {
-            $this->assertEquals($rs, '{"errcode":500,"errmsg":"FailOverHA call fail 1 times. Exception: provider call panic","errtype":1}');
-        }else {
-            $this->assertEquals($rs, '{"errcode":500,"errmsg":"provider call panic","errtype":1}');
-        }
+        $rs = $multi_resp->getException($req2);
+        $this->assertEquals('{"errcode":500,"errmsg":"method HelloX is not found in provider.","errtype":1}', $rs);
     }
 }

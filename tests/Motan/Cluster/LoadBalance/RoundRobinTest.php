@@ -15,17 +15,16 @@ class RoundRobinTest extends \PHPUnit\Framework\TestCase
      * Sets up the fixture, for example, opens a network connection.
      * This method is called before a test is executed.
      */
-    protected function setUp()
+    public function setUp() : void
     {
         $this->markTestSkipped('Just Skip this.');
-        $this->object = new RoundRobin;
     }
 
     /**
      * Tears down the fixture, for example, closes a network connection.
      * This method is called after a test is executed.
      */
-    protected function tearDown()
+    public function tearDown() : void
     {
     }
 
@@ -59,7 +58,7 @@ class RoundRobinTest extends \PHPUnit\Framework\TestCase
      */
     public function testSelectToHolder()
     {
-        // Remove the following lines when you implement this test.
+         // Remove the following lines when you implement this test.
         $this->markTestIncomplete(
             'This test has not been implemented yet.'
         );
