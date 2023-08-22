@@ -1,6 +1,6 @@
 {
   "name": "motan/motan-php",
-  "version": "v1.1.9",
+  "version": "v1.1.10",
   "description": "Motan For PHP",
   "autoload": {
     "psr-4": {
