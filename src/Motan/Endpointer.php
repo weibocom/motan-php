@@ -337,7 +337,15 @@ abstract class  Endpointer
 
     protected function _doRecv($resp_obj = NULL)
     {
-        $resp_msg = $this->_connection_obj->read();
+        $resp_msg = $this->_doRecvRespMsg();
+        return $this->_parseRespMsg($resp_msg, $resp_obj);
+    }
+
+    protected function _doRecvRespMsg() {
+        return $this->_connection_obj->read();
+    }
+
+    protected function _parseRespMsg($resp_msg, $resp_obj = NULL) {
         $resp_body = $resp_msg->getBody();
         if ($resp_msg->getHeader()->isGzip()) {
             $resp_body = zlib_decode($resp_body);
