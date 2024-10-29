@@ -368,33 +368,6 @@ abstract class  Endpointer
         return new \Motan\Response($res, $exception, $resp_msg);
     }
 
-    protected function _doRecvRespMsg() {
-        return $this->_connection_obj->read();
-    }
-
-    protected function _parseRespMsg($resp_msg, $resp_obj = NULL) {
-        $resp_body = $resp_msg->getBody();
-        if ($resp_msg->getHeader()->isGzip()) {
-            $resp_body = zlib_decode($resp_body);
-        }
-        // aquires seialization type from response header.
-        $resp_seria=$resp_msg->getHeader()->getSerialize();
-        // create seialization object from $resp_seria.
-        // notice: $resp_seria is a int typed flag.
-        $serializer=Utils::getSerializer($resp_seria);
-        // if create fail, using $this->_serializer as default serializer.
-        empty($serializer)&&$serializer=$this->_serializer;
-
-        $res = $exception = NULL;
-        $res = $serializer->deserialize($resp_obj, $resp_body);
-        // @TODO Check resp_taged for grpc
-        $resp_meta = $resp_msg->getMetadata();
-        if (isset($resp_meta['M_e'])) {
-            $exception = $resp_meta['M_e'];
-        }
-        return new \Motan\Response($res, $exception, $resp_msg);
-    }
-
     /**
      * multi call
      *
