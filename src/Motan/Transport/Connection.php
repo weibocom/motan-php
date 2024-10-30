@@ -21,11 +21,11 @@ use Motan\URL;
 
 /**
  * TCP Connection for PHP 5.6+
- * 
+ *
  * <pre>
  * TCP 连接
  * </pre>
- * 
+ *
  * @author idevz <zhoujing00k@gmail.com>
  * @version V1.0 [created at: 2016-11-18]
  */
@@ -74,14 +74,14 @@ class Connection
             }
         }
         if (!$connection) {
-            throw new \Exception("Connect to $this->_connection_addr fail, err_code:${err_code},err_msg:${err_msg} ");
+            throw new \Exception("Connect to $this->_connection_addr fail, err_code:{$err_code},err_msg:{$err_msg} ");
         }
         $this->_connection = $connection;
         $this->_setStreamOpt();
         return true;
     }
 
-    private function _setStreamOpt() 
+    private function _setStreamOpt()
     {
         if (!is_resource($this->_connection)) {
             return false;
@@ -102,7 +102,7 @@ class Connection
             $sent = @fwrite($this->_connection, $buffer, $length);
             if ($sent === false) {
                 $stream_meta = stream_get_meta_data($this->_connection);
-                if($stream_meta['timed_out'] == TRUE) {
+                if ($stream_meta['timed_out'] == TRUE) {
                     throw new \Exception('Write to remote timeout.');
                 } else {
                     throw new \Exception('Unknow error when write to remote. Stream detail:' . var_export($stream_meta, TRUE));

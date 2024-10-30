@@ -47,9 +47,9 @@ class Client
         try {
             $mesh_isalive = $connection->buildConnection($agent_addr);
         } catch (\Exception $e) {
-            error_log("weibo-mesh isn't alive " . $e->getMessage() );
+            error_log("weibo-mesh isn't alive " . $e->getMessage());
         }
-        if ($mesh_isalive){
+        if ($mesh_isalive) {
             $this->_url_obj->setEndpoint(Constants::ENDPOINT_AGENT);
             $this->_endpoint = new Agent($this->_url_obj);
             $this->_endpoint->setConnectionObj($connection);
@@ -78,7 +78,8 @@ class Client
         $this->_endpoint->setConnectionTimeOut($time_out);
     }
 
-    public function getEndPoint() {
+    public function getEndPoint()
+    {
         return $this->_endpoint;
     }
 
@@ -132,8 +133,11 @@ class Client
     {
         $request_id = $request_args = $request_header = NULL;
         isset($arguments[0]) && !empty($arguments[0]) && $request_args = $arguments[0];
+        if (!is_array($request_args)) { // single parameter
+            $request_args = array($request_args);
+        }
         $request = new \Motan\Request($this->_url_obj->getService(),
-        $name, ...[$request_args]);
+            $name, ...$request_args);
         $request->addHeaders($this->_url_obj->getHeaders());
         isset($arguments[1]) && !empty($arguments[1]) && $request->addHeaders($arguments[1]);
         isset($arguments[2]) && !empty($arguments[2]) && $request->setRequestId($arguments[2]);
@@ -164,12 +168,13 @@ class Client
     /**
      * multiCall calls a method on multiple backend.
      * @param URL[] $url_objs array of backend URL object.
-     * @param string $method  RPC method name.
-     * @param mixed ...$args  arguments will pass to method.
+     * @param string $method RPC method name.
+     * @param mixed ...$args arguments will pass to method.
      * @return array arary of called result, index 0 is the first response of $url_objs.
      * @throws \Exception, you should try to catch it.
      */
-    public function multiCall(array $url_objs,string $method, ...$args) {
+    public function multiCall(array $url_objs, string $method, ...$args)
+    {
         if (empty($url_objs)) {
             return [];
         }
@@ -177,7 +182,7 @@ class Client
         $request_objs = [];
         foreach ($url_objs as $url_obj) {
             $request = new \Motan\Request($url_obj->getService(),
-            $method, ...$args);
+                $method, ...$args);
             $request->addHeaders($url_obj->getHeaders());
             $request->setGroup($url_obj->getGroup());
             $request_objs[] = $request;
