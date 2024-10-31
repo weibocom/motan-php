@@ -1,4 +1,5 @@
 <?php
+
 namespace Motan;
 define('DEFAULT_TEST_URL', 'motan2://127.0.0.1:9981/com.weibo.HelloMTService?group=motan-demo-rpc');
 
@@ -19,7 +20,7 @@ class ClientTest extends \PHPUnit\Framework\TestCase
      * Sets up the fixture, for example, opens a network connection.
      * This method is called before a test is executed.
      */
-    protected function setUp() : void
+    protected function setUp(): void
     {
         $url = new URL(DEFAULT_TEST_URL);
         $url->setConnectionTimeOut(50000);
@@ -31,7 +32,7 @@ class ClientTest extends \PHPUnit\Framework\TestCase
      * Tears down the fixture, for example, closes a network connection.
      * This method is called after a test is executed.
      */
-    protected function tearDown() : void
+    protected function tearDown(): void
     {
     }
 
@@ -77,7 +78,7 @@ class ClientTest extends \PHPUnit\Framework\TestCase
      */
     public function testGetResponseException()
     {
-        $this->object->doCall('HelloX', 222, 123, 124, ['string','arr']);
+        $this->object->doCall('HelloX', 222, 123, 124, ['string', 'arr']);
         $rs = $this->object->getResponseException();
         $this->assertEquals('{"errcode":500,"errmsg":"method HelloX is not found in provider.","errtype":1}', $rs);
     }
@@ -91,7 +92,6 @@ class ClientTest extends \PHPUnit\Framework\TestCase
         $params = "testmsg";
         $this->object->doCall('Hello', $params);
         $rs = $this->object->getResponse();
-        $this->assertObjectHasAttribute('_type',$rs);
         $this->assertEquals(MSG_TYPE_RESPONSE, $rs->getType());
     }
 
@@ -114,6 +114,10 @@ class ClientTest extends \PHPUnit\Framework\TestCase
     {
         $params = "testmsg";
         $rs = $this->object->Hello($params);
+        $this->assertEquals("hello testmsg", $rs);
+
+        // use array params(for multi params)
+        $rs = $this->object->Hello([$params]);
         $this->assertEquals("hello testmsg", $rs);
     }
 
