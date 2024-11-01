@@ -106,7 +106,8 @@ abstract class  Endpointer
         return $this->_connection = $this->_connection_obj->getConnection();
     }
 
-    public function setConnectionObj(Connection $conn_obj) {
+    public function setConnectionObj(Connection $conn_obj)
+    {
         $this->_connection_obj = $conn_obj;
         $this->_connection = $this->_connection_obj->getConnection();
     }
@@ -114,7 +115,7 @@ abstract class  Endpointer
     public function doUpload(\Motan\Request $request)
     {
         $this->_buildConnection();
-        if( !$this->_connection) {
+        if (!$this->_connection) {
             throw new \Exception("Connection has gone away!");
         }
 
@@ -151,7 +152,7 @@ abstract class  Endpointer
             $sent = @fwrite($this->_connection, $buffer, $length);
             if ($sent === false) {
                 $stream_meta = stream_get_meta_data($this->_connection);
-                if($stream_meta['timed_out'] == TRUE) {
+                if ($stream_meta['timed_out'] == TRUE) {
                     throw new \Exception('Write to remote timeout.');
                 } else {
                     throw new \Exception('Unknow error when write to remote. Stream detail:' . var_export($stream_meta, TRUE));
@@ -175,7 +176,7 @@ abstract class  Endpointer
             $sent += @fwrite($this->_connection, $buff);
         }
         if ($sent != $file_size) {
-            throw new \Exception("upload fail, need to upload:${file_size}, but only uploaded:${sent}" . var_export(stream_get_meta_data($this->_connection), TRUE));
+            throw new \Exception("upload fail, need to upload:{$file_size}, but only uploaded:{$sent}" . var_export(stream_get_meta_data($this->_connection), TRUE));
         }
         @fclose($in);
 
@@ -219,13 +220,13 @@ abstract class  Endpointer
         $status_code = \curl_getinfo($ch, CURLINFO_HTTP_CODE);
         $exception = NULL;
         if ($status_code == 0) {
-            $exception = new \Exception("bad request to httpcalling error, url is ${url}");
+            $exception = new \Exception("bad request to httpcalling error, url is {$url}");
         }
         if ($status_code >= 400) {
-            $exception = new \Exception("back to httpcalling error, url is ${url}");
+            $exception = new \Exception("back to httpcalling error, url is {$url}");
         }
         $request_id = $request->getRequestId();
-        $raw_header = \Motan\Protocol\Motan::buildResponseHeader($request_id,SERIALIZE_SIMPLE, $status_code);
+        $raw_header = \Motan\Protocol\Motan::buildResponseHeader($request_id, SERIALIZE_SIMPLE, $status_code);
         $metadata['M_p'] = $request->getService();
         $metadata['M_m'] = $request->getMethod();
         $metadata['M_g'] = $request->getGroup();
@@ -283,11 +284,11 @@ abstract class  Endpointer
     {
         // aquires seialization type from request itself.
         // notice: $request_seria is a string typed flag.
-        $request_seria=$request->getSerialization();
+        $request_seria = $request->getSerialization();
         // create seialization object from $request_seria.
-        $serialization=empty($request_seria)?$this->_url_obj->getSerialization():$request_seria;
+        $serialization = empty($request_seria) ? $this->_url_obj->getSerialization() : $request_seria;
         // if create fail, using $this->_serializer as default serializer.
-        $serializer=empty($request_seria)?$this->_serializer:$request->getSerializer();
+        $serializer = empty($request_seria) ? $this->_serializer : $request->getSerializer();
 
         if ($this->_url_obj->getUrlType() == Constants::REQ_URL_TYPE_RESTY
             || FALSE !== strpos($request->getMethod(), '/')) {
@@ -305,10 +306,10 @@ abstract class  Endpointer
                 throw new \Exception("Couldn't get correct group.");
             }
         }
-        if( !$this->_connection) {
+        if (!$this->_connection) {
             throw new \Exception("Connection has gone away!");
         }
-        if(!is_null($request->getRequestArgs())){
+        if (!is_null($request->getRequestArgs())) {
             $req_body = $serializer->serializeMulti(...$request->getRequestArgs());
         }
 
@@ -337,18 +338,28 @@ abstract class  Endpointer
 
     protected function _doRecv($resp_obj = NULL)
     {
-        $resp_msg = $this->_connection_obj->read();
+        $resp_msg = $this->_doRecvRespMsg();
+        return $this->_parseRespMsg($resp_msg, $resp_obj);
+    }
+
+    protected function _doRecvRespMsg()
+    {
+        return $this->_connection_obj->read();
+    }
+
+    protected function _parseRespMsg($resp_msg, $resp_obj = NULL)
+    {
         $resp_body = $resp_msg->getBody();
         if ($resp_msg->getHeader()->isGzip()) {
             $resp_body = zlib_decode($resp_body);
         }
         // aquires seialization type from response header.
-        $resp_seria=$resp_msg->getHeader()->getSerialize();
+        $resp_seria = $resp_msg->getHeader()->getSerialize();
         // create seialization object from $resp_seria.
         // notice: $resp_seria is a int typed flag.
-        $serializer=Utils::getSerializer($resp_seria);
+        $serializer = Utils::getSerializer($resp_seria);
         // if create fail, using $this->_serializer as default serializer.
-        empty($serializer)&&$serializer=$this->_serializer;
+        empty($serializer) && $serializer = $this->_serializer;
 
         $res = $exception = NULL;
         $res = $serializer->deserialize($resp_obj, $resp_body);
@@ -413,13 +424,15 @@ abstract class  Endpointer
         }
 
         $multi_exceptions = [];
-        foreach ($results as $req_id => $prepared_resp) {
+        foreach ($results as $prepared_resp) {
             if ($prepared_resp !== NULL) {
                 continue;
             }
             try {
-                $resp_obj = isset($requests[$req_id]) ? $requests[$req_id]->getRespSerializerObj() : null;
-                $resp= $this->_doRecv($resp_obj);
+                $respMsg = $this->_doRecvRespMsg();
+                $requestId = $respMsg->getHeader()->getRequestId();
+                $resp_obj = isset($requests[$requestId]) ? $requests[$requestId]->getRespSerializerObj() : null;
+                $resp = $this->_parseRespMsg($respMsg, $resp_obj);
             } catch (\Exception $e) {
                 array_push($multi_exceptions, $e);
                 continue;

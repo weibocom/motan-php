@@ -37,3 +37,7 @@ agent.pid
 # debugger
 .gdb*
 /tests/MockServer/log.txt
+
+composer.phar
+composer.lock
+.phpunit.cache/
